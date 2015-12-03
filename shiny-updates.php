@@ -95,7 +95,7 @@ class Shiny_Updates {
 	 * @param string $hook Current admin page.
 	 */
 	function enqueue_scripts( $hook ) {
-		if ( ! in_array( $hook, array( 'plugins.php', 'plugin-install.php', 'themes.php', 'theme-install.php' ) ) ) {
+		if ( ! in_array( $hook, array( 'plugins.php', 'plugin-install.php', 'themes.php', 'theme-install.php', 'update-core.php' ) ) ) {
 			return;
 		}
 

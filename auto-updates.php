@@ -86,7 +86,7 @@ function shiny_auto_updates_checkbox_field( $args ) {
  * Renders the auto update settings.
  */
 function shiny_auto_updates_render() {
-	echo '<form method="post" action="options.php">';
+	echo '<form class="card" method="post" action="options.php">';
 		settings_fields( 'shiny_auto_updates' );
 		do_settings_sections( 'shiny_auto_updates' );
 		submit_button();
