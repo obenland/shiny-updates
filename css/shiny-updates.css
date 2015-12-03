@@ -61,6 +61,14 @@
 	vertical-align: top;
 }
 
+/* We should probably consider removing the max-width on the base card element. My bad. -MJA */
 .update-core-php .card {
 	max-width: none;
+}
+
+/* This overrides the custom styles on update-core.php, but those styles should be removed via patch */
+.update-php h2,
+.update-core-php h2 {
+	font-size: 1.3em;
+	margin: 1em 0;
 }
