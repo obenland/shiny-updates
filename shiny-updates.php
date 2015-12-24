@@ -91,11 +91,9 @@ class Shiny_Updates {
 					</a>
 				</p>
 				<div class="progress-details">
-					<ul>
-						<# if ( data.message ) { #>
-							{{{ data.message }}}
-						<# } #>
-					</ul>
+					<# if ( data.message ) { #>
+						{{{ data.message }}}
+					<# } #>
 				</div>
 			</div>
 		</p>
