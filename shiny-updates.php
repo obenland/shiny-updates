@@ -79,7 +79,7 @@ class Shiny_Updates {
 	 */
 	function plugin_bulk_actions( $tabs ) {
 		// Bulk select button.
-		$bulk_select_button = '<button type="button" class="button bulk-install">' .
+		$bulk_select_button = '<button type="button" class="button bulk-install hide-if-no-js">' .
 			__( 'Bulk Select' ) .
 			'</button>';
 		$tabs['bulk-plugin-actions'] = $bulk_select_button;
