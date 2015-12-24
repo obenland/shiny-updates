@@ -58,6 +58,7 @@ window.wp = window.wp || {};
 			$message.data( 'originaltext', $message.html() );
 		}
 
+		// Start ptogress for plugin.
 		wp.updates.updateProgressMessage( message );
 		$message.text( wp.updates.l10n.updating );
 
@@ -348,6 +349,7 @@ window.wp = window.wp || {};
 		wp.updates.pluginUpdateSuccesses = 0;
 		wp.updates.pluginUpdateFailures  = 0;
 		wp.updates.updateLock            = false;
+		// Start the progress updates.
 		wp.updates.updateProgressMessage ( '' );
 
 		wp.updates.queueChecker();
