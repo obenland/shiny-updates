@@ -91,11 +91,12 @@ li.bulk-plugin-actions .button {
 	padding-right: 10px;
 }
 
-.bulk-plugin-selection-mode .plugin-card.plugin-selected {
-	border-color: #0073aa;
+.bulk-plugin-selection-mode .plugin-card {
 	border-width: 3px;
 }
-
+.bulk-plugin-selection-mode .plugin-card.plugin-selected {
+	border-color: #0073aa;
+}
 .plugin-bulk-action-label {
 	display: none;
 	position: absolute;
@@ -103,9 +104,14 @@ li.bulk-plugin-actions .button {
 	top: 0;
 	padding: 10px;
 	color: #fff;
-	background-color: #0073aa;
+	background-color: #999;
 }
 
 .bulk-plugin-selection-mode .plugin-card.plugin-selected .plugin-bulk-action-label {
+	background-color: #0073aa;
+
+}
+
+.bulk-plugin-selection-mode .plugin-card .plugin-bulk-action-label {
 	display: inline-block;
 }
