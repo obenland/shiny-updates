@@ -84,7 +84,7 @@ class Shiny_Updates {
 						{{ data.header }}
 					<# } #>
 					<a href="#" class="progress-show-details">
-						<?php _e( 'show details' ); ?>
+						<?php _e( 'Details' ); ?>
 					</a>
 					<a href="#" class="progress-hide-details">
 						<?php _e( 'hide details' ); ?>
