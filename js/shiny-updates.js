@@ -10,6 +10,19 @@ window.wp = window.wp || {};
 	wp.updates.l10n = _.extend( wp.updates.l10n, window.shinyUpdates );
 
 	/**
+	 * Handle the bulk plugin install button.
+	 *
+	 * Toggles bulk plugin install mode:
+	 *  ~ Hide tabs and search
+	 *  ~ Shows update action button
+	 *  ~ Handle card clicks as selection
+	 *  ~ Activate update button
+	 */
+	$( document ).on( 'click', '.bulk-plugin-actions .button', function( evnt ) {
+		$( 'body' ).toggleClass( 'bulk-plugin-selection-mode' );
+	} );
+
+	/**
 	 * Actions performed after every Ajax request.
 	 *
 	 * @todo Maybe we can find a better function name here.
