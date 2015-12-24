@@ -985,6 +985,36 @@ window.wp = window.wp || {};
 		 * Handle the new plugin screen bulk action upgrade/install button.
 		 */
 		$( document ).on( 'click', '.bulk-plugin-action-upgrade-install .button', function() {
+			var pluginsToUpdate  = [],
+				pluginsToInstall = [],
+				$activeCards     = $( 'body.plugin-install-php .plugin-card.plugin-selected' );
+
+			// Go thru cards that are selected, queueing plugins for install and upgrade.
+			_.each( $activeCards, function( card ) {
+				var $installButton = $( card ).find( '.install-now' ),
+					$updateButton  = $( card ).find( '.update-now' );
+
+				// Add to install queue if install button found.
+				if ( $installButton.length > 0 ) {
+					pluginsToInstall.push( {
+						plugin: $installButton.data( 'plugin' ),
+						slug:   $installButton.data( 'slug' )
+					} );
+				}
+
+				// Add to update queue if update button found.
+				if ( $updateButton.length > 0 ) {
+					pluginsToUpdate.push( {
+						plugin: $updateButton.data( 'plugin' ),
+						slug:   $updateButton.data( 'slug' )
+					} );
+				}
+			} );
+
+			if ( 0 !== pluginsToUpdate.length ) {
+				wp.updates.bulkUpdatePlugins( pluginsToUpdate );
+			}
+
 
 		} );
 
