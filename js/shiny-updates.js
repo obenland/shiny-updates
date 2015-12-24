@@ -298,7 +298,7 @@ window.wp = window.wp || {};
 						{
 							header:  wp.updates.getPluginUpdateProgress(),
 							message: wp.updates.progressMessage,
-							noticeClass: _.isUndefined( currentMessage.messageClass ) ? 'notice-success' : 'notice-error'
+							noticeClass: _.isUndefined( currentMessage.messageClass ) ? 'notice-success' : currentMessage.messageClass
 						}
 					)
 				);
