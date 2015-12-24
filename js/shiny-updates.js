@@ -228,7 +228,7 @@ window.wp = window.wp || {};
 		}
 
 		$( document ).on( 'click', 'a.progress-show-details,a.progress-hide-details', function( evnt ) {
-			$( evnt.currentTarget ).parents( '.wp-progress-update' ).toggleClass( 'show-details' );
+			$( evnt.currentTarget ).parents( '#wp-progress-placeholder' ).toggleClass( 'show-details' );
 		} );
 
 	};
