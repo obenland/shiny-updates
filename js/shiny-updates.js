@@ -265,9 +265,21 @@ window.wp = window.wp || {};
 				// Lock message displaying until our message displays briefly.
 				wp.updates.messageLock = true;
 
+				// Get the latest message from the queue.
 				currentMessage = wp.updates.messageQueue.shift();
 				if ( '' !== currentMessage.message ) {
-					wp.updates.progressMessage += '<li>' + currentMessage.message + '</li>';
+
+					// If appendToLine is set, insert message at end of current line.
+					if ( currentMessage.appendToLine ) {
+						var lastLi = wp.updates.progressMessage.lastIndexOf( '</li>' );
+						wp.updates.progressMessage =
+							wp.updates.progressMessage.substring( 0, lastLi ) +
+							' ' + currentMessage.message +
+							'</li>';
+					} else {
+						// Create a new progress line.
+						wp.updates.progressMessage += '<li>' + currentMessage.message + '</li>';
+					}
 				}
 
 				// Update the progress message.
