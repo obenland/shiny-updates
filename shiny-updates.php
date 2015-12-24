@@ -29,7 +29,7 @@ class Shiny_Updates {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 
 		// Add the update HTML for plugin updates progress.
-		add_action( 'pre_current_active_plugins', array( $this, 'wp_update_notification_template' ) );
+		add_action( 'all_admin_notices', array( $this, 'wp_update_notification_template' ) );
 
 		// Search plugins
 		add_action( 'wp_ajax_search-plugins', 'wp_ajax_search_plugins' );
@@ -73,6 +73,7 @@ class Shiny_Updates {
 		// Plugin install screen bulk actions.
 		add_filter( 'views_plugin-install', array( $this, 'plugin_install_bulk_actions' ) );
 		//add_filter( 'plugin_install_action_links' array( $this, 'plugin_install_action_links' ) );
+		//
 	}
 	/**
 	 * Handle bulk plugin install action.
@@ -103,18 +104,21 @@ class Shiny_Updates {
 	 * Add the HTML template for progress updates.
 	 */
 	function wp_update_notification_template() {
+		// Add our templates to the notification area on the plugin and plugin install screens.
+		if ( 'plugins.php' === $GLOBALS['hook_suffix'] || 'plugin-install.php' === $GLOBALS['hook_suffix'] ) {
 		?>
-		<div id="wp-progress-placeholder"></div>
-		<script id="tmpl-wp-progress-template" type="text/html">
-			<div class="notice wp-progress-update is-dismissible <# if ( data.noticeClass ) { #> {{ data.noticeClass }} <# } #>">
-				<p>
-					<# if ( data.message ) { #>
-						{{ data.message }}
-					<# } #>
-				</p>
-			</div>
-		</script>
+			<div id="wp-progress-placeholder"></div>
+			<script id="tmpl-wp-progress-template" type="text/html">
+				<div class="notice wp-progress-update is-dismissible <# if ( data.noticeClass ) { #> {{ data.noticeClass }} <# } #>">
+					<p>
+						<# if ( data.message ) { #>
+							{{ data.message }}
+						<# } #>
+					</p>
+				</div>
+			</script>
 		<?php
+	}
 	}
 
 	/**
