@@ -20,39 +20,40 @@ window.wp = window.wp || {};
 	 */
 	$( document ).on( 'click', '.bulk-plugin-actions .button', function( evnt ) {
 		var selectedPlugins,
-			$pluginList = $( '#the-list' ),
 			$body = $( 'body' );
 
 		// Add the bulk selection mode class.
 		$body.addClass( 'bulk-plugin-selection-mode' );
 
-		// In bulk selection mode, handle card clicking interaction
-		if ( $body.hasClass( 'bulk-plugin-selection-mode' ) ) {
+	} );
 
-			// Handle card clicks by adding a selected class.
-			$body.on( 'click', '.plugin-card', function( evnt ) {
+	/**
+	 * Handle card clicks on the plugin install screen by adding a selected class.
+	 */
+	$( 'body.plugin-install-php' ).on( 'click', '.plugin-card', function( evnt ) {
+		var $pluginList = $( '#the-list' );
 
-				// Stop other click handling.
-				evnt.preventDefault();
-
-				$( evnt.currentTarget ).toggleClass( 'plugin-selected' );
-
-				// If any cards are selected, enable the bulk action button.
-				selectedPlugins = $pluginList.find( '.plugin-card.plugin-selected' );
-				if ( selectedPlugins.length > 0 ) {
-					$( '.bulk-action-upgrade-install' ).attr( 'disabled', false );
-				} else {
-					// No cards selected, disable the action button.
-					$( '.bulk-action-upgrade-install' ).attr( 'disabled', true );
-
-				}
-			} );
-		} else {
-			// When bulk selection is turned off, remove card click handler.
-			$body.off( 'click', '.plugin-card' );
+		// Only handle selection in bulk selection mode.
+		if ( ! $( 'body' ).hasClass( 'bulk-plugin-selection-mode' ) ) {
+			return;
 		}
 
+		// Stop other click handling.
+		evnt.preventDefault();
+
+		$( evnt.currentTarget ).toggleClass( 'plugin-selected' );
+
+		// If any cards are selected, enable the bulk action button.
+		selectedPlugins = $pluginList.find( '.plugin-card.plugin-selected' );
+		if ( selectedPlugins.length > 0 ) {
+			$( '.bulk-action-upgrade-install' ).attr( 'disabled', false );
+		} else {
+			// No cards selected, disable the action button.
+			$( '.bulk-action-upgrade-install' ).attr( 'disabled', true );
+		}
 	} );
+
+
 
 	/**
 	 * Cancel the bulk selection mode.
@@ -61,6 +62,7 @@ window.wp = window.wp || {};
 		// Remove the bulk selection mode class.
 		$( 'body' ).removeClass( 'bulk-plugin-selection-mode' );
 
+		// When bulk selection is turned off, remove card click handler.
 	} );
 
 	/**
