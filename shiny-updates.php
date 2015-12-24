@@ -159,10 +159,10 @@ class Shiny_Updates {
 		}
 
 		// Adjust the activate action, adding data attributes.
-		if ( ! empty( $actions['activate'] ) ) {
+		/*if ( ! empty( $actions['activate'] ) ) {
 			$slug = empty( $plugin_data['slug'] ) ? dirname( $plugin_file ) : $plugin_data['slug'];
-			$actions['activate'] = '<a data-plugin="' . $plugin_file . '" data-slug="' . $slug . '" href="' . wp_nonce_url( 'plugins.php?action=delete-selected&amp;checked[]=' . $plugin_file . '&amp;plugin_status=' . $context . '&amp;paged=' . $GLOBALS['page'] . '&amp;s=' . $GLOBALS['s'], 'bulk-plugins' ) . '" class="edit" aria-label="' . esc_attr( sprintf( __( 'Activate %s' ), $plugin_data['Name'] ) ) . '">' . __( 'Activate' ) . '</a>';
-		}
+			$actions['activate'] = '<a data-plugin="' . $plugin_file . '" data-slug="' . $slug . '" href="' . wp_nonce_url( 'plugins.php?action=activate-selected&amp;checked[]=' . $plugin_file . '&amp;plugin_status=' . $context . '&amp;paged=' . $GLOBALS['page'] . '&amp;s=' . $GLOBALS['s'], 'bulk-plugins' ) . '" class="edit" aria-label="' . esc_attr( sprintf( __( 'Activate %s' ), $plugin_data['Name'] ) ) . '">' . __( 'Activate' ) . '</a>';
+		}*/
 
 		return $actions;
 	}
