@@ -19,7 +19,22 @@ window.wp = window.wp || {};
 	 *  ~ Activate update button
 	 */
 	$( document ).on( 'click', '.bulk-plugin-actions .button', function( evnt ) {
-		$( 'body' ).toggleClass( 'bulk-plugin-selection-mode' );
+		var $pluginList = $( '#the-list' ),
+			$body = $( 'body' );
+
+		// Toggle the bulk selection mode class.
+		$body.toggleClass( 'bulk-plugin-selection-mode' );
+
+		// In bulk selection mode, handle card clicking interaction
+		if ( $body.hasClass( 'bulk-plugin-selection-mode' ) ) {
+			$body.on( 'click', '.plugin-card', function( evnt ) {
+				$( evnt.currentTarget ).toggleClass( 'plugin-selected' );
+			} );
+		} else {
+			// When bulk selection is turned off, remove card clicki'm not sure, what wohandlers.
+			$body.off( 'click', '.plugin-card' );
+		}
+
 	} );
 
 	/**

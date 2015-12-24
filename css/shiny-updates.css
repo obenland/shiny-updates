@@ -73,15 +73,12 @@ li.bulk-plugin-actions .button {
 
 .bulk-plugin-selection-mode ul.filter-links li.bulk-plugin-actions,
 .bulk-plugin-selection-mode ul.filter-links li.bulk-plugin-action-cancel,
-.bulk-plugin-selection-mode ul.filter-links li.bulk-plugin-action-upgrade,
-.bulk-plugin-selection-mode ul.filter-links li.bulk-plugin-action-install
- {
+.bulk-plugin-selection-mode ul.filter-links li.bulk-plugin-action-upgrade-install {
 	display: inline-block;
 }
 
 .filter-links li.bulk-plugin-action-cancel,
-.filter-links li.bulk-plugin-action-upgrade,
-.filter-links li.bulk-plugin-action-install {
+.filter-links li.bulk-plugin-action-upgrade-install {
 	display: none;
 	padding-top: 10px;
 	padding-right: 10px;
@@ -89,4 +86,10 @@ li.bulk-plugin-actions .button {
 
 .bulk-plugin-selection-mode .spinner {
 	display: none;
+}
+
+.plugin-card.plugin-selected{
+	border-color: #0073aa;
+	border-width: 3px;
+
 }
