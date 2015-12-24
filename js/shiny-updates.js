@@ -19,21 +19,47 @@ window.wp = window.wp || {};
 	 *  ~ Activate update button
 	 */
 	$( document ).on( 'click', '.bulk-plugin-actions .button', function( evnt ) {
-		var $pluginList = $( '#the-list' ),
+		var selectedPlugins,
+			$pluginList = $( '#the-list' ),
 			$body = $( 'body' );
 
-		// Toggle the bulk selection mode class.
-		$body.toggleClass( 'bulk-plugin-selection-mode' );
+		// Add the bulk selection mode class.
+		$body.addClass( 'bulk-plugin-selection-mode' );
 
 		// In bulk selection mode, handle card clicking interaction
 		if ( $body.hasClass( 'bulk-plugin-selection-mode' ) ) {
+
+			// Handle card clicks by adding a selected class.
 			$body.on( 'click', '.plugin-card', function( evnt ) {
+
+				// Stop other click handling.
+				evnt.preventDefault();
+
 				$( evnt.currentTarget ).toggleClass( 'plugin-selected' );
+
+				// If any cards are selected, enable the bulk action button.
+				selectedPlugins = $pluginList.find( '.plugin-card.plugin-selected' );
+				if ( selectedPlugins.length > 0 ) {
+					$( '.bulk-action-upgrade-install' ).attr( 'disabled', false );
+				} else {
+					// No cards selected, disable the action button.
+					$( '.bulk-action-upgrade-install' ).attr( 'disabled', true );
+
+				}
 			} );
 		} else {
-			// When bulk selection is turned off, remove card clicki'm not sure, what wohandlers.
+			// When bulk selection is turned off, remove card click handler.
 			$body.off( 'click', '.plugin-card' );
 		}
+
+	} );
+
+	/**
+	 * Cancel the bulk selection mode.
+	 */
+	$( document ).on( 'click', '.bulk-plugin-action-cancel .button', function( evnt ) {
+		// Remove the bulk selection mode class.
+		$( 'body' ).removeClass( 'bulk-plugin-selection-mode' );
 
 	} );
 

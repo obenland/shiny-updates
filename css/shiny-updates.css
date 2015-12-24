@@ -71,7 +71,6 @@ li.bulk-plugin-actions .button {
 	display: none;
 }
 
-.bulk-plugin-selection-mode ul.filter-links li.bulk-plugin-actions,
 .bulk-plugin-selection-mode ul.filter-links li.bulk-plugin-action-cancel,
 .bulk-plugin-selection-mode ul.filter-links li.bulk-plugin-action-upgrade-install {
 	display: inline-block;
@@ -88,7 +87,7 @@ li.bulk-plugin-actions .button {
 	display: none;
 }
 
-.plugin-card.plugin-selected{
+.bulk-plugin-selection-mode .plugin-card.plugin-selected {
 	border-color: #0073aa;
 	border-width: 3px;
 

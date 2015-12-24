@@ -91,7 +91,7 @@ class Shiny_Updates {
 		$tabs['bulk-plugin-action-cancel'] = $bulk_action_cancel_button;
 
 		// Bulk install-upgrade plugins action button.
-		$bulk_action_install_button = '<button type="button" class="button bulk-action-upgrade" disabled="disabled">' .
+		$bulk_action_install_button = '<button type="button" class="button button-primary bulk-action-upgrade-install" disabled="disabled">' .
 		__( 'Updarade/Install Selected Plugins' ) .
 		'</button><span class="spinner"></span>';
 		$tabs['bulk-plugin-action-upgrade-install'] = $bulk_action_install_button;
