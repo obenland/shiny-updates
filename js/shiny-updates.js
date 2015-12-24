@@ -241,6 +241,15 @@ window.wp = window.wp || {};
 		}
 	};
 
+	wp.updates.finishProgressUpdates = function() {
+		// Make the notice dismissable
+		wp.updates.updateProgressMessage( '', 'is-dismissible' );
+
+		// Remove our show details click handler.
+		$( document ).off( 'click', 'a.progress-show-details' );
+
+	}
+
 	/**
 	 * Process the message queue, showing messages in a throttled manner.
 	 */
@@ -848,6 +857,9 @@ window.wp = window.wp || {};
 						wp.updates.updateProgressMessage( updateMessage, 'is-dismissible' );
 						break;
 				}
+
+				// Close out the progress updater.
+				wp.updates.finishProgressUpdates();
 			}
 			return;
 		}
