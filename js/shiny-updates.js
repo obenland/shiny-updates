@@ -1033,19 +1033,20 @@ window.wp = window.wp || {};
 			// Stop other click handling.
 			evnt.preventDefault();
 
-			// Toggle selectrion of the current plugin.
-			$currentTarget.toggleClass( 'plugin-selected' );
+			// Toggle selection of actionable plugins.
+			if ( $currentTarget.find( '.button-disabled' ).length === 0 ) {
+				$currentTarget.toggleClass( 'plugin-selected' );
 
-			// If any cards are selected, enable the bulk action button.
-			selectedPlugins = $pluginList.find( '.plugin-card.plugin-selected' );
-			if ( selectedPlugins.length > 0 ) {
-				$( '.bulk-action-upgrade-install' ).attr( 'disabled', false );
-			} else {
-				// No cards selected, disable the action button.
-				$( '.bulk-action-upgrade-install' ).attr( 'disabled', true );
+				// If any cards are selected, enable the bulk action button.
+				selectedPlugins = $pluginList.find( '.plugin-card.plugin-selected' );
+				if ( selectedPlugins.length > 0 ) {
+					$( '.bulk-action-upgrade-install' ).attr( 'disabled', false );
+				} else {
+					// No cards selected, disable the action button.
+					$( '.bulk-action-upgrade-install' ).attr( 'disabled', true );
+				}
 			}
 		} );
-
 
 
 		/**
