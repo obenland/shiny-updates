@@ -67,7 +67,9 @@ li.bulk-plugin-actions .button {
 	bottom: 12px;
 }
 
-.bulk-plugin-selection-mode ul.filter-links li {
+.bulk-plugin-selection-mode ul.filter-links li,
+.bulk-plugin-selection-mode .plugin-action-buttons,
+.bulk-plugin-selection-mode .spinner {
 	display: none;
 }
 
@@ -83,12 +85,7 @@ li.bulk-plugin-actions .button {
 	padding-right: 10px;
 }
 
-.bulk-plugin-selection-mode .spinner {
-	display: none;
-}
-
 .bulk-plugin-selection-mode .plugin-card.plugin-selected {
 	border-color: #0073aa;
 	border-width: 3px;
-
 }
