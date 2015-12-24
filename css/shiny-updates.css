@@ -70,7 +70,7 @@
 }
 
 .show-details .progress-hide-details,
-#wp-progress-placeholder .show-details .progress-details {
+#wp-progress-placeholder.show-details .progress-details {
 	display: inline-block;
 }
 
