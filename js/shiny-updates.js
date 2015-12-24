@@ -989,6 +989,11 @@ window.wp = window.wp || {};
 				pluginsToInstall = [],
 				$activeCards     = $( 'body.plugin-install-php .plugin-card.plugin-selected' );
 
+			// Get out of bulk selection mode.
+			$( 'body' ).removeClass( 'bulk-plugin-selection-mode' );
+
+			// @todo disable interactions, disable bulk select button until complete
+
 			// Go thru cards that are selected, queueing plugins for install and upgrade.
 			_.each( $activeCards, function( card ) {
 				var $installButton = $( card ).find( '.install-now' ),
