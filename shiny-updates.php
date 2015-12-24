@@ -78,21 +78,27 @@ class Shiny_Updates {
 		?>
 		<div id="wp-progress-placeholder"></div>
 		<script id="tmpl-wp-progress-template" type="text/html">
-			<div class="notice wp-progress-update is-dismissible <# if ( data.noticeClass ) { #> {{ data.noticeClass }} <# } #>">
-				<div class="progress-header">
+			<div class="notice wp-progress-update <# if ( data.noticeClass ) { #> {{ data.noticeClass }} <# } #>">
+				<p class="progress-header">
 					<# if ( data.header ) { #>
 						{{ data.header }}
 					<# } #>
 					<a href="#" class="progress-show-details">
 						<?php _e( 'show details' ); ?>
 					</a>
-				</div>
+					<a href="#" class="progress-hide-details">
+						<?php _e( 'hide details' ); ?>
+					</a>
+				</p>
 				<div class="progress-details">
-					<# if ( data.message ) { #>
-						{{{ data.message }}}
-					<# } #>
+					<ul>
+						<# if ( data.message ) { #>
+							{{{ data.message }}}
+						<# } #>
+					</ul>
 				</div>
 			</div>
+		</p>
 		</script>
 		<?php
 	}
