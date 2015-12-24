@@ -70,14 +70,14 @@ class Shiny_Updates {
 			add_filter( 'auto_update_theme', '__return_true' );
 		}
 
-		// Bulk plugin installs.
-		add_filter( 'views_plugin-install', array( $this, 'plugin_bulk_actions' ) );
+		// Plugin install screen bulk actions.
+		add_filter( 'views_plugin-install', array( $this, 'plugin_install_bulk_actions' ) );
+		//add_filter( 'plugin_install_action_links' array( $this, 'plugin_install_action_links' ) );
 	}
-
 	/**
 	 * Handle bulk plugin install action.
 	 */
-	function plugin_bulk_actions( $tabs ) {
+	function plugin_install_bulk_actions( $tabs ) {
 		// Bulk select button.
 		$bulk_select_button = '<button type="button" class="button bulk-install hide-if-no-js">' .
 			__( 'Bulk Select' ) .

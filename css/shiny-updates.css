@@ -69,8 +69,14 @@ li.bulk-plugin-actions .button {
 
 .bulk-plugin-selection-mode ul.filter-links li,
 .bulk-plugin-selection-mode .plugin-action-buttons,
+.bulk-plugin-selection-mode .wp-filter .search-form.search-plugins,
 .bulk-plugin-selection-mode .spinner {
 	display: none;
+}
+
+/* Hiding the search field collapses the filter bar, so adding a min height */
+.wp-filter {
+	min-height: 54px;
 }
 
 .bulk-plugin-selection-mode ul.filter-links li.bulk-plugin-action-cancel,
@@ -88,4 +94,18 @@ li.bulk-plugin-actions .button {
 .bulk-plugin-selection-mode .plugin-card.plugin-selected {
 	border-color: #0073aa;
 	border-width: 3px;
+}
+
+.plugin-bulk-action-label {
+	display: none;
+	position: absolute;
+	right: 0;
+	top: 0;
+	padding: 10px;
+	color: #fff;
+	background-color: #0073aa;
+}
+
+.bulk-plugin-selection-mode .plugin-card.plugin-selected .plugin-bulk-action-label {
+	display: inline-block;
 }
