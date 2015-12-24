@@ -228,15 +228,17 @@ window.wp = window.wp || {};
 	/**
 	 * Update the progress indicator with a new message.
 	 *
-	 * @param {String}  message A string to display in the prigress indicator.
-	 * @param {boolean} isError Whether the message indicates an error.
+	 * @param {String}  message      A string to display in the prigress indicator.
+	 * @param {boolean} isError      Whether the message indicates an error.
+	 * @param {boolean} appendToLine Whether to append the message to the current line,
+	 *                               Otherwise create a new line. Default false..
 	 */
-	wp.updates.updateProgressMessage = function( message, messageClass ) {
+	wp.updates.updateProgressMessage = function( message, messageClass, appendToLine ) {
 
 		// Check to ensure progress updater is set up.
 		if ( ! _.isUndefined( wp.updates.progressUpdates ) ) {
 			// Add the message to a queue so we can display messages in a throttled manner.
-			wp.updates.messageQueue.push( { message: message, messageClass: messageClass } );
+			wp.updates.messageQueue.push( { message: message, messageClass: messageClass, appendToLine: appendToLine } );
 			wp.updates.processMessageQueue();
 		}
 	};
