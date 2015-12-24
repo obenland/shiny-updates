@@ -3,7 +3,7 @@
  * Plugin Name: Shiny Updates
  * Description: Hide the ugly parts of updating WordPress.
  * Author: the WordPress team
- * Version: 2
+ * Version: 2-20161225
  * License: GPL2
  */
 
