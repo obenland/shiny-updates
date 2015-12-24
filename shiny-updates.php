@@ -169,7 +169,8 @@ class Shiny_Updates {
 		if ( 'theme-install.php' == $hook ) {
 			add_action( 'in_admin_header', array( $this, 'theme_install_templates' ) );
 		}
-		if ( 'plugins.php' === $hook ) {
+
+		if ( 'plugins.php' === $hook || 'plugin-install.php' === $hook ) {
 			wp_localize_script( 'shiny-updates', 'pluginData', get_plugins() );
 		}
 	}
