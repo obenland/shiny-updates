@@ -123,7 +123,9 @@ window.wp = window.wp || {};
 
 		$updateMessage.removeClass( 'updating-message' ).addClass( 'updated-message' );
 		$updateMessage.text( wp.updates.l10n.updated );
-		wp.updates.updateProgressMessage( wp.updates.l10n.updatedMsg );
+
+		// Finish progress for plugin.
+		wp.updates.updateProgressMessage( wp.updates.l10n.updatedMsg, '', true );
 
 		wp.updates.decrementCount( 'plugin' );
 
@@ -191,7 +193,8 @@ window.wp = window.wp || {};
 			});
 		}
 
-		wp.updates.updateProgressMessage( error_message, 'notice-error' );
+		// Complete the progress for this plugin update with a failure.
+		wp.updates.updateProgressMessage( error_message, 'notice-error', true );
 
 		$document.trigger( 'wp-plugin-update-error', response );
 		wp.updates.pluginUpdateFailures++;
@@ -872,7 +875,8 @@ window.wp = window.wp || {};
 						if ( 0 !== wp.updates.pluginUpdateFailures ) {
 							updateMessage += ' ' + wp.updates.l10n.updatedPluginsFailureMsg.replace( '%d', wp.updates.pluginUpdateFailures );
 						}
-						wp.updates.updateProgressMessage( updateMessage, 'is-dismissible' );
+						// Start the progress for this update.
+						wp.updates.updateProgressMessage( updateMessage );
 						break;
 				}
 
