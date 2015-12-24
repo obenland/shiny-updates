@@ -3,6 +3,8 @@ window.wp = window.wp || {};
 (function( $, wp ) {
 	var $document = $( document );
 
+	wp.updates.progressMessage = '';
+
 	// Not needed in core.
 	wp.updates = wp.updates || {};
 
@@ -243,7 +245,7 @@ window.wp = window.wp || {};
 	 * Process the message queue, showing messages in a throttled manner.
 	 */
 	wp.updates.processMessageQueue = function() {
-		var message;
+		var currentMessage;
 
 		// If we are already displaying a message, pause briefly and try again.
 		if ( wp.updates.messageLock ) {
@@ -254,18 +256,22 @@ window.wp = window.wp || {};
 				// Lock message displaying until our message displays briefly.
 				wp.updates.messageLock = true;
 
-				queuedMessage = wp.updates.messageQueue.shift();
+				currentMessage = wp.updates.messageQueue.shift();
+				if ( '' !== currentMessage.message ) {
+					wp.updates.progressMessage += '<li>' + currentMessage.message + '</li>';
+				}
 
 				// Update the progress message.
-				wp.updates.progressUpdates.append(
+				wp.updates.progressUpdates.html(
 					wp.updates.progressTemplate(
 						{
-							message: queuedMessage.message,
-							noticeClass: _.isUndefined( queuedMessage.messageClass ) ? 'notice-success' : 'notice-error'
+							header:  wp.updates.getPluginUpdateProgress(),
+							message: wp.updates.progressMessage,
+							noticeClass: _.isUndefined( currentMessage.messageClass ) ? 'notice-success' : 'notice-error'
 						}
 					)
 				);
-				wp.a11y.speak( wp.updates.l10n.updatingMsg, 'notice-error' === queuedMessage.messageClass ? 'assertive' : '' );
+				wp.a11y.speak( wp.updates.l10n.updatingMsg, 'notice-error' === wp.updates.progressMessage.messageClass ? 'assertive' : '' );
 
 				$( document ).trigger( 'wp-progress-updated' );
 
@@ -312,9 +318,7 @@ window.wp = window.wp || {};
 		wp.updates.pluginUpdateSuccesses = 0;
 		wp.updates.pluginUpdateFailures  = 0;
 		wp.updates.updateLock            = false;
-		wp.updates.updateProgressMessage (
-			wp.updates.getPluginUpdateProgress()
-		);
+		wp.updates.updateProgressMessage ( '' );
 
 		wp.updates.queueChecker();
 
