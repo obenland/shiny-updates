@@ -87,13 +87,21 @@ class Shiny_Updates {
 						<?php _e( 'Details' ); ?>
 					</a>
 					<a href="#" class="progress-hide-details">
-						<?php _e( 'hide details' ); ?>
+						<?php _e( 'Hide details' ); ?>
 					</a>
 				</p>
 				<div class="progress-details">
-					<# if ( data.message ) { #>
-						{{{ data.message }}}
-					<# } #>
+					<#
+					if ( data.messages ) {
+						_.each( data.messages, function( message ) {
+					#>
+						<li>
+							{{ message }}
+						</li>
+					<#
+						} );
+					}
+					#>
 				</div>
 			</div>
 		</p>

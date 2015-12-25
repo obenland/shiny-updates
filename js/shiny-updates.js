@@ -3,7 +3,7 @@ window.wp = window.wp || {};
 (function( $, wp ) {
 	var $document = $( document );
 
-	wp.updates.progressMessage = '';
+	wp.updates.progressMessages = [];
 
 	// Not needed in core.
 	wp.updates = wp.updates || {};
@@ -231,6 +231,11 @@ window.wp = window.wp || {};
 			$( evnt.currentTarget ).parents( '#wp-progress-placeholder' ).toggleClass( 'show-details' );
 		} );
 
+		/**
+		 * Clear any previous messages.
+		 */
+		wp.updates.progressMessages = [];
+
 	};
 
 	/**
@@ -281,14 +286,12 @@ window.wp = window.wp || {};
 
 					// If appendToLine is set, insert message at end of current line.
 					if ( currentMessage.appendToLine ) {
-						var lastLi = wp.updates.progressMessage.lastIndexOf( '</li>' );
-						wp.updates.progressMessage =
-							wp.updates.progressMessage.substring( 0, lastLi ) +
-							' ' + currentMessage.message +
-							'</li>';
+						wp.updates.progressMessages[ wp.updates.progressMessages.length - 1 ] =
+							wp.updates.progressMessages[ wp.updates.progressMessages.length - 1 ] +=
+								' ' + currentMessage.message;
 					} else {
 						// Create a new progress line.
-						wp.updates.progressMessage += '<li>' + currentMessage.message + '</li>';
+						wp.updates.progressMessages.push( currentMessage.message );
 					}
 				}
 
@@ -297,14 +300,14 @@ window.wp = window.wp || {};
 					wp.updates.progressTemplate(
 						{
 							header:  wp.updates.getPluginUpdateProgress(),
-							message: wp.updates.progressMessage,
+							messages: wp.updates.progressMessages,
 							noticeClass: _.isUndefined( currentMessage.messageClass ) ? 'notice-success' : currentMessage.messageClass
 						}
 					)
 				);
-				wp.a11y.speak( wp.updates.l10n.updatingMsg, 'notice-error' === wp.updates.progressMessage.messageClass ? 'assertive' : '' );
+				wp.a11y.speak( currentMessage.message, 'notice-error' === currentMessage.messageClass ? 'assertive' : '' );
 
-				$( document ).trigger( 'wp-progress-updated' );
+				$( document ).trigger( 'wp-progress-updated', currentMessage );
 
 				// After a brief delay, unlock and call the queue again.
 				setTimeout( function() {
