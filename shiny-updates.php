@@ -138,6 +138,7 @@ class Shiny_Updates {
 		</p>
 			</script>
 		<?php
+		}
 	}
 
 	/**
