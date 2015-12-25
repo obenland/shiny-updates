@@ -58,12 +58,13 @@ window.wp = window.wp || {};
 			$message.data( 'originaltext', $message.html() );
 		}
 
-		// Start ptogress for plugin.
+		// Start progress for plugin.
 		wp.updates.updateProgressMessage( message );
 		$message.text( wp.updates.l10n.updating );
 
 		$( document ).trigger( 'wp-plugin-updating' );
 
+		// If we are currently updating, push the update to the queue.
 		if ( wp.updates.updateLock ) {
 			wp.updates.updateQueue.push( {
 				type: 'update-plugin',
@@ -258,15 +259,21 @@ window.wp = window.wp || {};
 
 	wp.updates.finishProgressUpdates = function() {
 
-		//Choose a final status color, default to yellow.
-		var final_status_class = 'notice-warning';
+		//Choose a final status color.
+		var final_status_class = '';
 
-		// Only success, green.
-		if ( wp.updates.pluginUpdateSuccesses > 0 && wp.updates.pluginUpdateFailures === 0 ) {
+		// Any success, green.
+		if ( wp.updates.pluginUpdateSuccesses > 0 || wp.updates.pluginInstallSuccesses > 0 ) {
 			final_status_class = 'notice-success';
-		} else {
-			// Only failures, red.
-			if ( wp.updates.pluginUpdateFailures > 0 && wp.updates.pluginUpdateSuccesses === 0 ) {
+		}
+
+		// Any failures?
+		if ( wp.updates.pluginUpdateFailures > 0 || wp.updates.pluginInstallFailures > 0 ) {
+			// Already green, so make it yellow.
+			if ( 'notice-success' === final_status_class ) {
+				final_status_class = 'notice-warning';
+			} else {
+				// Otherwise red, all failures.
 				final_status_class = 'notice-error';
 			}
 		}
@@ -332,16 +339,54 @@ window.wp = window.wp || {};
 		}
 	};
 
-
 	/**
-	 * Send an Ajax request to the server to update plugins in bulk.
+	 * Queue installing of plugins in bulk.
+	 *
+	 * @since 4.5.0
+	 */
+	wp.updates.bulkInstallPlugins = function( plugins ) {
+		var $message, data;
+
+		// Ensure progress indicator set up.
+		wp.updates.setupProgressIndicator();
+
+		_.each( plugins, function( plugin ) {
+			$message = $( 'tr[data-plugin="' + plugin.plugin + '"]' ).find( '.update-message' );
+
+			$message.addClass( 'installing-message' );
+			if ( $message.html() !== wp.updates.l10n.installing ) {
+				$message.data( 'originaltext', $message.html() );
+			}
+
+			$message.text( wp.updates.l10n.updateQueued );
+
+			wp.updates.updateQueue.push( {
+				type: 'bulk-install-plugin',
+				data: plugin
+			} );
+		});
+
+		// Start the bulk plugin updates. Reset the count for totals, successes and failures.
+		//wp.updates.updateProgressMessage( wp.updates.l10n.updatingMsg );
+		wp.updates.pluginsToInstallCount  = plugins.length;
+		wp.updates.pluginInstallSuccesses = 0;
+		wp.updates.pluginInstallFailures  = 0;
+		wp.updates.updateLock             = false;
+		// Start the progress updates.
+		wp.updates.updateProgressMessage ( '' );
+
+		wp.updates.queueChecker();
+
+	};
+	/**
+	 * Queue updating of plugins in bulk.
 	 *
 	 * @since 4.5.0
 	 */
 	wp.updates.bulkUpdatePlugins = function( plugins ) {
 		var $message, data;
 
-		// Set up the progress indicaator.
+		// Ensure progress indicator set up.
 		wp.updates.setupProgressIndicator();
 
 		_.each( plugins, function( plugin ) {
@@ -377,16 +422,34 @@ window.wp = window.wp || {};
 	 * Build a string describing the bulk update progress.
 	 */
 	wp.updates.getPluginUpdateProgress = function() {
-		var updateMessage = wp.updates.l10n.updatePluginsQueuedMsg.replace( '%d', wp.updates.pluginsToUpdateCount );
+		var updateMessage = '',
+			installMessage = '';
 
-		if ( 0 !== wp.updates.pluginUpdateSuccesses ) {
-		updateMessage += ' ' + wp.updates.l10n.updatedPluginsSuccessMsg.replace( '%d', wp.updates.pluginUpdateSuccesses );
-		}
-		if ( 0 !== wp.updates.pluginUpdateFailures ) {
-		updateMessage += ' ' + wp.updates.l10n.updatedPluginsFailureMsg.replace( '%d', wp.updates.pluginUpdateFailures );
+		// Do we have any successes or failures for updates?
+		if ( ! _.isUndefined( wp.updates.pluginUpdateSuccesses ) && ( 0 !== wp.updates.pluginUpdateSuccesses || 0 !== wp.updates.pluginUpdateFailures ) ) {
+			updateMessage = wp.updates.l10n.updatePluginsQueuedMsg.replace( '%d', wp.updates.pluginsToUpdateCount )
+			if ( 0 !== wp.updates.pluginUpdateSuccesses ) {
+			updateMessage += ' ' + wp.updates.l10n.updatedPluginsSuccessMsg.replace( '%d', wp.updates.pluginUpdateSuccesses );
+			}
+
+			if ( 0 !== wp.updates.pluginUpdateFailures ) {
+			updateMessage += ' ' + wp.updates.l10n.updatedPluginsFailureMsg.replace( '%d', wp.updates.pluginUpdateFailures );
+			}
 		}
 
-		return updateMessage;
+		// Do we have any successes or failures for installs?
+		if ( ! _.isUndefined( wp.updates.pluginInstallSuccesses ) && ( 0 !== wp.updates.pluginInstallSuccesses || 0 !== wp.updates.pluginInstallFailures ) ) {
+			installMessage = wp.updates.l10n.installPluginsQueuedMsg.replace( '%d', wp.updates.pluginsToInstallCount );
+			if ( 0 !== wp.updates.pluginInstallSuccesses ) {
+			installMessage += ' ' + wp.updates.l10n.updatedPluginsSuccessMsg.replace( '%d', wp.updates.pluginInstallSuccesses );
+			}
+
+			if ( 0 !== wp.updates.pluginInstallFailures ) {
+			installMessage += ' ' + wp.updates.l10n.updatedPluginsFailureMsg.replace( '%d', wp.updates.pluginInstallFailures );
+			}
+		}
+
+		return updateMessage + ( '' !== updateMessage ? ' ' : '' ) + installMessage;
 
 	};
 
@@ -397,14 +460,16 @@ window.wp = window.wp || {};
 	 *
 	 * @param {string} slug
 	 */
-	wp.updates.installPlugin = function( slug ) {
+	wp.updates.installPlugin = function( name, slug ) {
 		var $card    = $( '.plugin-card-' + slug ),
 			$message = $card.find( '.install-now' ),
 			data;
 
 		$message.addClass( 'updating-message' );
 		$message.text( wp.updates.l10n.installing );
-		wp.a11y.speak( wp.updates.l10n.installingMsg );
+
+		// Start progress for plugin.
+		wp.updates.updateProgressMessage( wp.updates.l10n.installingLabel.replace( '%s', name ) );
 
 		// Remove previous error messages, if any.
 		$card.removeClass( 'plugin-card-install-failed' ).find( '.notice.notice-error' ).remove();
@@ -450,10 +515,12 @@ window.wp = window.wp || {};
 
 		$message.removeClass( 'updating-message' ).addClass( 'updated-message button-disabled' );
 		$message.text( wp.updates.l10n.installed );
-		wp.a11y.speak( wp.updates.l10n.installedMsg );
 
 		wp.updates.updateDoneSuccessfully = true;
 		$document.trigger( 'wp-plugin-install-success', response );
+		wp.updates.pluginInstallSuccesses++;
+		wp.updates.updateProgressMessage( wp.updates.l10n.installedMsg, 'notice-success', true );
+
 	};
 
 	/**
@@ -494,7 +561,11 @@ window.wp = window.wp || {};
 			.attr( 'aria-label', wp.updates.l10n.installFailedLabel.replace( '%s', pluginData[ response.plugin ].Name ) )
 			.text( wp.updates.l10n.installFailedShort ).removeClass( 'updating-message' );
 
-		wp.a11y.speak( errorMessage, 'assertive' );
+		wp.updates.pluginInstallFailures++;
+
+		// Complete the progress for this plugin update with a failure.
+		wp.updates.updateProgressMessage( errorMessage, 'notice-error', true );
+
 
 		$document.trigger( 'wp-plugin-install-error', response );
 	};
@@ -881,9 +952,13 @@ window.wp = window.wp || {};
 	 */
 	wp.updates.queueChecker = function() {
 		if ( wp.updates.updateLock || wp.updates.updateQueue.length <= 0 ) {
-			// Clear the update lock when the queue is empty.
+
+			// Is the queue empty?
 			if ( wp.updates.updateQueue.length <= 0 ) {
+
+				// Clear the update lock when the queue is empty.
 				wp.updates.updateLock = false;
+
 				// Update the status with final progress results.
 				switch ( wp.updates.currentJobType ) {
 					case 'bulk-update-plugin':
@@ -897,10 +972,24 @@ window.wp = window.wp || {};
 						// Start the progress for this update.
 						wp.updates.updateProgressMessage( updateMessage );
 						break;
+					case 'bulk-install-plugin':
+						var installMessage = wp.updates.l10n.installedPluginsMsg;
+						if ( 0 !== wp.updates.pluginInstallSuccesses ) {
+							installMessage += ' ' + wp.updates.l10n.updatedPluginsSuccessMsg.replace( '%d', wp.updates.pluginInstallSuccesses );
+						}
+						if ( 0 !== wp.updates.pluginInstallFailures ) {
+							installMessage += ' ' + wp.updates.l10n.updatedPluginsFailureMsg.replace( '%d', wp.updates.pluginInstallFailures );
+						}
+						// Start the progress for this update.
+						wp.updates.updateProgressMessage( installMessage );
+						break;
 				}
 
 				// Close out the progress updater.
 				wp.updates.finishProgressUpdates();
+
+				// Send a message that the queue is finishes.
+				$( document ).trigger( 'wp-updates-queue-complete' );
 			}
 			return;
 		}
@@ -909,8 +998,9 @@ window.wp = window.wp || {};
 
 		wp.updates.currentJobType = job.type;
 		switch ( job.type ) {
+			case 'bulk-install-plugin':
 			case 'install-plugin':
-				wp.updates.installPlugin( job.data.slug );
+				wp.updates.installPlugin( job.data.plugin, job.data.slug );
 				break;
 
 			case 'bulk-update-plugin':
@@ -1059,7 +1149,7 @@ window.wp = window.wp || {};
 				// Add to install queue if install button found.
 				if ( $installButton.length > 0 ) {
 					pluginsToInstall.push( {
-						plugin: $installButton.data( 'plugin' ),
+						plugin: $installButton.data( 'name' ),
 						slug:   $installButton.data( 'slug' )
 					} );
 				}
@@ -1073,10 +1163,26 @@ window.wp = window.wp || {};
 				}
 			} );
 
-			if ( 0 !== pluginsToUpdate.length ) {
-				wp.updates.bulkUpdatePlugins( pluginsToUpdate );
-			}
+			if ( pluginsToUpdate.length > 0 || pluginsToInstall.length > 0 ) {
+				// Callback to handle instlls
+				processInstalls = function() {
+					if ( 0 !== pluginsToInstall.length ) {
+						wp.updates.bulkInstallPlugins( pluginsToInstall );
+					}
+				}
 
+				// Do we have any plugin upgrades to run?
+				if ( 0 !== pluginsToUpdate.length ) {
+					wp.updates.bulkUpdatePlugins( pluginsToUpdate );
+					// Wait until plugin upgrades complete before starting plugin installs.
+					$( document ).on( 'wp-updates-queue-complete', function(){
+						processInstalls();
+					} );
+				} else {
+					// Only plugin installs to handle.
+					processInstalls();
+				}
+			}
 
 		} );
 
@@ -1119,6 +1225,7 @@ window.wp = window.wp || {};
 			$( 'body' ).removeClass( 'bulk-plugin-selection-mode' );
 
 			// When bulk selection is turned off, remove card click handler.
+			$( 'body.plugin-install-php' ).off( 'click', '.plugin-card' );
 		} );
 
 		/**
@@ -1144,7 +1251,7 @@ window.wp = window.wp || {};
 				} );
 			}
 
-			wp.updates.installPlugin( $button.data( 'slug' ) );
+			wp.updates.installPlugin( $button.data( 'name' ), $button.data( 'slug' ) );
 		} );
 
 		/**
