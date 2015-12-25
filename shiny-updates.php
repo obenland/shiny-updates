@@ -173,13 +173,17 @@ class Shiny_Updates {
 			'deletinggMsg'              => __( 'Deleting... please wait.' ),
 			'deletedMsg'                => __( 'Plugin successfully deleted.' ),
 			'updatedPluginsMsg'         => __( 'Plugin updates complete.' ),
+			'installedPluginsMsg'       => __( 'Plugin installs complete.' ),
 			/* translators: 1. Plugins update successes. 2. Plugin update failures. */
 			'updatedPluginsSuccessMsg'  => __( 'Successes: %d.' ),
 			/* translators: 1. Plugins update successes. 2. Plugin update failures. */
 			'updatedPluginsFailureMsg'  => __( 'Failures: %d.' ),
 			/* translators: 1. Total plugins to update. */
 			'updatePluginsQueuedMsg'    => __( '%d plugin updates queued.' ),
-			'updateQueued'              => __( 'Update queued.')
+			/* translators: 1. Total plugins to install. */
+			'installPluginsQueuedMsg'   => __( '%d plugin installs queued.' ),
+			'updateQueued'              => __( 'Update queued.'),
+			'installQueued'             => __( 'Update queued.')
 		) );
 
 		if ( in_array( $hook, array( 'themes.php', 'theme-install.php' ) ) ) {
