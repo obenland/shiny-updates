@@ -126,7 +126,7 @@ window.wp = window.wp || {};
 		$updateMessage.text( wp.updates.l10n.updated );
 
 		// Finish progress for plugin.
-		wp.updates.updateProgressMessage( wp.updates.l10n.updatedMsg, '', true );
+		wp.updates.updateProgressMessage( wp.updates.l10n.updatedMsg, 'notice-success', true );
 
 		wp.updates.decrementCount( 'plugin' );
 
@@ -257,8 +257,22 @@ window.wp = window.wp || {};
 	};
 
 	wp.updates.finishProgressUpdates = function() {
-		// Make the notice dismissable
-		wp.updates.updateProgressMessage( '', 'is-dismissible' );
+
+		//Choose a final status color, default to yellow.
+		var final_status_class = 'notice-warning';
+
+		// Only success, green.
+		if ( wp.updates.pluginUpdateSuccesses > 0 && wp.updates.pluginUpdateFailures === 0 ) {
+			final_status_class = 'notice-success';
+		} else {
+			// Only failures, red.
+			if ( wp.updates.pluginUpdateFailures > 0 && wp.updates.pluginUpdateSuccesses === 0 ) {
+				final_status_class = 'notice-error';
+			}
+		}
+
+		// Make the notice dismissable and add the final status class.
+		wp.updates.updateProgressMessage( '', 'is-dismissible ' + final_status_class );
 
 		// Remove our show details click handler.
 		$( document ).off( 'click', 'a.progress-show-details' );
