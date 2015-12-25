@@ -115,3 +115,20 @@ li.bulk-plugin-actions .button {
 .bulk-plugin-selection-mode .plugin-card .plugin-bulk-action-label {
 	display: inline-block;
 }
+
+#wp-progress-placeholder .progress-details {
+	display:none;
+}
+
+.progress-hide-details {
+	display: none;
+}
+
+.show-details .progress-hide-details,
+#wp-progress-placeholder.show-details .progress-details {
+	display: inline-block;
+}
+
+.show-details .progress-show-details {
+	display: none;
+}
