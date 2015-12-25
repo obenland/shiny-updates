@@ -29,7 +29,7 @@ class Shiny_Updates {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 
 		// Add the update HTML for plugin updates progress.
-		add_action( 'pre_current_active_plugins', array( $this, 'wp_update_notification_template' ) );
+		add_action( 'all_admin_notices', array( $this, 'wp_update_notification_template' ) );
 
 		// Search plugins
 		add_action( 'wp_ajax_search-plugins', 'wp_ajax_search_plugins' );
@@ -69,24 +69,56 @@ class Shiny_Updates {
 		if ( get_option( 'wp_auto_update_themes' ) ) {
 			add_filter( 'auto_update_theme', '__return_true' );
 		}
+
+		// Plugin install screen bulk actions.
+		add_filter( 'views_plugin-install', array( $this, 'plugin_install_bulk_actions' ) );
+		//add_filter( 'plugin_install_action_links' array( $this, 'plugin_install_action_links' ) );
+		//
+	}
+	/**
+	 * Handle bulk plugin install action.
+	 */
+	function plugin_install_bulk_actions( $tabs ) {
+		// Bulk select button.
+		$bulk_select_button = '<button type="button" class="button bulk-install hide-if-no-js">' .
+			__( 'Bulk Select' ) .
+			'</button>';
+		$tabs['bulk-plugin-actions'] = $bulk_select_button;
+
+		// Cancel bulk selection button.
+		$bulk_action_cancel_button = '<button type="button" class="button bulk-select-cancel">' .
+			__( 'Cancel Selection' ) .
+			'</button>';
+		$tabs['bulk-plugin-action-cancel'] = $bulk_action_cancel_button;
+
+		// Bulk install-upgrade plugins action button.
+		$bulk_action_install_button = '<button type="button" class="button button-primary bulk-action-upgrade-install" disabled="disabled">' .
+		__( 'Updgrade/Install Selected Plugins' ) .
+		'</button><span class="spinner"></span>';
+		$tabs['bulk-plugin-action-upgrade-install'] = $bulk_action_install_button;
+
+		return $tabs;
 	}
 
 	/**
 	 * Add the HTML template for progress updates.
 	 */
 	function wp_update_notification_template() {
+		// Add our templates to the notification area on the plugin and plugin install screens.
+		if ( 'plugins.php' === $GLOBALS['hook_suffix'] || 'plugin-install.php' === $GLOBALS['hook_suffix'] ) {
 		?>
-		<div id="wp-progress-placeholder"></div>
-		<script id="tmpl-wp-progress-template" type="text/html">
-			<div class="notice wp-progress-update is-dismissible <# if ( data.noticeClass ) { #> {{ data.noticeClass }} <# } #>">
-				<p>
-					<# if ( data.message ) { #>
-						{{ data.message }}
-					<# } #>
-				</p>
-			</div>
-		</script>
+			<div id="wp-progress-placeholder"></div>
+			<script id="tmpl-wp-progress-template" type="text/html">
+				<div class="notice wp-progress-update is-dismissible <# if ( data.noticeClass ) { #> {{ data.noticeClass }} <# } #>">
+					<p>
+						<# if ( data.message ) { #>
+							{{ data.message }}
+						<# } #>
+					</p>
+				</div>
+			</script>
 		<?php
+	}
 	}
 
 	/**
@@ -137,7 +169,8 @@ class Shiny_Updates {
 		if ( 'theme-install.php' == $hook ) {
 			add_action( 'in_admin_header', array( $this, 'theme_install_templates' ) );
 		}
-		if ( 'plugins.php' === $hook ) {
+
+		if ( 'plugins.php' === $hook || 'plugin-install.php' === $hook ) {
 			wp_localize_script( 'shiny-updates', 'pluginData', get_plugins() );
 		}
 	}

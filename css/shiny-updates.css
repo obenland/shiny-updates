@@ -60,3 +60,58 @@
 	margin: 0 8px 0 -2px;
 	vertical-align: top;
 }
+
+li.bulk-plugin-actions .button {
+	position: absolute;
+	right: 320px;
+	bottom: 12px;
+}
+
+.bulk-plugin-selection-mode ul.filter-links li,
+.bulk-plugin-selection-mode .plugin-action-buttons,
+.bulk-plugin-selection-mode .wp-filter .search-form.search-plugins,
+.bulk-plugin-selection-mode .spinner {
+	display: none;
+}
+
+/* Hiding the search field collapses the filter bar, so adding a min height */
+.wp-filter {
+	min-height: 54px;
+}
+
+.bulk-plugin-selection-mode ul.filter-links li.bulk-plugin-action-cancel,
+.bulk-plugin-selection-mode ul.filter-links li.bulk-plugin-action-upgrade-install {
+	display: inline-block;
+}
+
+.filter-links li.bulk-plugin-action-cancel,
+.filter-links li.bulk-plugin-action-upgrade-install {
+	display: none;
+	padding-top: 10px;
+	padding-right: 10px;
+}
+
+.bulk-plugin-selection-mode .plugin-card {
+	border-width: 3px;
+}
+.bulk-plugin-selection-mode .plugin-card.plugin-selected {
+	border-color: #0073aa;
+}
+.plugin-bulk-action-label {
+	display: none;
+	position: absolute;
+	right: 0;
+	top: 0;
+	padding: 10px;
+	color: #fff;
+	background-color: #999;
+}
+
+.bulk-plugin-selection-mode .plugin-card.plugin-selected .plugin-bulk-action-label {
+	background-color: #0073aa;
+
+}
+
+.bulk-plugin-selection-mode .plugin-card .plugin-bulk-action-label {
+	display: inline-block;
+}
