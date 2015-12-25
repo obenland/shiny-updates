@@ -3,7 +3,7 @@
  * Plugin Name: Shiny Updates
  * Description: Hide the ugly parts of updating WordPress.
  * Author: the WordPress team
- * Version: 2
+ * Version: 2-20161225
  * License: GPL2
  */
 
@@ -109,16 +109,36 @@ class Shiny_Updates {
 		?>
 			<div id="wp-progress-placeholder"></div>
 			<script id="tmpl-wp-progress-template" type="text/html">
-				<div class="notice wp-progress-update is-dismissible <# if ( data.noticeClass ) { #> {{ data.noticeClass }} <# } #>">
-					<p>
-						<# if ( data.message ) { #>
-							{{ data.message }}
+			<div class="notice wp-progress-update <# if ( data.noticeClass ) { #> {{ data.noticeClass }} <# } #>">
+				<p class="progress-header">
+					<# if ( data.header ) { #>
+						{{ data.header }}
 						<# } #>
+					<a href="#" class="progress-show-details">
+						<?php _e( 'Details' ); ?>
+					</a>
+					<a href="#" class="progress-hide-details">
+						<?php _e( 'Hide details' ); ?>
+					</a>
 					</p>
+				<div class="progress-details">
+					<#
+					if ( data.messages ) {
+						_.each( data.messages, function( message ) {
+					#>
+						<li>
+							{{ message }}
+						</li>
+					<#
+						} );
+					}
+					#>
 				</div>
+				</div>
+		</p>
 			</script>
 		<?php
-	}
+		}
 	}
 
 	/**
@@ -194,7 +214,8 @@ class Shiny_Updates {
 		// Adjust the activate action, adding data attributes.
 		if ( ! empty( $actions['activate'] ) ) {
 			$slug = empty( $plugin_data['slug'] ) ? dirname( $plugin_file ) : $plugin_data['slug'];
-			$actions['activate'] = '<a data-plugin="' . $plugin_file . '" data-slug="' . $slug . '" href="' . wp_nonce_url( 'plugins.php?action=delete-selected&amp;checked[]=' . $plugin_file . '&amp;plugin_status=' . $context . '&amp;paged=' . $GLOBALS['page'] . '&amp;s=' . $GLOBALS['s'], 'bulk-plugins' ) . '" class="edit" aria-label="' . esc_attr( sprintf( __( 'Activate %s' ), $plugin_data['Name'] ) ) . '">' . __( 'Activate' ) . '</a>';
+			/* translators: %s: plugin name */
+			$actions['activate'] = '<a data-plugin="' . $plugin_file . '" data-slug="' . $slug . '" href="' . wp_nonce_url( 'plugins.php?action=activate&amp;plugin=' . $plugin_file . '&amp;plugin_status=' . $context . '&amp;paged=' . $GLOBALS['page'] . '&amp;s=' . $GLOBALS['s'], 'activate-plugin_' . $plugin_file ) . '" class="edit" aria-label="' . esc_attr( sprintf( __( 'Activate %s' ), $plugin_data['Name'] ) ) . '">' . __( 'Activate' ) . '</a>';
 		}
 
 		return $actions;
