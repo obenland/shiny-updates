@@ -5,8 +5,8 @@ window.wp = window.wp || {};
 	/**
 	 * Add id attribute in theme.js.
 	 */
-	wp.themes.view.Theme = wp.themes.view.Theme.extend({
-		initialize: function(){
+	wp.themes.view.Theme = wp.themes.view.Theme.extend( {
+		initialize: function() {
 			this.model.on( 'change', this.render, this );
 		},
 
@@ -14,11 +14,11 @@ window.wp = window.wp || {};
 			var data = this.model.toJSON();
 
 			// Render themes using the html template
-			this.$el.html( this.html( data ) ).attr({
+			this.$el.html( this.html( data ) ).attr( {
 				tabindex: 0,
 				'aria-describedby' : data.id + '-action ' + data.id + '-name',
 				'id': data.id
-			});
+			} );
 
 			// Renders active theme styles
 			this.activeTheme();
@@ -51,15 +51,15 @@ window.wp = window.wp || {};
 
 			$( document ).on( 'wp-install-theme-success', function( event, response ) {
 				if ( _this.model.get( 'id' ) === response.slug ) {
-					_this.model.set({ 'installed': true });
+					_this.model.set( { 'installed': true } );
 				}
-			});
+			} );
 
 			wp.updates.installTheme( $( event.target ).data( 'slug' ) );
 		}
-	});
+	} );
 
-	wp.themes.view.Details = wp.themes.view.Details.extend({
+	wp.themes.view.Details = wp.themes.view.Details.extend( {
 		events: {
 			'click': 'collapse',
 			'click .delete-theme': 'deleteTheme',
@@ -92,9 +92,9 @@ window.wp = window.wp || {};
 
 			wp.updates.deleteTheme( this.model.get('id') );
 		}
-	});
+	} );
 
-	wp.themes.view.Preview = wp.themes.view.Preview.extend({
+	wp.themes.view.Preview = wp.themes.view.Preview.extend( {
 		html: wp.themes.template( 'shiny-theme-preview' ),
 
 		events: {
@@ -120,11 +120,11 @@ window.wp = window.wp || {};
 			}
 
 			$( document ).on( 'wp-install-theme-success', function() {
-				_this.model.set({ 'installed': true });
-			});
+				_this.model.set( { 'installed': true } );
+			} );
 
 			wp.updates.installTheme( $( event.target ).data( 'slug' ) );
 		}
-	});
+	} );
 
-})( jQuery, window.wp );
+} )( jQuery, window.wp );

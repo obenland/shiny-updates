@@ -54,7 +54,7 @@ window.wp = window.wp || {};
 		$message.attr( 'aria-label', message );
 
 		$message.addClass( 'updating-message' );
-		if ( $message.html() !== wp.updates.l10n.updating ){
+		if ( $message.html() !== wp.updates.l10n.updating ) {
 			$message.data( 'originaltext', $message.html() );
 		}
 
@@ -196,7 +196,7 @@ window.wp = window.wp || {};
 						.removeClass( 'plugin-card-update-failed' )
 						.find( '.column-name a' ).focus();
 				}, 200 );
-			});
+			} );
 		}
 
 		// Complete the progress for this plugin update with a failure.
@@ -374,7 +374,7 @@ window.wp = window.wp || {};
 				type: 'bulk-install-plugin',
 				data: plugin
 			} );
-		});
+		} );
 
 		// Start the bulk plugin installs. Reset the count for totals, successes and failures.
 		wp.updates.pluginsToInstallCount  = plugins.length;
@@ -413,7 +413,7 @@ window.wp = window.wp || {};
 				type: 'bulk-update-plugin',
 				data: plugin
 			} );
-		});
+		} );
 
 		// Start the bulk plugin updates. Reset the count for totals, successes and failures.
 		wp.updates.pluginsToUpdateCount  = plugins.length;
@@ -572,7 +572,7 @@ window.wp = window.wp || {};
 					.removeClass( 'plugin-card-update-failed' )
 					.find( '.column-name a' ).focus();
 			}, 200 );
-		});
+		} );
 
 		$button
 			.attr( 'aria-label', wp.updates.l10n.installFailedLabel.replace( '%s', pluginData[ response.plugin ].Name ) )
@@ -640,9 +640,9 @@ window.wp = window.wp || {};
 		wp.updates.updateDoneSuccessfully = true;
 
 		// Removes the plugin and updates rows.
-		$( '#' + response.slug + '-update, #' + response.id ).css({ backgroundColor:'#faafaa' }).fadeOut( 350, function() {
+		$( '#' + response.slug + '-update, #' + response.id ).css( { backgroundColor:'#faafaa' } ).fadeOut( 350, function() {
 			$( this ).remove();
-		});
+		} );
 
 		$document.trigger( 'wp-plugin-delete-success', response );
 	};
@@ -677,7 +677,7 @@ window.wp = window.wp || {};
 			data;
 
 		$message.addClass( 'updating-message' );
-		if ( $message.html() !== wp.updates.l10n.updating ){
+		if ( $message.html() !== wp.updates.l10n.updating ) {
 			$message.data( 'originaltext', $message.html() );
 		}
 
@@ -772,7 +772,7 @@ window.wp = window.wp || {};
 			data;
 
 		$message.addClass( 'updating-message' );
-		if ( $message.html() !== wp.updates.l10n.installing ){
+		if ( $message.html() !== wp.updates.l10n.installing ) {
 			$message.data( 'originaltext', $message.html() );
 		}
 
@@ -873,7 +873,7 @@ window.wp = window.wp || {};
 			data;
 
 		$message.addClass( 'updating-message' );
-		if ( $message.html() !== wp.updates.l10n.installing ){
+		if ( $message.html() !== wp.updates.l10n.installing ) {
 			$message.data( 'originaltext', $message.html() );
 		}
 
@@ -1190,7 +1190,7 @@ window.wp = window.wp || {};
 					wp.updates.bulkUpdatePlugins( pluginsToUpdate );
 
 					// Wait until plugin upgrades complete before starting plugin installs.
-					$( document ).on( 'wp-updates-queue-complete', function(){
+					$( document ).on( 'wp-updates-queue-complete', function() {
 						processInstalls();
 					} );
 				} else {
@@ -1318,12 +1318,12 @@ window.wp = window.wp || {};
 
 					// Only add updatable plugins to the queue.
 					if ( $checkbox.parents( 'tr' ).hasClass( 'update' ) ) {
-						plugins.push({
+						plugins.push( {
 							plugin: $checkbox.val(),
 							slug:   $checkbox.parents( 'tr' ).prop( 'id' )
-						});
+						} );
 					}
-			});
+			} );
 			if ( 0 !== plugins.length ) {
 				wp.updates.bulkUpdatePlugins( plugins );
 			}
@@ -1365,12 +1365,12 @@ window.wp = window.wp || {};
 					$el.fadeTo( 100, 0, function() {
 						$el.slideUp( 100, function() {
 							$el.remove();
-						});
-					});
-				});
+						} );
+					} );
+				} );
 
 				$el.append( $button );
-			});
+			} );
 		} );
 
 		$( '#plugin-search-input' ).on( 'keyup search', function() {
@@ -1388,8 +1388,8 @@ window.wp = window.wp || {};
 			wp.updates.searchRequest = wp.ajax.post( 'search-plugins', data ).done( function( response ) {
 				$( '#the-list' ).empty().append( response.items );
 				delete wp.updates.searchRequest;
-			});
+			} );
 		} );
-	});
+	} );
 
-})( jQuery, window.wp );
+} )( jQuery, window.wp );
