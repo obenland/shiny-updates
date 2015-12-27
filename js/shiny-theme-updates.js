@@ -12,6 +12,7 @@ window.wp = window.wp || {};
 
 		render: function() {
 			var data = this.model.toJSON();
+
 			// Render themes using the html template
 			this.$el.html( this.html( data ) ).attr({
 				tabindex: 0,

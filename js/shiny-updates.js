@@ -46,6 +46,7 @@ window.wp = window.wp || {};
 		} else if ( 'plugin-install' === pagenow ) {
 			$message = $card.find( '.update-now' );
 			name     = $message.data( 'name' );
+
 			// Remove previous error messages, if any.
 			$card.removeClass( 'plugin-card-update-failed' ).find( '.notice.notice-error' ).remove();
 		}
@@ -186,6 +187,7 @@ window.wp = window.wp || {};
 				.html( wp.updates.l10n.updateFailedShort ).removeClass( 'updating-message' );
 
 			$card.on( 'click', '.notice.is-dismissible .notice-dismiss', function() {
+
 				// Use same delay as the total duration of the notice fadeTo + slideUp animation.
 				setTimeout( function() {
 					$card
@@ -251,6 +253,7 @@ window.wp = window.wp || {};
 
 		// Check to ensure progress updater is set up.
 		if ( ! _.isUndefined( wp.updates.progressUpdates ) ) {
+
 			// Add the message to a queue so we can display messages in a throttled manner.
 			wp.updates.messageQueue.push( { message: message, messageClass: messageClass, appendToLine: appendToLine } );
 			wp.updates.processMessageQueue();
@@ -269,10 +272,12 @@ window.wp = window.wp || {};
 
 		// Any failures?
 		if ( wp.updates.pluginUpdateFailures > 0 || wp.updates.pluginInstallFailures > 0 ) {
+
 			// Already green, so make it yellow.
 			if ( 'notice-success' === final_status_class ) {
 				final_status_class = 'notice-warning';
 			} else {
+
 				// Otherwise red, all failures.
 				final_status_class = 'notice-error';
 			}
@@ -296,8 +301,10 @@ window.wp = window.wp || {};
 		if ( wp.updates.messageLock ) {
 			setTimeout( wp.updates.processMessageQueue, 500 );
 		} else {
+
 			// Anything left in the queue?
 			if ( 0 !== wp.updates.messageQueue.length ) {
+
 				// Lock message displaying until our message displays briefly.
 				wp.updates.messageLock = true;
 
@@ -311,6 +318,7 @@ window.wp = window.wp || {};
 							wp.updates.progressMessages[ wp.updates.progressMessages.length - 1 ] +=
 								' ' + currentMessage.message;
 					} else {
+
 						// Create a new progress line.
 						wp.updates.progressMessages.push( currentMessage.message );
 					}
@@ -366,12 +374,12 @@ window.wp = window.wp || {};
 			} );
 		});
 
-		// Start the bulk plugin updates. Reset the count for totals, successes and failures.
-		//wp.updates.updateProgressMessage( wp.updates.l10n.updatingMsg );
+		// Start the bulk plugin installs. Reset the count for totals, successes and failures.
 		wp.updates.pluginsToInstallCount  = plugins.length;
 		wp.updates.pluginInstallSuccesses = 0;
 		wp.updates.pluginInstallFailures  = 0;
 		wp.updates.updateLock             = false;
+
 		// Start the progress updates.
 		wp.updates.updateProgressMessage ( '' );
 
@@ -406,11 +414,11 @@ window.wp = window.wp || {};
 		});
 
 		// Start the bulk plugin updates. Reset the count for totals, successes and failures.
-		//wp.updates.updateProgressMessage( wp.updates.l10n.updatingMsg );
 		wp.updates.pluginsToUpdateCount  = plugins.length;
 		wp.updates.pluginUpdateSuccesses = 0;
 		wp.updates.pluginUpdateFailures  = 0;
 		wp.updates.updateLock            = false;
+
 		// Start the progress updates.
 		wp.updates.updateProgressMessage ( '' );
 
@@ -428,10 +436,13 @@ window.wp = window.wp || {};
 		// Do we have any successes or failures for updates?
 		if ( ! _.isUndefined( wp.updates.pluginUpdateSuccesses ) && ( 0 !== wp.updates.pluginUpdateSuccesses || 0 !== wp.updates.pluginUpdateFailures ) ) {
 			updateMessage = wp.updates.l10n.updatePluginsQueuedMsg.replace( '%d', wp.updates.pluginsToUpdateCount );
+
+			// Update successes.
 			if ( 0 !== wp.updates.pluginUpdateSuccesses ) {
 			updateMessage += ' ' + wp.updates.l10n.updatedPluginsSuccessMsg.replace( '%d', wp.updates.pluginUpdateSuccesses );
 			}
 
+			// Update failures.
 			if ( 0 !== wp.updates.pluginUpdateFailures ) {
 			updateMessage += ' ' + wp.updates.l10n.updatedPluginsFailureMsg.replace( '%d', wp.updates.pluginUpdateFailures );
 			}
@@ -440,10 +451,13 @@ window.wp = window.wp || {};
 		// Do we have any successes or failures for installs?
 		if ( ! _.isUndefined( wp.updates.pluginInstallSuccesses ) && ( 0 !== wp.updates.pluginInstallSuccesses || 0 !== wp.updates.pluginInstallFailures ) ) {
 			installMessage = wp.updates.l10n.installPluginsQueuedMsg.replace( '%d', wp.updates.pluginsToInstallCount );
+
+			//Install Successes.
 			if ( 0 !== wp.updates.pluginInstallSuccesses ) {
 			installMessage += ' ' + wp.updates.l10n.updatedPluginsSuccessMsg.replace( '%d', wp.updates.pluginInstallSuccesses );
 			}
 
+			// Install failures.
 			if ( 0 !== wp.updates.pluginInstallFailures ) {
 			installMessage += ' ' + wp.updates.l10n.updatedPluginsFailureMsg.replace( '%d', wp.updates.pluginInstallFailures );
 			}
@@ -549,6 +563,7 @@ window.wp = window.wp || {};
 			.append( '<div class="notice notice-error is-dismissible"><p>' + errorMessage + '</p></div>' );
 
 		$card.on( 'click', '.notice.is-dismissible .notice-dismiss', function() {
+
 			// Use same delay as the total duration of the notice fadeTo + slideUp animation.
 			setTimeout( function() {
 				$card
@@ -969,7 +984,6 @@ window.wp = window.wp || {};
 						if ( 0 !== wp.updates.pluginUpdateFailures ) {
 							updateMessage += ' ' + wp.updates.l10n.updatedPluginsFailureMsg.replace( '%d', wp.updates.pluginUpdateFailures );
 						}
-						// Start the progress for this update.
 						wp.updates.updateProgressMessage( updateMessage );
 						break;
 					case 'bulk-install-plugin':
@@ -980,7 +994,6 @@ window.wp = window.wp || {};
 						if ( 0 !== wp.updates.pluginInstallFailures ) {
 							installMessage += ' ' + wp.updates.l10n.updatedPluginsFailureMsg.replace( '%d', wp.updates.pluginInstallFailures );
 						}
-						// Start the progress for this update.
 						wp.updates.updateProgressMessage( installMessage );
 						break;
 				}
@@ -997,6 +1010,8 @@ window.wp = window.wp || {};
 		var job = wp.updates.updateQueue.shift();
 
 		wp.updates.currentJobType = job.type;
+
+		// Handle a queue job.
 		switch ( job.type ) {
 			case 'bulk-install-plugin':
 			case 'install-plugin':
@@ -1059,6 +1074,7 @@ window.wp = window.wp || {};
 	 * @since 4.5.0 Triggers an event for callbacks to listen to and add their actions.
 	 */
 	wp.updates.requestForCredentialsModalCancel = function() {
+
 		// No updateLock and no updateQueue means we already have cleared things up.
 		if ( false === wp.updates.updateLock && 0 === wp.updates.updateQueue.length ) {
 			return;
@@ -1164,6 +1180,7 @@ window.wp = window.wp || {};
 			} );
 
 			if ( pluginsToUpdate.length > 0 || pluginsToInstall.length > 0 ) {
+
 				// Callback to handle instlls
 				processInstalls = function() {
 					if ( 0 !== pluginsToInstall.length ) {
@@ -1174,11 +1191,13 @@ window.wp = window.wp || {};
 				// Do we have any plugin upgrades to run?
 				if ( 0 !== pluginsToUpdate.length ) {
 					wp.updates.bulkUpdatePlugins( pluginsToUpdate );
+
 					// Wait until plugin upgrades complete before starting plugin installs.
 					$( document ).on( 'wp-updates-queue-complete', function(){
 						processInstalls();
 					} );
 				} else {
+
 					// Only plugin installs to handle.
 					processInstalls();
 				}
@@ -1210,6 +1229,7 @@ window.wp = window.wp || {};
 				if ( selectedPlugins.length > 0 ) {
 					$( '.bulk-action-upgrade-install' ).attr( 'disabled', false );
 				} else {
+
 					// No cards selected, disable the action button.
 					$( '.bulk-action-upgrade-install' ).attr( 'disabled', true );
 				}
@@ -1221,6 +1241,7 @@ window.wp = window.wp || {};
 		 * Cancel the bulk selection mode.
 		 */
 		$( document ).on( 'click', '.bulk-plugin-action-cancel .button', function( evnt ) {
+
 			// Remove the bulk selection mode class.
 			$( 'body' ).removeClass( 'bulk-plugin-selection-mode' );
 
