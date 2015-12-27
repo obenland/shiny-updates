@@ -163,7 +163,11 @@ window.wp = window.wp || {};
 
 		wp.updates.updateDoneSuccessfully = false;
 		wp.updates.updateLock             = false;
-		if ( response.errorCode && response.errorCode == 'unable_to_connect_to_filesystem' && wp.updates.shouldRequestFilesystemCredentials ) {
+		if (
+			response.errorCode &&
+			'unable_to_connect_to_filesystem' === response.errorCode &&
+			wp.updates.shouldRequestFilesystemCredentials
+		) {
 			wp.updates.credentialError( response, 'update-plugin' );
 			wp.updates.queueChecker();
 			return;
@@ -1221,7 +1225,7 @@ window.wp = window.wp || {};
 			evnt.preventDefault();
 
 			// Toggle selection of actionable plugins.
-			if ( $currentTarget.find( '.button-disabled' ).length === 0 ) {
+			if ( 0 === $currentTarget.find( '.button-disabled' ).length ) {
 				$currentTarget.toggleClass( 'plugin-selected' );
 
 				// If any cards are selected, enable the bulk action button.
