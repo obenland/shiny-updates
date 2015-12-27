@@ -16,7 +16,7 @@ window.wp = window.wp || {};
 			// Render themes using the html template
 			this.$el.html( this.html( data ) ).attr( {
 				tabindex: 0,
-				'aria-describedby' : data.id + '-action ' + data.id + '-name',
+				'aria-describedby': data.id + '-action ' + data.id + '-name',
 				'id': data.id
 			} );
 
@@ -33,9 +33,9 @@ window.wp = window.wp || {};
 		},
 
 		events: {
-			'click': wp.themes.isInstall ? 'preview': 'expand',
-			'keydown': wp.themes.isInstall ? 'preview': 'expand',
-			'touchend': wp.themes.isInstall ? 'preview': 'expand',
+			'click': wp.themes.isInstall ? 'preview' : 'expand',
+			'keydown': wp.themes.isInstall ? 'preview' : 'expand',
+			'touchend': wp.themes.isInstall ? 'preview' : 'expand',
 			'keyup': 'addFocus',
 			'touchmove': 'preventExpand',
 			'click .theme-install': 'installTheme'
@@ -90,7 +90,7 @@ window.wp = window.wp || {};
 				wp.updates.requestFilesystemCredentials( event );
 			}
 
-			wp.updates.deleteTheme( this.model.get('id') );
+			wp.updates.deleteTheme( this.model.get( 'id' ) );
 		}
 	} );
 
