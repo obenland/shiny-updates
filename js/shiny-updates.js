@@ -284,7 +284,7 @@ window.wp = window.wp || {};
 		// Remove our show details click handler.
 		$( document ).off( 'click', 'a.progress-show-details' );
 
-	}
+	};
 
 	/**
 	 * Process the message queue, showing messages in a throttled manner.
@@ -427,7 +427,7 @@ window.wp = window.wp || {};
 
 		// Do we have any successes or failures for updates?
 		if ( ! _.isUndefined( wp.updates.pluginUpdateSuccesses ) && ( 0 !== wp.updates.pluginUpdateSuccesses || 0 !== wp.updates.pluginUpdateFailures ) ) {
-			updateMessage = wp.updates.l10n.updatePluginsQueuedMsg.replace( '%d', wp.updates.pluginsToUpdateCount )
+			updateMessage = wp.updates.l10n.updatePluginsQueuedMsg.replace( '%d', wp.updates.pluginsToUpdateCount );
 			if ( 0 !== wp.updates.pluginUpdateSuccesses ) {
 			updateMessage += ' ' + wp.updates.l10n.updatedPluginsSuccessMsg.replace( '%d', wp.updates.pluginUpdateSuccesses );
 			}
@@ -1095,7 +1095,7 @@ window.wp = window.wp || {};
 				.parents( '.action-links' )
 				.after( '<span class="plugin-bulk-action-label bulk-update">ALREADY INSTALLED</span>' );
 		} );
-	}
+	};
 
 
 	/**
@@ -1169,7 +1169,7 @@ window.wp = window.wp || {};
 					if ( 0 !== pluginsToInstall.length ) {
 						wp.updates.bulkInstallPlugins( pluginsToInstall );
 					}
-				}
+				};
 
 				// Do we have any plugin upgrades to run?
 				if ( 0 !== pluginsToUpdate.length ) {
