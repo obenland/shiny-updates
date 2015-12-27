@@ -25,7 +25,6 @@ window.wp = window.wp || {};
 		wp.updates.queueChecker();
 	};
 
-
 	/**
 	 * Send an Ajax request to the server to update a plugin.
 	 *
@@ -145,7 +144,6 @@ window.wp = window.wp || {};
 
 		wp.updates.queueChecker();
 	};
-
 
 	/**
 	 * On a plugin update error, update the UI appropriately.
@@ -584,7 +582,6 @@ window.wp = window.wp || {};
 
 		// Complete the progress for this plugin update with a failure.
 		wp.updates.updateProgressMessage( errorMessage, 'notice-error', true );
-
 
 		$document.trigger( 'wp-plugin-install-error', response );
 	};
@@ -1049,7 +1046,6 @@ window.wp = window.wp || {};
 		}
 	};
 
-
 	/**
 	 * Request the users filesystem credentials if we don't have them already.
 	 *
@@ -1117,7 +1113,6 @@ window.wp = window.wp || {};
 		} );
 	};
 
-
 	/**
 	 * Document ready plugin setup.
 	 */
@@ -1127,8 +1122,6 @@ window.wp = window.wp || {};
 
 		// Set up the plugin cards.
 		wp.updates.addActionLabelsToPluginCards();
-
-
 
 		/**
 		 * Handle the bulk select button.
@@ -1239,7 +1232,6 @@ window.wp = window.wp || {};
 				}
 			}
 		} );
-
 
 		/**
 		 * Cancel the bulk selection mode.
@@ -1356,7 +1348,6 @@ window.wp = window.wp || {};
 			$message.html( $message.data( 'originaltext' ) );
 			wp.a11y.speak( wp.updates.l10n.updateCancel );
 		} );
-
 
 		/**
 		 * Make notices dismissable.
