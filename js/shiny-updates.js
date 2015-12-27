@@ -1,4 +1,4 @@
-/*global pagenow, _, pluginData */
+/*global pagenow, _, pluginData, commonL10n */
 window.wp = window.wp || {};
 
 (function( $, wp ) {
@@ -210,8 +210,10 @@ window.wp = window.wp || {};
 	 * Set up the progress indicator.
 	 */
 	wp.updates.setupProgressIndicator = function() {
+		var $progressTemplate;
+
 		/**
-		 * Only set uo the progress updater once.
+		 * Only set up the progress updater once.
 		 */
 		if ( ! _.isUndefined( wp.updates.progressUpdates ) ) {
 			return;
@@ -1148,7 +1150,8 @@ window.wp = window.wp || {};
 		 * Handle the new plugin screen bulk action upgrade/install button.
 		 */
 		$( document ).on( 'click', '.bulk-plugin-action-upgrade-install .button', function() {
-			var pluginsToUpdate  = [],
+			var processInstalls,
+				pluginsToUpdate  = [],
 				pluginsToInstall = [],
 				$activeCards     = $( 'body.plugin-install-php .plugin-card.plugin-selected' );
 
@@ -1209,7 +1212,8 @@ window.wp = window.wp || {};
 		 * Handle card clicks on the plugin install screen by adding a selected class.
 		 */
 		$( 'body.plugin-install-php' ).on( 'click', '.plugin-card', function( evnt ) {
-			var $pluginList    = $( '#the-list' ),
+			var selectedPlugins,
+				$pluginList    = $( '#the-list' ),
 				$currentTarget = $( evnt.currentTarget );
 
 			// Only handle selection in bulk selection mode.
@@ -1281,7 +1285,7 @@ window.wp = window.wp || {};
 			var $link = $( event.target );
 			event.preventDefault();
 
-			if ( ! confirm( wp.updates.l10n.aysDelete ) ) {
+			if ( ! window.confirm( wp.updates.l10n.aysDelete ) ) {
 				return;
 			}
 

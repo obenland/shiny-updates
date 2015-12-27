@@ -82,7 +82,7 @@ window.wp = window.wp || {};
 			event.preventDefault();
 
 			// Confirmation dialog for deleting a theme.
-			if ( ! confirm( wp.themes.data.settings.confirmDelete ) ) {
+			if ( ! window.confirm( wp.themes.data.settings.confirmDelete ) ) {
 				return;
 			}
 
