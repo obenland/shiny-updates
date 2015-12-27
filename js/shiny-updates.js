@@ -108,7 +108,7 @@ window.wp = window.wp || {};
 		if ( 'plugins' === pagenow || 'plugins-network' === pagenow ) {
 			$pluginRow = $( 'tr[data-plugin="' + response.plugin + '"]' ).first().prev();
 			$updateMessage = $pluginRow.next().find( '.update-message' );
-			$pluginRow.addClass( 'updated' ).removeClass( 'update');
+			$pluginRow.addClass( 'updated' ).removeClass( 'update' );
 
 			// Update the version number in the row.
 			newText = $pluginRow.find( '.plugin-version-author-uri' ).html().replace( response.oldVersion, response.newVersion );
