@@ -23,6 +23,10 @@ window.wp = window.wp || {};
 		wp.updates.queueChecker();
 	};
 
+//===============================================================================
+// PLUGIN UPDATES
+//===============================================================================
+
 	/**
 	 * Send an Ajax request to the server to update a plugin.
 	 *
@@ -198,6 +202,10 @@ window.wp = window.wp || {};
 		wp.updates.queueChecker();
 	};
 
+//===============================================================================
+// PROGRESS INDICATOR
+//===============================================================================
+
 	/**
 	 * Set up the progress indicator.
 	 */
@@ -284,6 +292,10 @@ window.wp = window.wp || {};
 		}
 	};
 
+//===============================================================================
+// BULK PLUGIN UPDATES
+//===============================================================================
+
 	/**
 	 * Send an Ajax request to the server to update plugins in bulk.
 	 *
@@ -340,6 +352,10 @@ window.wp = window.wp || {};
 		return updateMessage;
 
 	};
+
+//===============================================================================
+// INSTALL PLUGIN
+//===============================================================================
 
 	/**
 	 * Send an Ajax request to the server to install a plugin.
@@ -451,43 +467,9 @@ window.wp = window.wp || {};
 		$document.trigger( 'wp-plugin-install-error', response );
 	};
 
-
-
-	/**
-	 * On plugin install success, update the UI with the result.
-	 *
-	 * @since 4.5.0
-	 *
-	 * @param {object} response
-	 */
-	wp.updates.activatePluginSuccess = function( response ) {
-
-		var $activateLink = $( '.activate a[data-plugin="' + response.plugin + '"]' );
-
-		$activateLink.parents( 'tr' )
-			.removeClass( 'inactive' )
-			.addClass( 'active' );
-
-		wp.a11y.speak( wp.updates.l10n.activatedMsg );
-
-		wp.updates.activateDoneSuccessfully = true;
-		$document.trigger( 'wp-plugin-activate-success', response );
-	};
-
-	/**
-	 * On plugin activate failure, update the UI appropriately.
-	 *
-	 * @since 4.5.0
-	 *
-	 * @param {object} response
-	 */
-	wp.updates.activatePluginError = function( response ) {
-
-
-		$document.trigger( 'wp-plugin-activate-error', response );
-	};
-
-
+//===============================================================================
+// ACTIVATE PLUGIN
+//===============================================================================
 
 	/**
 	 * Send an Ajax request to the server to activate a plugin.
@@ -532,6 +514,49 @@ window.wp = window.wp || {};
 			.fail( wp.updates.activatePluginError )
 			.always( wp.updates.ajaxAlways );
 	};
+
+	/**
+	 * On plugin activate success, update the UI with the result.
+	 *
+	 * @since 4.5.0
+	 *
+	 * @param {object} response
+	 */
+	wp.updates.activatePluginSuccess = function( response ) {
+
+		var $activateLink = $( '.activate a[data-plugin="' + response.plugin + '"]' );
+
+		$activateLink.parents( 'tr' )
+			.removeClass( 'inactive' )
+			.addClass( 'active' );
+
+		wp.a11y.speak( wp.updates.l10n.activatedMsg );
+
+		wp.updates.activateDoneSuccessfully = true;
+		$document.trigger( 'wp-plugin-activate-success', response );
+	};
+
+	/**
+	 * On plugin activate failure, update the UI appropriately.
+	 *
+	 * @since 4.5.0
+	 *
+	 * @param {object} response
+	 */
+	wp.updates.activatePluginError = function( response ) {
+		var $activateLink = $( '.activate a[data-plugin="' + response.plugin + '"]' );
+
+		$activateLink
+			.after( wp.updates.l10n.activateFailedLabel.replace( '%s', pluginData[ response.plugin ].Name ) );
+
+		wp.a11y.speak( wp.updates.l10n.activateFailedShort, 'assertive' );
+
+		$document.trigger( 'wp-plugin-activate-error', response );
+	};
+
+//===============================================================================
+// DELETE PLUGIN
+//===============================================================================
 
 	/**
 	 * Send an Ajax request to the server to delete a plugin.
@@ -613,6 +638,10 @@ window.wp = window.wp || {};
 
 		$document.trigger( 'wp-plugin-delete-error', response );
 	};
+
+//===============================================================================
+// UPDATE THEME
+//===============================================================================
 
 	/**
 	 * Send an Ajax request to the server to update a theme.
@@ -708,6 +737,10 @@ window.wp = window.wp || {};
 
 		$document.trigger( 'wp-theme-update-error', response );
 	};
+
+//===============================================================================
+// INSTALL THEME
+//===============================================================================
 
 	/**
 	 * Send an Ajax request to the server to install a theme.
@@ -810,8 +843,13 @@ window.wp = window.wp || {};
 		$document.trigger( 'wp-theme-install-error', response );
 	};
 
+//===============================================================================
+// DELETE THEME
+//===============================================================================
+
+
 	/**
-	 * Send an Ajax request to the server to install a theme.
+	 * Send an Ajax request to the server to delete a theme.
 	 *
 	 * @since 4.5.0
 	 *
@@ -910,6 +948,10 @@ window.wp = window.wp || {};
 		$document.trigger( 'wp-theme-delete-error', response );
 	};
 
+//===============================================================================
+// BULK PROCESSING QUEUE
+//===============================================================================
+
 	/**
 	 * If an install/update job has been placed in the queue, queueChecker pulls it out and runs it.
 	 *
@@ -979,6 +1021,10 @@ window.wp = window.wp || {};
 		}
 	};
 
+//===============================================================================
+// FILESYSTEM CREDENTIALS MODAL
+//===============================================================================
+
 	/**
 	 * Request the users filesystem credentials if we don't have them already.
 	 *
@@ -1021,6 +1067,10 @@ window.wp = window.wp || {};
 
 		$document.trigger( 'credential-modal-cancel' );
 	};
+
+//===============================================================================
+// EVENT HANDLERS
+//===============================================================================
 
 	$( function() {
 		var $pluginList     = $( '#the-list' ),
