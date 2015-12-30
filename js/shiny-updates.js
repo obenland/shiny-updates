@@ -1104,12 +1104,14 @@ window.wp = window.wp || {};
 		 * Every row of the plugin table should not have an id or data-slug attribute and needs a data-plugin attribute
 		 * This should be fixed in core via trac ticket #18974 but until then lets fix it with javascript
 		 */
+		$pluginList.append('<br id="remove-this">');
 		$pluginList.find('tr').each( function(){
 			$(this).removeAttr('id data-slug');
 			if( typeof $(this).attr('data-plugin') == 'undefined' ){
-				$(this).attr('data-plugin', $(this).prevAll(':has(th.check-column)').andSelf().first().find('th input').val() );
+				$(this).attr('data-plugin', $(this).next().prevAll(':has(th.check-column)').first().find('th input').val() );
 			}
 		} );
+		$('#remove-this').remove();
 
 	} );
 
