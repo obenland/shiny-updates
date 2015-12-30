@@ -18,7 +18,6 @@ window.wp = window.wp || {};
 	 * @since 4.5.0
 	 */
 	wp.updates.ajaxAlways = function() {
-		$( '#the-list' ).find( '.check-column [type="checkbox"]' ).prop( 'checked', false );
 
 		wp.updates.updateLock = false;
 		wp.updates.queueChecker();
@@ -450,6 +449,88 @@ window.wp = window.wp || {};
 		wp.a11y.speak( errorMessage, 'assertive' );
 
 		$document.trigger( 'wp-plugin-install-error', response );
+	};
+
+
+
+	/**
+	 * On plugin install success, update the UI with the result.
+	 *
+	 * @since 4.5.0
+	 *
+	 * @param {object} response
+	 */
+	wp.updates.activatePluginSuccess = function( response ) {
+
+		var $activateLink = $( '.activate a[data-plugin="' + response.plugin + '"]' );
+
+		$activateLink.parents( 'tr' )
+			.removeClass( 'inactive' )
+			.addClass( 'active' );
+
+		wp.a11y.speak( wp.updates.l10n.activatedMsg );
+
+		wp.updates.activateDoneSuccessfully = true;
+		$document.trigger( 'wp-plugin-activate-success', response );
+	};
+
+	/**
+	 * On plugin activate failure, update the UI appropriately.
+	 *
+	 * @since 4.5.0
+	 *
+	 * @param {object} response
+	 */
+	wp.updates.activatePluginError = function( response ) {
+
+
+		$document.trigger( 'wp-plugin-activate-error', response );
+	};
+
+
+
+	/**
+	 * Send an Ajax request to the server to activate a plugin.
+	 *
+	 * @since 4.5.0
+	 *
+	 * @param {string} plugin
+	 * @param {string} slug
+	 */
+	wp.updates.activatePlugin = function( plugin, slug ) {
+		var data;
+
+		wp.a11y.speak( wp.updates.l10n.activatingMsg );
+
+		if ( wp.updates.updateLock ) {
+			wp.updates.updateQueue.push( {
+				type: 'activate-plugin',
+				data: {
+					plugin: plugin,
+					slug: slug
+				}
+			} );
+			return;
+		}
+
+		wp.updates.updateLock = true;
+
+		data = {
+			_ajax_nonce:     wp.updates.ajaxNonce,
+			plugin:          plugin,
+			slug:            slug,
+			username:        wp.updates.filesystemCredentials.ftp.username,
+			password:        wp.updates.filesystemCredentials.ftp.password,
+			hostname:        wp.updates.filesystemCredentials.ftp.hostname,
+			connection_type: wp.updates.filesystemCredentials.ftp.connectionType,
+			public_key:      wp.updates.filesystemCredentials.ssh.publicKey,
+			private_key:     wp.updates.filesystemCredentials.ssh.privateKey
+		};
+
+		wp.ajax.post( 'activate-plugin', data )
+			.done( wp.updates.activatePluginSuccess )
+			.fail( wp.updates.activatePluginError )
+			.always( wp.updates.ajaxAlways );
 	};
 
 	/**
@@ -946,6 +1027,17 @@ window.wp = window.wp || {};
 			$bulkActionForm = $( '#bulk-action-form' );
 
 		/**
+		 * Activate a plugin.
+		 */
+		$pluginList.find( '.activate' ).on( 'click', function( event ) {
+			var $button = $( event.target );
+			event.preventDefault();
+
+			wp.updates.activatePlugin( $button.data( 'plugin' ), $button.data( 'slug' ) );
+			return false;
+		} );
+
+		/**
 		 * Install a plugin.
 		 */
 		$pluginList.find( '.install-now' ).on( 'click', function( event ) {
@@ -956,19 +1048,7 @@ window.wp = window.wp || {};
 				return;
 			}
 
-			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
-				wp.updates.requestFilesystemCredentials( event );
-
-				$document.on( 'credential-modal-cancel', function() {
-					var $message = $( '.install-now.updating-message' );
-
-					$message.removeClass( 'updating-message' );
-					$message.text( wp.updates.l10n.installNow );
-					wp.a11y.speak( wp.updates.l10n.updateCancel );
-				} );
-			}
-
-			wp.updates.installPlugin( $button.data( 'slug' ) );
+			wp.updates.activatePlugin( $button.data( 'plugin' ) );
 		} );
 
 		/**

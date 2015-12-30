@@ -60,3 +60,11 @@
 	margin: 0 8px 0 -2px;
 	vertical-align: top;
 }
+
+.active .activate {
+	display: none;
+}
+
+.inactive .deactivate {
+	display: none;
+}
