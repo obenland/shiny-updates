@@ -1,4 +1,4 @@
-/*global pagenow, _, pluginData, commonL10n */
+/* global pagenow, pluginData, commonL10n */
 window.wp = window.wp || {};
 
 (function( $, wp ) {
@@ -16,11 +16,19 @@ window.wp = window.wp || {};
 	 * @todo Maybe we can find a better function name here.
 	 *
 	 * @since 4.5.0
+	 *
+	 * @param {object} response
 	 */
-	wp.updates.ajaxAlways = function() {
+	wp.updates.ajaxAlways = function( response ) {
 
 		wp.updates.updateLock = false;
 		wp.updates.queueChecker();
+
+		if ( 'undefined' !== typeof response.debug ) {
+			_.map( response.debug, function( message ) {
+				window.console.log( $( '<p />' ).html( message ).text() );
+			} );
+		}
 	};
 
 //===============================================================================
