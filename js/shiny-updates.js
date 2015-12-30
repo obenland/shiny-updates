@@ -555,6 +555,93 @@ window.wp = window.wp || {};
 	};
 
 //===============================================================================
+// DEACTIVATE PLUGIN
+//===============================================================================
+
+	/**
+	 * Send an Ajax request to the server to deactivate a plugin.
+	 *
+	 * @since 4.5.0
+	 *
+	 * @param {string} plugin
+	 * @param {string} slug
+	 */
+	wp.updates.deactivatePlugin = function( plugin, slug ) {
+		var data;
+
+		wp.a11y.speak( wp.updates.l10n.activatingMsg );
+
+		if ( wp.updates.updateLock ) {
+			wp.updates.updateQueue.push( {
+				type: 'deactivate-plugin',
+				data: {
+					plugin: plugin,
+					slug: slug
+				}
+			} );
+			return;
+		}
+
+		wp.updates.updateLock = true;
+
+		data = {
+			_ajax_nonce:     wp.updates.ajaxNonce,
+			plugin:          plugin,
+			slug:            slug,
+			username:        wp.updates.filesystemCredentials.ftp.username,
+			password:        wp.updates.filesystemCredentials.ftp.password,
+			hostname:        wp.updates.filesystemCredentials.ftp.hostname,
+			connection_type: wp.updates.filesystemCredentials.ftp.connectionType,
+			public_key:      wp.updates.filesystemCredentials.ssh.publicKey,
+			private_key:     wp.updates.filesystemCredentials.ssh.privateKey
+		};
+
+		wp.ajax.post( 'deactivate-plugin', data )
+			.done( wp.updates.deactivatePluginSuccess )
+			.fail( wp.updates.deactivatePluginError )
+			.always( wp.updates.ajaxAlways );
+	};
+
+	/**
+	 * On plugin deactivate success, update the UI with the result.
+	 *
+	 * @since 4.5.0
+	 *
+	 * @param {object} response
+	 */
+	wp.updates.deactivatePluginSuccess = function( response ) {
+
+		var $deactivateLink = $( '.deactivate a[data-plugin="' + response.plugin + '"]' );
+
+		$deactivateLink.parents( 'tr' )
+			.removeClass( 'active' )
+			.addClass( 'inactive' );
+
+		wp.a11y.speak( wp.updates.l10n.deactivatedMsg );
+
+		wp.updates.deactivateDoneSuccessfully = true;
+		$document.trigger( 'wp-plugin-deactivate-success', response );
+	};
+
+	/**
+	 * On plugin deactivate failure, update the UI appropriately.
+	 *
+	 * @since 4.5.0
+	 *
+	 * @param {object} response
+	 */
+	wp.updates.deactivatePluginError = function( response ) {
+		var $deactivateLink = $( '.deactivate a[data-plugin="' + response.plugin + '"]' );
+
+		$deactivateLink
+			.after( wp.updates.l10n.deactivateFailedLabel.replace( '%s', pluginData[ response.plugin ].Name ) );
+
+		wp.a11y.speak( wp.updates.l10n.deactivateFailedShort, 'assertive' );
+
+		$document.trigger( 'wp-plugin-deactivate-error', response );
+	};
+
+//===============================================================================
 // DELETE PLUGIN
 //===============================================================================
 
@@ -1075,6 +1162,17 @@ window.wp = window.wp || {};
 	$( function() {
 		var $pluginList     = $( '#the-list' ),
 			$bulkActionForm = $( '#bulk-action-form' );
+
+		/**
+		 * Deactivate a plugin.
+		 */
+		$pluginList.find( '.deactivate' ).on( 'click', function( event ) {
+			var $button = $( event.target );
+			event.preventDefault();
+
+			wp.updates.deactivatePlugin( $button.data( 'plugin' ), $button.data( 'slug' ) );
+			return false;
+		} );
 
 		/**
 		 * Activate a plugin.

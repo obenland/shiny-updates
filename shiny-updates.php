@@ -44,8 +44,9 @@ class Shiny_Updates {
 		// Plugin deletions.
 		add_action( 'wp_ajax_delete-plugin', 'wp_ajax_delete_plugin' );
 
-		// Plugin activations.
+		// Plugin activation/deactivation.
 		add_action( 'wp_ajax_activate-plugin', 'wp_ajax_activate_plugin' );
+		add_action( 'wp_ajax_deactivate-plugin', 'wp_ajax_deactivate_plugin' );
 
 		// Plugin row actions.
 		add_filter( 'plugin_action_links', array( $this, 'plugin_action_links' ), 10, 4 );
@@ -128,6 +129,14 @@ class Shiny_Updates {
 			'deletingMsg'               => __( 'Deleting... please wait.' ),
 			'activatingMsg'             => __( 'Activating... please wait.' ),
 			'activatedMsg'              => __( 'Activated.' ),
+			/* translators: Plugin/Theme name */
+			'activateFailedLabel'       => __( '%s activation failed' ),
+			'activateFailedShort'       => __( 'Activation Failed!' ),
+			'deactivatingMsg'           => __( 'Dectivating... please wait.' ),
+			'deactivatedMsg'            => __( 'Deactivated.' ),
+			/* translators: Plugin/Theme name */
+			'deactivateFailedLabel'     => __( '%s deactivate failed' ),
+			'deactivateFailedShort'     => __( 'Deactivate Failed!' ),
 			'deletedMsg'                => __( 'Plugin successfully deleted.' ),
 			'updatedPluginsMsg'         => __( 'Plugin updates complete.' ),
 			/* translators: 1. Plugins update successes. 2. Plugin update failures. */
@@ -325,6 +334,55 @@ function wp_ajax_activate_plugin() {
 
 	// Attempt to activate the plugin.
 	$result = activate_plugin( $plugin, null, is_network_admin() );
+
+	if ( is_wp_error( $result ) ) {
+		$error_code = $result->get_error_code();
+		/* Translators: %s refers to the activation error code */
+		$status['error'] = __( sprintf( 'Plugin activation error: %s', $error_code ) );
+		wp_send_json_error( $status );
+	}
+
+	wp_send_json_success( $status );
+}
+
+
+/**
+ * AJAX handler for deactivating a plugin.
+ *
+ * @todo switch to existing link nonces.
+ */
+function wp_ajax_deactivate_plugin() {
+	check_ajax_referer( 'updates' );
+
+	if ( empty( $_POST['plugin'] ) ) {
+		wp_send_json_error( array( 'errorCode' => 'no_plugin_specified' ) );
+	}
+
+	$plugin      = filter_var( wp_unslash( $_POST['plugin'] ), FILTER_SANITIZE_STRING );
+	$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin );
+
+	// Set up the default status to return.
+	$status = array(
+		'activate' => 'plugin',
+		'id'       => sanitize_title( $plugin_data['Name'] ),
+		'slug'     => sanitize_key( $_POST['slug'] ),
+		'plugin'   => $plugin,
+	);
+
+	// Verify user can activate plugins.
+	if ( ! current_user_can('activate_plugins') ) {
+		$status['error'] = __( 'You do not have sufficient permissions to activate plugins for this site.' );
+		wp_send_json_error( $status );
+	}
+
+	// Check for network only plugins.
+	if ( is_multisite() && ! is_network_admin() && is_network_only_plugin( $plugin ) ) {
+		$status['error'] = __( 'This plugin cannot be activated.' );
+		wp_send_json_error( $status );
+	}
+
+	// Attempt to activate the plugin.
+	$result = deactivate_plugins( $plugin, null, is_network_admin() );
 
 	if ( is_wp_error( $result ) ) {
 		$error_code = $result->get_error_code();
