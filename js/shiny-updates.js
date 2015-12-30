@@ -480,7 +480,11 @@ window.wp = window.wp || {};
 	 * @param {string} slug
 	 */
 	wp.updates.activatePlugin = function( plugin, slug ) {
-		var data;
+		var data,
+			$activateLink = $( '.activate a[data-plugin="' + plugin + '"]' );
+
+		// Start the progress indicator for this row.
+		$activateLink.parents( 'tr' ).addClass( 'in-progress' );
 
 		wp.a11y.speak( wp.updates.l10n.activatingMsg );
 
@@ -527,6 +531,7 @@ window.wp = window.wp || {};
 		var $activateLink = $( '.activate a[data-plugin="' + response.plugin + '"]' );
 
 		$activateLink.parents( 'tr' )
+			.removeClass( 'in-progress' )
 			.removeClass( 'inactive' )
 			.addClass( 'active' );
 
@@ -546,7 +551,8 @@ window.wp = window.wp || {};
 	wp.updates.activatePluginError = function( response ) {
 		var $activateLink = $( '.activate a[data-plugin="' + response.plugin + '"]' );
 
-		$activateLink
+		$activateLink.parents( 'tr' )
+			.removeClass( 'in-progress' )
 			.after( wp.updates.l10n.activateFailedLabel.replace( '%s', pluginData[ response.plugin ].Name ) );
 
 		wp.a11y.speak( wp.updates.l10n.activateFailedShort, 'assertive' );
@@ -567,7 +573,11 @@ window.wp = window.wp || {};
 	 * @param {string} slug
 	 */
 	wp.updates.deactivatePlugin = function( plugin, slug ) {
-		var data;
+		var data,
+			$deactivateLink = $( '.deactivate a[data-plugin="' + plugin + '"]' );
+
+		// Start the progress indicator for this row.
+		$deactivateLink.parents( 'tr' ).addClass( 'in-progress' );
 
 		wp.a11y.speak( wp.updates.l10n.activatingMsg );
 
@@ -614,6 +624,7 @@ window.wp = window.wp || {};
 		var $deactivateLink = $( '.deactivate a[data-plugin="' + response.plugin + '"]' );
 
 		$deactivateLink.parents( 'tr' )
+			.removeClass( 'in-progress' )
 			.removeClass( 'active' )
 			.addClass( 'inactive' );
 
@@ -634,6 +645,7 @@ window.wp = window.wp || {};
 		var $deactivateLink = $( '.deactivate a[data-plugin="' + response.plugin + '"]' );
 
 		$deactivateLink
+			.removeClass( 'in-progress' )
 			.after( wp.updates.l10n.deactivateFailedLabel.replace( '%s', pluginData[ response.plugin ].Name ) );
 
 		wp.a11y.speak( wp.updates.l10n.deactivateFailedShort, 'assertive' );
@@ -933,7 +945,6 @@ window.wp = window.wp || {};
 //===============================================================================
 // DELETE THEME
 //===============================================================================
-
 
 	/**
 	 * Send an Ajax request to the server to delete a theme.

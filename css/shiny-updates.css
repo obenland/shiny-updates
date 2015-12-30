@@ -68,3 +68,14 @@
 .inactive .deactivate {
 	display: none;
 }
+
+#the-list tr.in-progress:after {
+	content: url(../images/spinner.gif);
+	position: absolute;
+	left: 15px;
+	margin-top: 10px;
+}
+
+#the-list tr.in-progress input {
+	display: none;
+}
