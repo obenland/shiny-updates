@@ -1215,7 +1215,19 @@ window.wp = window.wp || {};
 				return;
 			}
 
-			wp.updates.activatePlugin( $button.data( 'plugin' ) );
+			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
+				wp.updates.requestFilesystemCredentials( event );
+
+				$document.on( 'credential-modal-cancel', function() {
+					var $message = $( '.install-now.updating-message' );
+
+					$message.removeClass( 'updating-message' );
+					$message.text( wp.updates.l10n.installNow );
+					wp.a11y.speak( wp.updates.l10n.updateCancel );
+				} );
+			}
+
+			wp.updates.installPlugin( $button.data( 'slug' ) );
 		} );
 
 		/**
