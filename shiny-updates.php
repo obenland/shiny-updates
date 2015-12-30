@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Shiny Updates
+ * Plugin Name: Johan's Shiny Updates
  * Description: Hide the ugly parts of updating WordPress.
  * Author: the WordPress team
  * Version: 2
