@@ -1099,6 +1099,18 @@ window.wp = window.wp || {};
 				delete wp.updates.searchRequest;
 			} );
 		} );
+
+		/**
+		 * Every row of the plugin table should not have an id or data-slug attribute and needs a data-plugin attribute
+		 * This should be fixed in core via trac ticket #18974 but until then lets fix it with javascript
+		 */
+		$pluginList.find('tr').each( function(){
+			$(this).removeAttr('id data-slug');
+			if( typeof $(this).attr('data-plugin') == 'undefined' ){
+				$(this).attr('data-plugin', $(this).prevAll(':has(th.check-column)').andSelf().first().find('th input').val() );
+			}
+		} );
+
 	} );
 
 } )( jQuery, window.wp );
