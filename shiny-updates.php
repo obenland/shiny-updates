@@ -77,6 +77,11 @@ class Shiny_Updates {
 		if ( get_option( 'wp_auto_update_themes' ) ) {
 			add_filter( 'auto_update_theme', '__return_true' );
 		}
+
+		// Prevent redirects during ajax requests.
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			add_action( 'admin_init', array( $this, 'capture_any_redirects' ), 1 );
+		}
 	}
 
 	/**
@@ -293,6 +298,19 @@ class Shiny_Updates {
 	 */
 	public function load_auto_updates_settings() {
 		include_once plugin_dir_path( __FILE__ ) . 'auto-updates.php';
+	}
+
+	/**
+	* Capture any redirects from plugin activation or deactivation.
+	*
+	* @todo Just discard these?
+	*/
+	function capture_any_redirects() {
+		// Prevent any redirects.
+		add_filter( 'wp_redirect', function( $location ) {
+			return false;
+		} );
+
 	}
 }
 add_action( 'init', array( 'Shiny_Updates', 'init' ) );
