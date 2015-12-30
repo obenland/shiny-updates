@@ -45,8 +45,7 @@ window.wp = window.wp || {};
 			$card = $( '.plugin-card-' + slug );
 
 		if ( 'plugins' === pagenow || 'plugins-network' === pagenow ) {
-			$updateRow = $( 'tr[data-plugin="' + plugin + '"]' );
-			$message   = $updateRow.find( '.update-message' );
+			$message   = $( 'tr[data-plugin="' + plugin + '"]' ).find( '.update-message' );
 			name       = pluginData[ plugin ].Name;
 
 		} else if ( 'plugin-install' === pagenow ) {
@@ -110,8 +109,8 @@ window.wp = window.wp || {};
 	wp.updates.updateSuccess = function( response ) {
 		var $updateMessage, name, $pluginRow, newText;
 		if ( 'plugins' === pagenow || 'plugins-network' === pagenow ) {
-			$pluginRow = $( 'tr[data-plugin="' + response.plugin + '"]' ).first().prev();
-			$updateMessage = $pluginRow.next().find( '.update-message' );
+			$pluginRow = $( 'tr[data-plugin="' + response.plugin + '"]' ).first();
+			$updateMessage = $( 'tr[data-plugin="' + response.plugin + '"]' ).find( '.update-message' );
 			$pluginRow.addClass( 'updated' ).removeClass( 'update' );
 
 			// Update the version number in the row.
@@ -1046,8 +1045,8 @@ window.wp = window.wp || {};
 			var slug, $message;
 
 			if ( 'plugins' === pagenow || 'plugins-network' === pagenow ) {
-				slug     = wp.updates.updateQueue[0].data.slug;
-				$message = $( '#' + slug ).next().find( '.update-message' );
+				plugin     = wp.updates.updateQueue[0].data.plugin;
+				$message = $( 'tr[data-plugin="' + plugin + '"]' ).find( '.update-message' );
 			} else if ( 'plugin-install' === pagenow ) {
 				$message = $( '.update-now.updating-message' );
 			} else {
