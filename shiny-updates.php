@@ -399,7 +399,7 @@ function wp_ajax_deactivate_plugin() {
 		wp_send_json_error( $status );
 	}
 
-	// Attempt to activate the plugin.
+	// Attempt to deactivate the plugin.
 	$result = deactivate_plugins( $plugin, null, is_network_admin() );
 
 	if ( is_wp_error( $result ) ) {
