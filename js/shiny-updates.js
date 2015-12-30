@@ -1,4 +1,4 @@
-/* global pagenow, pluginData, commonL10n */
+/* global pagenow, pluginData, commonL10n, _ */
 window.wp = window.wp || {};
 
 (function( $, wp ) {
@@ -1098,6 +1098,16 @@ window.wp = window.wp || {};
 		switch ( job.type ) {
 			case 'install-plugin':
 				wp.updates.installPlugin( job.data.slug );
+				break;
+
+			case 'bulk-activate-plugin':
+			case 'activate-plugin':
+				wp.updates.activatePlugin( job.data.plugin, job.data.slug );
+				break;
+
+			case 'bulk-deactivate-plugin':
+			case 'deactivate-plugin':
+				wp.updates.deactivatePlugin( job.data.plugin, job.data.slug );
 				break;
 
 			case 'bulk-update-plugin':
