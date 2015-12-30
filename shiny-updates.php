@@ -371,13 +371,13 @@ function wp_ajax_deactivate_plugin() {
 
 	// Verify user can activate plugins.
 	if ( ! current_user_can('activate_plugins') ) {
-		$status['error'] = __( 'You do not have sufficient permissions to activate plugins for this site.' );
+		$status['error'] = __( 'You do not have sufficient permissions to deactivate plugins for this site.' );
 		wp_send_json_error( $status );
 	}
 
 	// Check for network only plugins.
 	if ( is_multisite() && ! is_network_admin() && is_network_only_plugin( $plugin ) ) {
-		$status['error'] = __( 'This plugin cannot be activated.' );
+		$status['error'] = __( 'This plugin cannot be deactivated.' );
 		wp_send_json_error( $status );
 	}
 
@@ -387,7 +387,7 @@ function wp_ajax_deactivate_plugin() {
 	if ( is_wp_error( $result ) ) {
 		$error_code = $result->get_error_code();
 		/* Translators: %s refers to the activation error code */
-		$status['error'] = __( sprintf( 'Plugin activation error: %s', $error_code ) );
+		$status['error'] = __( sprintf( 'Plugin deactivation error: %s', $error_code ) );
 		wp_send_json_error( $status );
 	}
 
