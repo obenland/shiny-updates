@@ -80,7 +80,7 @@ class Shiny_Updates {
 
 		// Prevent redirects during ajax requests.
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-			add_action( 'admin_init', array( $this, 'capture_any_redirects' ), 1 );
+			add_action( 'admin_init', array( $this, 'wp_capture_any_redirects' ), 1 );
 		}
 	}
 
@@ -306,16 +306,20 @@ class Shiny_Updates {
 
 	/**
 	* Capture any redirects from plugin activation or deactivation.
-	*
-	* @todo Just discard these?
 	*/
-	function capture_any_redirects() {
+	function wp_capture_any_redirects() {
 		// Prevent any redirects.
-		add_filter( 'wp_redirect', function( $location ) {
-			error_log( $location );
-			return false;
-		} );
+		add_filter( 'wp_redirect', 'wp_handle_plugin_redirects' );
 
+	}
+
+	/**
+	 * Handle redirects attempted during plugin activation or deactivation.
+	 *
+	 * @todo Just discard these?
+	 */
+	function wp_handle_plugin_redirects( $location ) {
+		return false;
 	}
 }
 add_action( 'init', array( 'Shiny_Updates', 'init' ) );
