@@ -1,4 +1,4 @@
-/* global pagenow, pluginData, commonL10n, _ */
+/* global pagenow, pluginData, commonL10n */
 window.wp = window.wp || {};
 
 (function( $, wp ) {
