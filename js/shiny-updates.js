@@ -41,7 +41,7 @@ window.wp = window.wp || {};
 	 * @param {string} slug
 	 */
 	wp.updates.updatePlugin = function( plugin, slug ) {
-		var $message, name, $updateRow, message, data,
+		var $message, name, message, data,
 			$card = $( '.plugin-card-' + slug );
 
 		if ( 'plugins' === pagenow || 'plugins-network' === pagenow ) {
@@ -1042,7 +1042,7 @@ window.wp = window.wp || {};
 		 * Handle events after the credential modal was closed.
 		 */
 		$document.on( 'credential-modal-cancel', function() {
-			var slug, $message;
+			var $message, plugin;
 
 			if ( 'plugins' === pagenow || 'plugins-network' === pagenow ) {
 				plugin     = wp.updates.updateQueue[0].data.plugin;
@@ -1106,7 +1106,7 @@ window.wp = window.wp || {};
 		$pluginList.append('<br id="remove-this">');
 		$pluginList.find('tr').each( function(){
 			$(this).removeAttr('id data-slug');
-			if( typeof $(this).attr('data-plugin') == 'undefined' ){
+			if( typeof $(this).attr('data-plugin') === 'undefined' ){
 				$(this).attr('data-plugin', $(this).next().prevAll(':has(th.check-column)').first().find('th input').val() );
 			}
 		} );
