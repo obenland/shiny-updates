@@ -97,29 +97,20 @@ window.wp = window.wp || {};
 		}
 
 		if ( ! wp.updates.updateLock ) {
-		message = wp.updates.l10n.updatingLabel.replace( '%s', name );
-		$message.attr( 'aria-label', message );
+			message = wp.updates.l10n.updatingLabel.replace( '%s', name );
+			$message.attr( 'aria-label', message );
 
-		$message.addClass( 'updating-message' );
-		if ( $message.html() !== wp.updates.l10n.updating ) {
-			$message.data( 'originaltext', $message.html() );
-		}
+			$message.addClass( 'updating-message' );
+			if ( $message.html() !== wp.updates.l10n.updating ) {
+				$message.data( 'originaltext', $message.html() );
+			}
 
-		wp.updates.updateProgressMessage( message );
-		$message.text( wp.updates.l10n.updating );
+			wp.updates.updateProgressMessage( message );
+			$message.text( wp.updates.l10n.updating );
 
 			$document.trigger( 'wp-plugin-updating' );
 		}
-		if ( wp.updates.updateLock ) {
-			wp.updates.updateQueue.push( {
-				type: 'update-plugin',
-				data: {
-					plugin: plugin,
-					slug: slug
-				}
-			} );
-			return;
-		}
+
 		wp.updates.ajax( 'update-plugin', { plugin: plugin, slug: slug } )
 			.done( wp.updates.updateSuccess )
 			.fail( wp.updates.updateError );
@@ -327,8 +318,16 @@ window.wp = window.wp || {};
 	wp.updates.bulkUpdatePlugins = function( plugins ) {
 		var $message;
 
-		// Set up the progress indicaator.
+		// Set up the progress indicator.
 		wp.updates.setupProgressIndicator();
+
+		// Start the bulk plugin updates. Reset the count for totals, successes and failures.
+		wp.updates.pluginsToUpdateCount  = plugins.length;
+		wp.updates.pluginUpdateSuccesses = 0;
+		wp.updates.pluginUpdateFailures  = 0;
+		wp.updates.updateProgressMessage(
+			wp.updates.getPluginUpdateProgress()
+		);
 
 		_.each( plugins, function( plugin ) {
 			$message = $( 'tr[data-plugin="' + plugin.plugin + '"]' ).find( '.update-message' );
@@ -340,22 +339,8 @@ window.wp = window.wp || {};
 
 			$message.text( wp.updates.l10n.updateQueued );
 
-			wp.updates.updateQueue.push( {
-				type: 'bulk-update-plugin',
-				data: plugin
-			} );
+			wp.updates.updatePlugin( plugin.plugin, plugin.slug );
 		} );
-
-		// Start the bulk plugin updates. Reset the count for totals, successes and failures.
-		wp.updates.pluginsToUpdateCount  = plugins.length;
-		wp.updates.pluginUpdateSuccesses = 0;
-		wp.updates.pluginUpdateFailures  = 0;
-		wp.updates.updateProgressMessage(
-			wp.updates.getPluginUpdateProgress()
-		);
-
-		wp.updates.queueChecker();
-
 	};
 
 	/**
@@ -364,25 +349,9 @@ window.wp = window.wp || {};
 	 * @since 4.5.0
 	 */
 	wp.updates.bulkActivatePlugins = function( plugins ) {
-		var $message;
 
-		// Set up the progress indicaator.
+		// Set up the progress indicator.
 		wp.updates.setupProgressIndicator();
-
-		_.each( plugins, function( plugin ) {
-			$message = $( '#the-list' ).find( '.activate a[data-plugin="' + plugin.plugin + '"]' );
-
-			// Start the progress indicator for this row.
-			$message.parents( 'tr' ).addClass( 'in-progress' );
-			if ( $message.html() !== wp.updates.l10n.updating ) {
-				$message.data( 'originaltext', $message.html() );
-			}
-
-			wp.updates.updateQueue.push( {
-				type: 'bulk-activate-plugin',
-				data: plugin
-			} );
-		} );
 
 		// Start the bulk plugin updates. Reset the count for totals, successes and failures.
 		wp.updates.pluginsToActivateCount  = plugins.length;
@@ -391,8 +360,9 @@ window.wp = window.wp || {};
 		wp.updates.updateLock              = false;
 		wp.updates.updateProgressMessage( wp.updates.getPluginActivateProgress() );
 
-		// Start processing the queue
-		wp.updates.queueChecker();
+		_.each( plugins, function( plugin ) {
+			wp.updates.activatePlugin( plugin.plugin, plugin.slug );
+		} );
 	};
 
 	/**
@@ -401,22 +371,9 @@ window.wp = window.wp || {};
 	 * @since 4.5.0
 	 */
 	wp.updates.bulkDeactivatePlugins = function( plugins ) {
-		var $message;
 
-		// Set up the progress indicaator.
+		// Set up the progress indicator.
 		wp.updates.setupProgressIndicator();
-
-		_.each( plugins, function( plugin ) {
-			$message = $( '#the-list' ).find( '.deactivate a[data-plugin="' + plugin.plugin + '"]' );
-
-			// Start the progress indicator for this row.
-			$message.parents( 'tr' ).addClass( 'in-progress' );
-
-			wp.updates.updateQueue.push( {
-				type: 'bulk-deactivate-plugin',
-				data: plugin
-			} );
-		} );
 
 		// Start the bulk plugin updates. Reset the count for totals, successes and failures.
 		wp.updates.pluginsToDeactivateCount  = plugins.length;
@@ -425,10 +382,16 @@ window.wp = window.wp || {};
 		wp.updates.updateLock                = false;
 		wp.updates.updateProgressMessage( wp.updates.getPluginDeactivateProgress() );
 
-		// Start processing the queue
-		wp.updates.queueChecker();
+		_.each( plugins, function( plugin ) {
+			wp.updates.deactivatePlugin( plugin.plugin, plugin.slug );
+		} );
 	};
 
+	/**
+	 *
+	 *
+	 * @since 4.5.0
+	 */
 	wp.updates.getPluginActivateProgress = function() {
 		var updateMessage = wp.updates.l10n.activatePluginsQueuedMsg.replace( '%d', wp.updates.pluginsToActivateCount );
 
@@ -442,6 +405,11 @@ window.wp = window.wp || {};
 		return updateMessage;
 	};
 
+	/**
+	 *
+	 *
+	 * @since 4.5.0
+	 */
 	wp.updates.getPluginDeactivateProgress = function() {
 		var updateMessage = wp.updates.l10n.deactivatePluginsQueuedMsg.replace( '%d', wp.updates.pluginsToDeactivateCount );
 
@@ -457,6 +425,8 @@ window.wp = window.wp || {};
 
 	/**
 	 * Build a string describing the bulk update progress.
+	 *
+	 * @since 4.5.0
 	 */
 	wp.updates.getPluginUpdateProgress = function() {
 		var updateMessage = wp.updates.l10n.updatePluginsQueuedMsg.replace( '%d', wp.updates.pluginsToUpdateCount );
@@ -578,43 +548,13 @@ window.wp = window.wp || {};
 	 * @param {string} slug
 	 */
 	wp.updates.activatePlugin = function( plugin, slug ) {
-		var data,
-			$activateLink = $( '.activate a[data-plugin="' + plugin + '"]' );
-
-		// Start the progress indicator for this row.
-		$activateLink.parents( 'tr' ).addClass( 'in-progress' );
+		$( '#the-list' ).find( '.activate a[data-plugin="' + plugin + '"]' ).parents( 'tr' ).addClass( 'in-progress' );
 
 		wp.a11y.speak( wp.updates.l10n.activatingMsg );
 
-		if ( wp.updates.updateLock ) {
-			wp.updates.updateQueue.push( {
-				type: 'activate-plugin',
-				data: {
-					plugin: plugin,
-					slug: slug
-				}
-			} );
-			return;
-		}
-
-		wp.updates.updateLock = true;
-
-		data = {
-			_ajax_nonce:     wp.updates.ajaxNonce,
-			plugin:          plugin,
-			slug:            slug,
-			username:        wp.updates.filesystemCredentials.ftp.username,
-			password:        wp.updates.filesystemCredentials.ftp.password,
-			hostname:        wp.updates.filesystemCredentials.ftp.hostname,
-			connection_type: wp.updates.filesystemCredentials.ftp.connectionType,
-			public_key:      wp.updates.filesystemCredentials.ssh.publicKey,
-			private_key:     wp.updates.filesystemCredentials.ssh.privateKey
-		};
-
-		wp.ajax.post( 'activate-plugin', data )
+		wp.updates.ajax( 'activate-plugin', { plugin: plugin, slug: slug } )
 			.done( wp.updates.activatePluginSuccess )
-			.fail( wp.updates.activatePluginError )
-			.always( wp.updates.ajaxAlways );
+			.fail( wp.updates.activatePluginError );
 	};
 
 	/**
@@ -625,12 +565,8 @@ window.wp = window.wp || {};
 	 * @param {object} response
 	 */
 	wp.updates.activatePluginSuccess = function( response ) {
-
-		var $activateLink = $( '.activate a[data-plugin="' + response.plugin + '"]' );
-
-		$activateLink.parents( 'tr' )
-			.removeClass( 'in-progress' )
-			.removeClass( 'inactive' )
+		$( '#the-list' ).find( '.activate a[data-plugin="' + response.plugin + '"]' ).parents( 'tr' )
+			.removeClass( 'in-progress inactive' )
 			.addClass( 'active' );
 
 		wp.a11y.speak( wp.updates.l10n.activatedMsg );
@@ -646,9 +582,7 @@ window.wp = window.wp || {};
 	 * @param {object} response
 	 */
 	wp.updates.activatePluginError = function( response ) {
-		var $activateLink = $( '.activate a[data-plugin="' + response.plugin + '"]' );
-
-		$activateLink.parents( 'tr' )
+		$( '#the-list' ).find( '.activate a[data-plugin="' + response.plugin + '"]' ).parents( 'tr' )
 			.removeClass( 'in-progress' )
 			.after( wp.updates.l10n.activateFailedLabel.replace( '%s', pluginData[ response.plugin ].Name ) );
 
@@ -672,43 +606,13 @@ window.wp = window.wp || {};
 	 * @param {string} slug
 	 */
 	wp.updates.deactivatePlugin = function( plugin, slug ) {
-		var data,
-			$deactivateLink = $( '.deactivate a[data-plugin="' + plugin + '"]' );
-
-		// Start the progress indicator for this row.
-		$deactivateLink.parents( 'tr' ).addClass( 'in-progress' );
+		$( '#the-list' ).find( '.deactivate a[data-plugin="' + plugin + '"]' ).parents( 'tr' ).addClass( 'in-progress' );
 
 		wp.a11y.speak( wp.updates.l10n.activatingMsg );
 
-		if ( wp.updates.updateLock ) {
-			wp.updates.updateQueue.push( {
-				type: 'deactivate-plugin',
-				data: {
-					plugin: plugin,
-					slug: slug
-				}
-			} );
-			return;
-		}
-
-		wp.updates.updateLock = true;
-
-		data = {
-			_ajax_nonce:     wp.updates.ajaxNonce,
-			plugin:          plugin,
-			slug:            slug,
-			username:        wp.updates.filesystemCredentials.ftp.username,
-			password:        wp.updates.filesystemCredentials.ftp.password,
-			hostname:        wp.updates.filesystemCredentials.ftp.hostname,
-			connection_type: wp.updates.filesystemCredentials.ftp.connectionType,
-			public_key:      wp.updates.filesystemCredentials.ssh.publicKey,
-			private_key:     wp.updates.filesystemCredentials.ssh.privateKey
-		};
-
-		wp.ajax.post( 'deactivate-plugin', data )
+		wp.updates.ajax( 'deactivate-plugin', { plugin: plugin, slug: slug } )
 			.done( wp.updates.deactivatePluginSuccess )
-			.fail( wp.updates.deactivatePluginError )
-			.always( wp.updates.ajaxAlways );
+			.fail( wp.updates.deactivatePluginError );
 	};
 
 	/**
@@ -719,12 +623,8 @@ window.wp = window.wp || {};
 	 * @param {object} response
 	 */
 	wp.updates.deactivatePluginSuccess = function( response ) {
-
-		var $deactivateLink = $( '.deactivate a[data-plugin="' + response.plugin + '"]' );
-
-		$deactivateLink.parents( 'tr' )
-			.removeClass( 'in-progress' )
-			.removeClass( 'active' )
+		$( '#the-list' ).find( '.deactivate a[data-plugin="' + response.plugin + '"]' ).parents( 'tr' )
+			.removeClass( 'in-progress active' )
 			.addClass( 'inactive' );
 
 		wp.a11y.speak( wp.updates.l10n.deactivatedMsg );
@@ -740,9 +640,7 @@ window.wp = window.wp || {};
 	 * @param {object} response
 	 */
 	wp.updates.deactivatePluginError = function( response ) {
-		var $deactivateLink = $( '.deactivate a[data-plugin="' + response.plugin + '"]' );
-
-		$deactivateLink
+		$( '#the-list' ).find( '.deactivate a[data-plugin="' + response.plugin + '"]' )
 			.removeClass( 'in-progress' )
 			.after( wp.updates.l10n.deactivateFailedLabel.replace( '%s', pluginData[ response.plugin ].Name ) );
 
@@ -1062,28 +960,9 @@ window.wp = window.wp || {};
 	 * @since 4.5.0 Can handle multiple job types.
 	 */
 	wp.updates.queueChecker = function() {
-		var job, updateMessage;
+		var job;
 
 		if ( wp.updates.updateLock || wp.updates.updateQueue.length <= 0 ) {
-
-			// Clear the update lock when the queue is empty.
-			if ( wp.updates.updateQueue.length <= 0 ) {
-				wp.updates.updateLock = false;
-
-				// Update the status with final progress results.
-				switch ( wp.updates.currentJobType ) {
-					case 'bulk-update-plugin':
-						updateMessage = wp.updates.l10n.updatedPluginsMsg;
-						if ( 0 !== wp.updates.pluginUpdateSuccesses ) {
-							updateMessage += ' ' + wp.updates.l10n.successMsg.replace( '%d', wp.updates.pluginUpdateSuccesses );
-						}
-						if ( 0 !== wp.updates.pluginUpdateFailures ) {
-							updateMessage += ' ' + wp.updates.l10n.failureMsg.replace( '%d', wp.updates.pluginUpdateFailures );
-						}
-						wp.updates.updateProgressMessage( updateMessage, 'is-dismissible' );
-						break;
-				}
-			}
 			return;
 		}
 
@@ -1095,17 +974,14 @@ window.wp = window.wp || {};
 				wp.updates.installPlugin( job.data.slug );
 				break;
 
-			case 'bulk-activate-plugin':
 			case 'activate-plugin':
 				wp.updates.activatePlugin( job.data.plugin, job.data.slug );
 				break;
 
-			case 'bulk-deactivate-plugin':
 			case 'deactivate-plugin':
 				wp.updates.deactivatePlugin( job.data.plugin, job.data.slug );
 				break;
 
-			case 'bulk-update-plugin':
 			case 'update-plugin':
 				wp.updates.updatePlugin( job.data.plugin, job.data.slug );
 				break;
@@ -1256,15 +1132,31 @@ window.wp = window.wp || {};
 		} );
 
 		/**
-		 * Bulk update for plugins.
+		 * Bulk actions for plugins.
 		 */
 		$bulkActionForm.on( 'click', '[type="submit"]', function( event ) {
-			var plugins = [];
+			var plugins = [], qualifier, bulkActionHandler;
 
 			event.preventDefault();
 
-			if ( 'update-selected' !== $( event.target ).siblings( 'select' ).val() ) {
-				return;
+			switch ( $( event.target ).siblings( 'select' ).val() ) {
+				case 'update-selected':
+					qualifier         = 'update';
+					bulkActionHandler = wp.updates.bulkUpdatePlugins;
+					break;
+
+				case 'activate-selected':
+					qualifier         = 'inactive';
+					bulkActionHandler = wp.updates.bulkActivatePlugins;
+					break;
+
+				case 'deactivate-selected':
+					qualifier         = 'active';
+					bulkActionHandler = wp.updates.bulkDeactivatePlugins;
+					break;
+
+				default:
+					return;
 			}
 
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
@@ -1277,8 +1169,8 @@ window.wp = window.wp || {};
 				.each( function( index, element ) {
 					var $checkbox = $( element );
 
-					// Only add updatable plugins to the queue.
-					if ( $checkbox.parents( 'tr' ).hasClass( 'update' ) ) {
+					// Only add qualifying plugins to the queue.
+					if ( $checkbox.parents( 'tr' ).hasClass( qualifier ) ) {
 
 						// Processing checkbox, so uncheck.
 						$checkbox .prop( 'checked', false );
@@ -1289,96 +1181,11 @@ window.wp = window.wp || {};
 					}
 			} );
 
-			// Uncheck the bulk select checkbox.
+			// Un-check the bulk select checkbox.
 			$( '.manage-column [type="checkbox"]' ).prop( 'checked', false );
 
 			if ( 0 !== plugins.length ) {
-				wp.updates.bulkUpdatePlugins( plugins );
-			}
-		} );
-
-		/**
-		 * Bulk activate for plugins.
-		 */
-		$bulkActionForm.on( 'click', '[type="submit"]', function( event ) {
-			var plugins = [];
-
-			event.preventDefault();
-
-			if ( 'activate-selected' !== $( event.target ).siblings( 'select' ).val() ) {
-				return;
-			}
-
-			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
-				wp.updates.requestFilesystemCredentials( event );
-			}
-
-			// Find all the checkboxes which have been checked.
-			$bulkActionForm
-				.find( 'input[name="checked[]"]:checked' )
-				.each( function( index, element ) {
-					var $checkbox = $( element );
-
-					// Add plugins that can be activated to the queue.
-					if ( $checkbox.parents( 'tr' ).hasClass( 'inactive' ) ) {
-
-						// Processing checkbox, so uncheck.
-						$checkbox .prop( 'checked', false );
-						plugins.push( {
-							plugin: $checkbox.val(),
-							slug:   $checkbox.parents( 'tr' ).prop( 'id' )
-						} );
-					}
-			} );
-
-			// Uncheck the bulk select checkbox.
-			$( '.manage-column [type="checkbox"]' ).prop( 'checked', false );
-
-			if ( 0 !== plugins.length ) {
-				wp.updates.bulkActivatePlugins( plugins );
-			}
-		} );
-
-		/**
-		 * Bulk deactivate for plugins.
-		 */
-		$bulkActionForm.on( 'click', '[type="submit"]', function( event ) {
-			var plugins;
-
-			if ( 'deactivate-selected' !== $( event.target ).siblings( 'select' ).val() ) {
-				return;
-			}
-
-			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
-				wp.updates.requestFilesystemCredentials( event );
-			}
-
-			plugins = [];
-			event.preventDefault();
-
-			// Find all the checkboxes which have been checked.
-			$bulkActionForm
-				.find( 'input[name="checked[]"]:checked' )
-				.each( function( index, element ) {
-					var $checkbox = $( element );
-
-					// Add plugins that can be deactivated to the queue.
-					if ( $checkbox.parents( 'tr' ).hasClass( 'active' ) ) {
-
-						// Processing checkbox, so uncheck.
-						$checkbox .prop( 'checked', false );
-						plugins.push( {
-							plugin: $checkbox.val(),
-							slug:   $checkbox.parents( 'tr' ).prop( 'id' )
-						} );
-					}
-			} );
-
-			// Uncheck the bulk select checkbox.
-			$( '.manage-column [type="checkbox"]' ).prop( 'checked', false );
-
-			if ( 0 !== plugins.length ) {
-				wp.updates.bulkDeactivatePlugins( plugins );
+				bulkActionHandler( plugins );
 			}
 		} );
 
@@ -1403,9 +1210,9 @@ window.wp = window.wp || {};
 		} );
 
 		/**
-		 * Make notices dismissable.
+		 * Make notices dismissible.
  		 */
-		$( document ) .on( 'wp-progress-updated wp-theme-update-error wp-theme-install-error', function() {
+		$document.on( 'wp-progress-updated wp-theme-update-error wp-theme-install-error', function() {
 			$( '.notice.is-dismissible' ).each( function() {
 				var $el = $( this ),
 					$button = $( '<button type="button" class="notice-dismiss"><span class="screen-reader-text"></span></button>' ),
