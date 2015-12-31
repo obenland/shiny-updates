@@ -10,6 +10,15 @@ window.wp = window.wp || {};
 	// Not needed in core.
 	wp.updates.l10n = _.extend( wp.updates.l10n, window.shinyUpdates );
 
+	// Map some bulk action language strings.
+	wp.updates.bulkActions                = {};
+	wp.updates.bulkActions.update         = {};
+	wp.updates.bulkActions.activate       = {};
+	wp.updates.bulkActions.deactivate     = {};
+	wp.updates.bulkActions.update.msg     = wp.updates.l10n.updatePluginsQueuedMsg;
+	wp.updates.bulkActions.activate.msg   = wp.updates.l10n.activatePluginsQueuedMsg;
+	wp.updates.bulkActions.deactivate.msg = wp.updates.l10n.deactivatePluginsQueuedMsg;
+
 	/**
 	 * Handles Ajax requests to WordPress.
 	 *
@@ -66,7 +75,7 @@ window.wp = window.wp || {};
 	};
 
 	/**
-	 *
+	 * ===============================================================================
 	 * PLUGIN UPDATES
 	 * ===============================================================================
 	 */
@@ -153,7 +162,7 @@ window.wp = window.wp || {};
 		wp.updates.updateDoneSuccessfully = true;
 
 		$document.trigger( 'wp-plugin-update-success', response );
-		wp.updates.pluginUpdateSuccesses++;
+		wp.updates.bulkActions.updates.successes++;
 	};
 
 	/**
@@ -209,7 +218,7 @@ window.wp = window.wp || {};
 		wp.updates.updateProgressMessage( errorMessage, 'notice-error' );
 
 		$document.trigger( 'wp-plugin-update-error', response );
-		wp.updates.pluginUpdateFailures++;
+		wp.updates.bulkActions.updates.failures++;
 	};
 
 	/**
@@ -306,7 +315,7 @@ window.wp = window.wp || {};
 
 	/**
 	 * ===============================================================================
-	 * BULK PLUGIN Actions
+	 * BULK PLUGIN ACTIONS
 	 * ===============================================================================
 	 */
 
@@ -322,11 +331,11 @@ window.wp = window.wp || {};
 		wp.updates.setupProgressIndicator();
 
 		// Start the bulk plugin updates. Reset the count for totals, successes and failures.
-		wp.updates.pluginsToUpdateCount  = plugins.length;
-		wp.updates.pluginUpdateSuccesses = 0;
-		wp.updates.pluginUpdateFailures  = 0;
+		wp.updates.bulkActions.updates.count  = plugins.length;
+		wp.updates.bulkActions.updates.successes = 0;
+		wp.updates.bulkActions.updates.failures  = 0;
 		wp.updates.updateProgressMessage(
-			wp.updates.getPluginUpdateProgress()
+			wp.updates.getPluginActionProgress( 'update' )
 		);
 
 		_.each( plugins, function( plugin ) {
@@ -354,11 +363,11 @@ window.wp = window.wp || {};
 		wp.updates.setupProgressIndicator();
 
 		// Start the bulk plugin updates. Reset the count for totals, successes and failures.
-		wp.updates.pluginsToActivateCount  = plugins.length;
-		wp.updates.pluginActivateSuccesses = 0;
-		wp.updates.pluginActivateFailures  = 0;
-		wp.updates.updateLock              = false;
-		wp.updates.updateProgressMessage( wp.updates.getPluginActivateProgress() );
+		wp.updates.bulkActions.activate.count     = plugins.length;
+		wp.updates.bulkActions.activate.successes = 0;
+		wp.updates.bulkActions.activate.failures  = 0;
+		wp.updates.updateLock                     = false;
+		wp.updates.updateProgressMessage( wp.updates.getPluginActionProgress( 'activate' ) );
 
 		_.each( plugins, function( plugin ) {
 			wp.updates.activatePlugin( plugin.plugin, plugin.slug );
@@ -376,11 +385,11 @@ window.wp = window.wp || {};
 		wp.updates.setupProgressIndicator();
 
 		// Start the bulk plugin updates. Reset the count for totals, successes and failures.
-		wp.updates.pluginsToDeactivateCount  = plugins.length;
-		wp.updates.pluginDeactivateSuccesses = 0;
-		wp.updates.pluginDeactivateFailures  = 0;
+		wp.updates.bulkActions.deactivate.count     = plugins.length;
+		wp.updates.bulkActions.deactivate.successes = 0;
+		wp.updates.bulkActions.deactivate.failures  = 0;
 		wp.updates.updateLock                = false;
-		wp.updates.updateProgressMessage( wp.updates.getPluginDeactivateProgress() );
+		wp.updates.updateProgressMessage( wp.updates.getPluginActionProgress( 'deactivate' ) );
 
 		_.each( plugins, function( plugin ) {
 			wp.updates.deactivatePlugin( plugin.plugin, plugin.slug );
@@ -388,58 +397,43 @@ window.wp = window.wp || {};
 	};
 
 	/**
+	 * Build the success/failure detail message for a bulk progress update.
 	 *
+	 * @param {string} updateMsg The main update message to use for this operation.
+	 * @param {int}    total     The total number of operations in this bulk group.
+	 * @param {int}    successes The number of successes for this bulk operation.
+	 * @param {int}    failures  The number of failures for this bulk operation.
 	 *
 	 * @since 4.5.0
 	 */
-	wp.updates.getPluginActivateProgress = function() {
-		var updateMessage = wp.updates.l10n.activatePluginsQueuedMsg.replace( '%d', wp.updates.pluginsToActivateCount );
+	function buildSuccessFailureUpdate( updateMsg, total, successes, failures ) {
+		var updateMessage = updateMsg.replace( '%d', total );
 
-		if ( 0 !== wp.updates.pluginActivateSuccesses ) {
-		updateMessage += ' ' + wp.updates.l10n.successMsg.replace( '%d', wp.updates.pluginActivateSuccesses );
+		if ( 0 !== successes ) {
+			updateMessage += ' ' + wp.updates.l10n.successMsg.replace( '%d', successes );
 		}
-		if ( 0 !== wp.updates.pluginActivateFailures ) {
-		updateMessage += ' ' + wp.updates.l10n.failureMsg.replace( '%d', wp.updates.pluginActivateFailures );
+
+		if ( 0 !== failures ) {
+			updateMessage += ' ' + wp.updates.l10n.failureMsg.replace( '%d', failures );
 		}
 
 		return updateMessage;
-	};
+	}
 
 	/**
+	 * Build a progress update string for bulk plugin actions.
 	 *
-	 *
-	 * @since 4.5.0
-	 */
-	wp.updates.getPluginDeactivateProgress = function() {
-		var updateMessage = wp.updates.l10n.deactivatePluginsQueuedMsg.replace( '%d', wp.updates.pluginsToDeactivateCount );
-
-		if ( 0 !== wp.updates.pluginDeactivateSuccesses ) {
-		updateMessage += ' ' + wp.updates.l10n.successMsg.replace( '%d', wp.updates.pluginDeactivateSuccesses );
-		}
-		if ( 0 !== wp.updates.pluginDeactivateFailures ) {
-		updateMessage += ' ' + wp.updates.l10n.failureMsg.replace( '%d', wp.updates.pluginDeactivateFailures );
-		}
-
-		return updateMessage;
-	};
-
-	/**
-	 * Build a string describing the bulk update progress.
+	 * @param {string} action The type of action being performed, one of 'update', 'activate' or 'deactivate'.
 	 *
 	 * @since 4.5.0
 	 */
-	wp.updates.getPluginUpdateProgress = function() {
-		var updateMessage = wp.updates.l10n.updatePluginsQueuedMsg.replace( '%d', wp.updates.pluginsToUpdateCount );
-
-		if ( 0 !== wp.updates.pluginUpdateSuccesses ) {
-		updateMessage += ' ' + wp.updates.l10n.successMsg.replace( '%d', wp.updates.pluginUpdateSuccesses );
-		}
-		if ( 0 !== wp.updates.pluginUpdateFailures ) {
-		updateMessage += ' ' + wp.updates.l10n.failureMsg.replace( '%d', wp.updates.pluginUpdateFailures );
-		}
-
-		return updateMessage;
-
+	wp.updates.getPluginActionProgress = function( action ) {
+		return buildSuccessFailureUpdate(
+			wp.updates.bulkActions[ action ].msg,
+			wp.updates.bulkActions[ action ].count,
+			wp.updates.bulkActions[ action ].successes,
+			wp.updates.bulkActions[ action ].failures
+		);
 	};
 
 	/**
