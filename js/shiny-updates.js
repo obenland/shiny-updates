@@ -1318,7 +1318,6 @@ window.wp = window.wp || {};
 			event.preventDefault();
 
 			wp.updates.deactivatePlugin( $button.data( 'plugin' ), $button.data( 'slug' ) );
-			return false;
 		} );
 
 		/**
@@ -1329,7 +1328,6 @@ window.wp = window.wp || {};
 			event.preventDefault();
 
 			wp.updates.activatePlugin( $button.data( 'plugin' ), $button.data( 'slug' ) );
-			return false;
 		} );
 
 		/**
