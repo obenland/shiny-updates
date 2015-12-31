@@ -327,11 +327,8 @@ window.wp = window.wp || {};
 	wp.updates.bulkUpdatePlugins = function( plugins ) {
 		var $message;
 
-		// Set up the progress indicator.
-		wp.updates.setupProgressIndicator();
-
 		// Start the bulk plugin updates. Reset the count for totals, successes and failures.
-		wp.updates.bulkActions.updates.count  = plugins.length;
+		wp.updates.bulkActions.updates.count     = plugins.length;
 		wp.updates.bulkActions.updates.successes = 0;
 		wp.updates.bulkActions.updates.failures  = 0;
 		wp.updates.updateProgressMessage(
@@ -359,9 +356,6 @@ window.wp = window.wp || {};
 	 */
 	wp.updates.bulkActivatePlugins = function( plugins ) {
 
-		// Set up the progress indicator.
-		wp.updates.setupProgressIndicator();
-
 		// Start the bulk plugin updates. Reset the count for totals, successes and failures.
 		wp.updates.bulkActions.activate.count     = plugins.length;
 		wp.updates.bulkActions.activate.successes = 0;
@@ -381,14 +375,11 @@ window.wp = window.wp || {};
 	 */
 	wp.updates.bulkDeactivatePlugins = function( plugins ) {
 
-		// Set up the progress indicator.
-		wp.updates.setupProgressIndicator();
-
 		// Start the bulk plugin updates. Reset the count for totals, successes and failures.
 		wp.updates.bulkActions.deactivate.count     = plugins.length;
 		wp.updates.bulkActions.deactivate.successes = 0;
 		wp.updates.bulkActions.deactivate.failures  = 0;
-		wp.updates.updateLock                = false;
+		wp.updates.updateLock                       = false;
 		wp.updates.updateProgressMessage( wp.updates.getPluginActionProgress( 'deactivate' ) );
 
 		_.each( plugins, function( plugin ) {
@@ -1060,6 +1051,9 @@ window.wp = window.wp || {};
 	$( function() {
 		var $pluginList     = $( '#the-list' ),
 			$bulkActionForm = $( '#bulk-action-form' );
+
+		// Set up the progress indicator.
+		wp.updates.setupProgressIndicator();
 
 		/**
 		 * Deactivate a plugin.
