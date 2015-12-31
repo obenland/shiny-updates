@@ -215,7 +215,7 @@ window.wp = window.wp || {};
 		}
 
 		// Complete the progress for this plugin update with a failure.
-		wp.updates.updateProgressMessage( error_message, 'notice-error', true );
+		wp.updates.updateProgressMessage( errorMessage, 'notice-error', true );
 
 		$document.trigger( 'wp-plugin-update-error', response );
 		wp.updates.pluginUpdateFailures++;
@@ -280,31 +280,32 @@ window.wp = window.wp || {};
 	wp.updates.finishProgressUpdates = function() {
 
 		//Choose a final status color, default to yellow.
-		var final_status_class = 'notice-warning';
+		var finalStatusClass = 'notice-warning';
 
 		// Only success, green.
-		if ( wp.updates.pluginUpdateSuccesses > 0 && wp.updates.pluginUpdateFailures === 0 ) {
-			final_status_class = 'notice-success';
+		if ( wp.updates.pluginUpdateSuccesses > 0 && 0 === wp.updates.pluginUpdateFailures ) {
+			finalStatusClass = 'notice-success';
 		} else {
+
 			// Only failures, red.
-			if ( wp.updates.pluginUpdateFailures > 0 && wp.updates.pluginUpdateSuccesses === 0 ) {
-				final_status_class = 'notice-error';
+			if ( wp.updates.pluginUpdateFailures > 0 && 0 === wp.updates.pluginUpdateSuccesses ) {
+				finalStatusClass = 'notice-error';
 			}
 		}
 
 		// Make the notice dismissable and add the final status class.
-		wp.updates.updateProgressMessage( '', 'is-dismissible ' + final_status_class );
+		wp.updates.updateProgressMessage( '', 'is-dismissible ' + finalStatusClass );
 
 		// Remove our show details click handler.
 		$( document ).off( 'click', 'a.progress-show-details' );
 
-	}
+	};
 
 	/**
 	 * Process the message queue, showing messages in a throttled manner.
 	 */
 	wp.updates.processMessageQueue = function() {
-		var queuedMessage;
+		var currentMessage;
 
 		// If we are already displaying a message, pause briefly and try again.
 		if ( wp.updates.messageLock ) {
@@ -327,6 +328,7 @@ window.wp = window.wp || {};
 							wp.updates.progressMessages[ wp.updates.progressMessages.length - 1 ] +=
 								' ' + currentMessage.message;
 					} else {
+
 						// Create a new progress line.
 						wp.updates.progressMessages.push( currentMessage.message );
 					}
