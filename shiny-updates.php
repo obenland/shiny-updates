@@ -344,7 +344,7 @@ function wp_ajax_activate_plugin() {
 	// Set up the default status to return.
 	$status = array(
 		'activate' => 'plugin',
-		'slug'     => isset(  $_POST['slug'] ) ? sanitize_key( $_POST['slug'] ) : '',
+		'slug'     => isset( $_POST['slug'] ) ? sanitize_key( $_POST['slug'] ) : '',
 		'plugin'   => $plugin,
 	);
 
@@ -392,7 +392,7 @@ function wp_ajax_deactivate_plugin() {
 	// Set up the default status to return.
 	$status = array(
 		'activate' => 'plugin',
-		'slug'     => isset(  $_POST['slug'] ) ? sanitize_key( $_POST['slug'] ) : '',
+		'slug'     => isset( $_POST['slug'] ) ? sanitize_key( $_POST['slug'] ) : '',
 		'plugin'   => $plugin,
 	);
 
