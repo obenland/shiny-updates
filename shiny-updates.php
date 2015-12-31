@@ -334,17 +334,16 @@ add_action( 'init', array( 'Shiny_Updates', 'init' ) );
 function wp_ajax_activate_plugin() {
 	check_ajax_referer( 'updates' );
 
-	if ( empty( $_POST['plugin'] ) ) {
+	if ( empty( $_POST['plugin'] ) || empty( $_POST['slug'] ) ) {
 		wp_send_json_error( array( 'errorCode' => 'no_plugin_specified' ) );
 	}
 
-	$plugin      = filter_var( wp_unslash( $_POST['plugin'] ), FILTER_SANITIZE_STRING );
-	$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin );
+	$plugin = filter_var( wp_unslash( $_POST['plugin'] ), FILTER_SANITIZE_STRING );
 
 	// Set up the default status to return.
 	$status = array(
 		'activate' => 'plugin',
-		'slug'     => isset(  $_POST['slug'] ) ? sanitize_key( $_POST['slug'] ) : '',
+		'slug'     => sanitize_key( $_POST['slug'] ),
 		'plugin'   => $plugin,
 	);
 
@@ -382,18 +381,17 @@ function wp_ajax_activate_plugin() {
 function wp_ajax_deactivate_plugin() {
 	check_ajax_referer( 'updates' );
 
-	if ( empty( $_POST['plugin'] ) ) {
+	if ( empty( $_POST['plugin'] ) || empty( $_POST['slug'] ) ) {
 		wp_send_json_error( array( 'errorCode' => 'no_plugin_specified' ) );
 	}
 
-	$plugin      = filter_var( wp_unslash( $_POST['plugin'] ), FILTER_SANITIZE_STRING );
-	$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin );
+	$plugin = filter_var( wp_unslash( $_POST['plugin'] ), FILTER_SANITIZE_STRING );
 
 	// Set up the default status to return.
 	$status = array(
-		'activate' => 'plugin',
-		'slug'     => isset(  $_POST['slug'] ) ? sanitize_key( $_POST['slug'] ) : '',
-		'plugin'   => $plugin,
+		'deactivate' => 'plugin',
+		'slug'       => sanitize_key( $_POST['slug'] ),
+		'plugin'     => $plugin,
 	);
 
 	// Verify user can activate plugins.
@@ -408,15 +406,8 @@ function wp_ajax_deactivate_plugin() {
 		wp_send_json_error( $status );
 	}
 
-	// Attempt to deactivate the plugin.
-	$result = deactivate_plugins( $plugin, null, is_network_admin() );
-
-	if ( is_wp_error( $result ) ) {
-		$error_code = $result->get_error_code();
-		/* Translators: %s refers to the activation error code */
-		$status['error'] = __( sprintf( 'Plugin deactivation error: %s', $error_code ) );
-		wp_send_json_error( $status );
-	}
+	// Deactivate the plugin.
+	deactivate_plugins( $plugin, false, is_network_admin() );
 
 	wp_send_json_success( $status );
 }
