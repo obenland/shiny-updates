@@ -649,7 +649,6 @@ window.wp = window.wp || {};
 
 		wp.a11y.speak( wp.updates.l10n.activatedMsg );
 
-		wp.updates.activateDoneSuccessfully = true;
 		$document.trigger( 'wp-plugin-activate-success', response );
 	};
 
@@ -744,7 +743,6 @@ window.wp = window.wp || {};
 
 		wp.a11y.speak( wp.updates.l10n.deactivatedMsg );
 
-		wp.updates.deactivateDoneSuccessfully = true;
 		$document.trigger( 'wp-plugin-deactivate-success', response );
 	};
 
