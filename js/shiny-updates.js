@@ -1376,6 +1376,9 @@ window.wp = window.wp || {};
 
 					// Only add updatable plugins to the queue.
 					if ( $checkbox.parents( 'tr' ).hasClass( 'update' ) ) {
+
+						// Processing checkbox, so uncheck.
+						$checkbox .prop( 'checked', false );
 						plugins.push( {
 							plugin: $checkbox.val(),
 							slug:   $checkbox.parents( 'tr' ).prop( 'id' )
@@ -1383,8 +1386,8 @@ window.wp = window.wp || {};
 					}
 			} );
 
-			// Uncheck all checkboxes.
-			$( '#the-list [type="checkbox"]' ).prop( 'checked', false );
+			// Uncheck the bulk select checkbox.
+			$( '.manage-column [type="checkbox"]' ).prop( 'checked', false );
 
 			if ( 0 !== plugins.length ) {
 				wp.updates.bulkUpdatePlugins( plugins );
@@ -1415,6 +1418,9 @@ window.wp = window.wp || {};
 
 					// Add plugins that can be activated to the queue.
 					if ( $checkbox.parents( 'tr' ).hasClass( 'inactive' ) ) {
+
+						// Processing checkbox, so uncheck.
+						$checkbox .prop( 'checked', false );
 						plugins.push( {
 							plugin: $checkbox.val(),
 							slug:   $checkbox.parents( 'tr' ).prop( 'id' )
@@ -1422,8 +1428,8 @@ window.wp = window.wp || {};
 					}
 			} );
 
-			// Uncheck all checkboxes.
-			$( '#the-list [type="checkbox"]' ).prop( 'checked', false );
+			// Uncheck the bulk select checkbox.
+			$( '.manage-column [type="checkbox"]' ).prop( 'checked', false );
 
 			if ( 0 !== plugins.length ) {
 				wp.updates.bulkActivatePlugins( plugins );
@@ -1455,6 +1461,9 @@ window.wp = window.wp || {};
 
 					// Add plugins that can be deactivated to the queue.
 					if ( $checkbox.parents( 'tr' ).hasClass( 'active' ) ) {
+
+						// Processing checkbox, so uncheck.
+						$checkbox .prop( 'checked', false );
 						plugins.push( {
 							plugin: $checkbox.val(),
 							slug:   $checkbox.parents( 'tr' ).prop( 'id' )
@@ -1462,8 +1471,8 @@ window.wp = window.wp || {};
 					}
 			} );
 
-			// Uncheck all checkboxes.
-			$( '#the-list [type="checkbox"]' ).prop( 'checked', false );
+			// Uncheck the bulk select checkbox.
+			$( '.manage-column [type="checkbox"]' ).prop( 'checked', false );
 
 			if ( 0 !== plugins.length ) {
 				wp.updates.bulkDeactivatePlugins( plugins );
