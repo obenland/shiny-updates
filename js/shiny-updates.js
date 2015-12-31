@@ -374,6 +374,9 @@ window.wp = window.wp || {};
 
 			// Start the progress indicator for this row.
 			$message.parents( 'tr' ).addClass( 'in-progress' );
+			if ( $message.html() !== wp.updates.l10n.updating ) {
+				$message.data( 'originaltext', $message.html() );
+			}
 
 			wp.updates.updateQueue.push( {
 				type: 'bulk-activate-plugin',
