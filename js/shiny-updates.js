@@ -1356,7 +1356,9 @@ window.wp = window.wp || {};
 		 * Bulk update for plugins.
 		 */
 		$bulkActionForm.on( 'click', '[type="submit"]', function( event ) {
-			var plugins;
+			var plugins = [];
+
+			event.preventDefault();
 
 			if ( 'update-selected' !== $( event.target ).siblings( 'select' ).val() ) {
 				return;
@@ -1365,9 +1367,6 @@ window.wp = window.wp || {};
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
 				wp.updates.requestFilesystemCredentials( event );
 			}
-
-			plugins = [];
-			event.preventDefault();
 
 			// Find all the checkboxes which have been checked.
 			$bulkActionForm
@@ -1396,7 +1395,9 @@ window.wp = window.wp || {};
 		 * Bulk activate for plugins.
 		 */
 		$bulkActionForm.on( 'click', '[type="submit"]', function( event ) {
-			var plugins;
+			var plugins = [];
+
+			event.preventDefault();
 
 			if ( 'activate-selected' !== $( event.target ).siblings( 'select' ).val() ) {
 				return;
@@ -1405,9 +1406,6 @@ window.wp = window.wp || {};
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
 				wp.updates.requestFilesystemCredentials( event );
 			}
-
-			plugins = [];
-			event.preventDefault();
 
 			// Find all the checkboxes which have been checked.
 			$bulkActionForm
@@ -1464,8 +1462,8 @@ window.wp = window.wp || {};
 					}
 			} );
 
-			// Uncheck the bulk checkboxes.
-			$( '.manage-column [type="checkbox"]' ).prop( 'checked', false );
+			// Uncheck all checkboxes.
+			$( '#the-list [type="checkbox"]' ).prop( 'checked', false );
 
 			if ( 0 !== plugins.length ) {
 				wp.updates.bulkDeactivatePlugins( plugins );
