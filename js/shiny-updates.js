@@ -300,7 +300,7 @@ window.wp = window.wp || {};
 						}
 					)
 				);
-				wp.a11y.speak( wp.updates.l10n.updatingMsg, 'notice-error' === queuedMessage.messageClass ? 'assertive' : '' );
+				wp.a11y.speak( queuedMessage.message, 'notice-error' === queuedMessage.messageClass ? 'assertive' : '' );
 
 				$( document ).trigger( 'wp-progress-updated' );
 
@@ -535,7 +535,7 @@ window.wp = window.wp || {};
 	wp.updates.activatePlugin = function( plugin, slug ) {
 		$( '#the-list' ).find( '.activate a[data-plugin="' + plugin + '"]' ).parents( 'tr' ).addClass( 'in-progress' );
 
-		wp.a11y.speak( wp.updates.l10n.activatingMsg );
+		wp.updates.updateProgressMessage( wp.updates.l10n.activatingMsg );
 
 		wp.updates.ajax( 'activate-plugin', { plugin: plugin, slug: slug } )
 			.done( wp.updates.activatePluginSuccess )
@@ -554,7 +554,7 @@ window.wp = window.wp || {};
 			.removeClass( 'in-progress inactive' )
 			.addClass( 'active' );
 
-		wp.a11y.speak( wp.updates.l10n.activatedMsg );
+		wp.updates.updateProgressMessage( wp.updates.l10n.activatedMsg );
 
 		$document.trigger( 'wp-plugin-activate-success', response );
 	};
@@ -571,7 +571,7 @@ window.wp = window.wp || {};
 			.removeClass( 'in-progress' )
 			.after( wp.updates.l10n.activateFailedLabel.replace( '%s', pluginData[ response.plugin ].Name ) );
 
-		wp.a11y.speak( wp.updates.l10n.activateFailedShort, 'assertive' );
+		wp.updates.updateProgressMessage( wp.updates.l10n.activateFailedShort, 'notice-error' );
 
 		$document.trigger( 'wp-plugin-activate-error', response );
 	};
@@ -593,7 +593,7 @@ window.wp = window.wp || {};
 	wp.updates.deactivatePlugin = function( plugin, slug ) {
 		$( '#the-list' ).find( '.deactivate a[data-plugin="' + plugin + '"]' ).parents( 'tr' ).addClass( 'in-progress' );
 
-		wp.a11y.speak( wp.updates.l10n.activatingMsg );
+		wp.updates.updateProgressMessage( wp.updates.l10n.deactivatingMsg );
 
 		wp.updates.ajax( 'deactivate-plugin', { plugin: plugin, slug: slug } )
 			.done( wp.updates.deactivatePluginSuccess )
@@ -612,7 +612,7 @@ window.wp = window.wp || {};
 			.removeClass( 'in-progress active' )
 			.addClass( 'inactive' );
 
-		wp.a11y.speak( wp.updates.l10n.deactivatedMsg );
+		wp.updates.updateProgressMessage( wp.updates.l10n.deactivatedMsg );
 
 		$document.trigger( 'wp-plugin-deactivate-success', response );
 	};
@@ -629,7 +629,7 @@ window.wp = window.wp || {};
 			.removeClass( 'in-progress' )
 			.after( wp.updates.l10n.deactivateFailedLabel.replace( '%s', pluginData[ response.plugin ].Name ) );
 
-		wp.a11y.speak( wp.updates.l10n.deactivateFailedShort, 'assertive' );
+		wp.updates.updateProgressMessage( wp.updates.l10n.deactivateFailedShort, 'notice-error' );
 
 		$document.trigger( 'wp-plugin-deactivate-error', response );
 	};
