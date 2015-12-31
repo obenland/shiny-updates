@@ -423,7 +423,7 @@ window.wp = window.wp || {};
 		}
 
 		return updateMessage;
-	}
+	};
 
 	wp.updates.getPluginDeactivateProgress = function() {
 		var updateMessage = wp.updates.l10n.deactivatePluginsQueuedMsg.replace( '%d', wp.updates.pluginsToDeactivateCount );
@@ -436,7 +436,7 @@ window.wp = window.wp || {};
 		}
 
 		return updateMessage;
-	}
+	};
 
 	/**
 	 * Build a string describing the bulk update progress.
@@ -1409,7 +1409,6 @@ window.wp = window.wp || {};
 			plugins = [];
 			event.preventDefault();
 
-
 			// Find all the checkboxes which have been checked.
 			$bulkActionForm
 				.find( 'input[name="checked[]"]:checked' )
@@ -1449,7 +1448,6 @@ window.wp = window.wp || {};
 
 			plugins = [];
 			event.preventDefault();
-
 
 			// Find all the checkboxes which have been checked.
 			$bulkActionForm
