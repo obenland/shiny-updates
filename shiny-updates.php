@@ -305,8 +305,8 @@ class Shiny_Updates {
 	}
 
 	/**
-	* Capture any redirects from plugin activation or deactivation.
-	*/
+	 * Capture any redirects from plugin activation or deactivation.
+	 */
 	function wp_capture_any_redirects() {
 		// Prevent any redirects.
 		add_filter( 'wp_redirect', 'wp_handle_plugin_redirects' );
@@ -315,6 +315,8 @@ class Shiny_Updates {
 
 	/**
 	 * Handle redirects attempted during plugin activation or deactivation.
+	 *
+	 * @param string $location The redirect url being called.
 	 *
 	 * @todo Just discard these?
 	 */
@@ -347,7 +349,7 @@ function wp_ajax_activate_plugin() {
 	);
 
 	// Verify user can activate plugins.
-	if ( ! current_user_can('activate_plugins') ) {
+	if ( ! current_user_can( 'activate_plugins' ) ) {
 		$status['error'] = __( 'You do not have sufficient permissions to activate plugins for this site.' );
 		wp_send_json_error( $status );
 	}
@@ -395,7 +397,7 @@ function wp_ajax_deactivate_plugin() {
 	);
 
 	// Verify user can activate plugins.
-	if ( ! current_user_can('activate_plugins') ) {
+	if ( ! current_user_can( 'activate_plugins' ) ) {
 		$status['error'] = __( 'You do not have sufficient permissions to deactivate plugins for this site.' );
 		wp_send_json_error( $status );
 	}
