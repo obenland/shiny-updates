@@ -9,9 +9,11 @@ License: GPLv2 or later
 
 "Shiny updates" was being developed as part of WordPress 4.2, but not everything made it into core. This initiative is to continue that work of removing the ugly bits of updating plugins, themes and such.
 
-![Old install screen gif](/Animated gif - existing plugin install.gif?raw=true "Old install screen gif")
+Existing plugin install process:
+![Existing plugin install process](/Animated gif - existing plugin install.gif?raw=true "Existing plugin install process")
 
-![Example of shiny install](/Animated gif - existing plugin install.gif?raw=true "Example of shiny install")
+Example of shiny plugin install process:
+![Example of shiny plugin install process](/Animated gif - shiny plugin install.gif?raw=true "Example of shiny plugin install process")
 
 ## Installation
 
