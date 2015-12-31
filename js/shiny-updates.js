@@ -41,12 +41,11 @@ window.wp = window.wp || {};
 	 * @param {string} slug
 	 */
 	wp.updates.updatePlugin = function( plugin, slug ) {
-		var $message, name, $updateRow, message, data,
+		var $message, name, message, data,
 			$card = $( '.plugin-card-' + slug );
 
 		if ( 'plugins' === pagenow || 'plugins-network' === pagenow ) {
-			$updateRow = $( 'tr[data-plugin="' + plugin + '"]' );
-			$message   = $updateRow.find( '.update-message' );
+			$message   = $( 'tr[data-plugin="' + plugin + '"]' ).find( '.update-message' );
 			name       = pluginData[ plugin ].Name;
 
 		} else if ( 'plugin-install' === pagenow ) {
@@ -110,8 +109,8 @@ window.wp = window.wp || {};
 	wp.updates.updateSuccess = function( response ) {
 		var $updateMessage, name, $pluginRow, newText;
 		if ( 'plugins' === pagenow || 'plugins-network' === pagenow ) {
-			$pluginRow = $( 'tr[data-plugin="' + response.plugin + '"]' ).first().prev();
-			$updateMessage = $pluginRow.next().find( '.update-message' );
+			$pluginRow = $( 'tr[data-plugin="' + response.plugin + '"]' ).first();
+			$updateMessage = $( 'tr[data-plugin="' + response.plugin + '"]' ).find( '.update-message' );
 			$pluginRow.addClass( 'updated' ).removeClass( 'update' );
 
 			// Update the version number in the row.
@@ -1043,11 +1042,11 @@ window.wp = window.wp || {};
 		 * Handle events after the credential modal was closed.
 		 */
 		$document.on( 'credential-modal-cancel', function() {
-			var slug, $message;
+			var $message, plugin;
 
 			if ( 'plugins' === pagenow || 'plugins-network' === pagenow ) {
-				slug     = wp.updates.updateQueue[0].data.slug;
-				$message = $( '#' + slug ).next().find( '.update-message' );
+				plugin     = wp.updates.updateQueue[0].data.plugin;
+				$message = $( 'tr[data-plugin="' + plugin + '"]' ).find( '.update-message' );
 			} else if ( 'plugin-install' === pagenow ) {
 				$message = $( '.update-now.updating-message' );
 			} else {
@@ -1099,6 +1098,20 @@ window.wp = window.wp || {};
 				delete wp.updates.searchRequest;
 			} );
 		} );
+
+		/**
+		 * Every row of the plugin table should not have an id or data-slug attribute and needs a data-plugin attribute
+		 * This should be fixed in core via trac ticket #18974 but until then lets fix it with javascript
+		 */
+		$pluginList.append('<br id="remove-this">');
+		$pluginList.find('tr').each( function(){
+			$(this).removeAttr('id data-slug');
+			if( typeof $(this).attr('data-plugin') === 'undefined' ){
+				$(this).attr('data-plugin', $(this).next().prevAll(':has(th.check-column)').first().find('th input').val() );
+			}
+		} );
+		$('#remove-this').remove();
+
 	} );
 
 } )( jQuery, window.wp );
