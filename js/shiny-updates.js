@@ -301,11 +301,11 @@ window.wp = window.wp || {};
 	};
 
 //===============================================================================
-// BULK PLUGIN UPDATES
+// BULK PLUGIN Actions
 //===============================================================================
 
 	/**
-	 * Send an Ajax request to the server to update plugins in bulk.
+	 * Start the bulk update process for a group of plugins.
 	 *
 	 * @since 4.5.0
 	 */
@@ -345,16 +345,110 @@ window.wp = window.wp || {};
 	};
 
 	/**
+	 * Start the bulk activate process for a group of plugins.
+	 *
+	 * @since 4.5.0
+	 */
+	wp.updates.bulkActivatePlugins = function( plugins ) {
+		var $message;
+
+		// Set up the progress indicaator.
+		wp.updates.setupProgressIndicator();
+
+		_.each( plugins, function( plugin ) {
+			$message = $( '#the-list' ).find( '.activate a[data-plugin="' + plugin.plugin + '"]' );
+
+			// Start the progress indicator for this row.
+			$message.parents( 'tr' ).addClass( 'in-progress' );
+
+			wp.updates.updateQueue.push( {
+				type: 'bulk-activate-plugin',
+				data: plugin
+			} );
+		} );
+
+		// Start the bulk plugin updates. Reset the count for totals, successes and failures.
+		wp.updates.pluginsToActivateCount  = plugins.length;
+		wp.updates.pluginActivateSuccesses = 0;
+		wp.updates.pluginActivateFailures  = 0;
+		wp.updates.updateLock              = false;
+		wp.updates.updateProgressMessage( wp.updates.getPluginActivateProgress() );
+
+		// Start processing the queue
+		wp.updates.queueChecker();
+	};
+
+	/**
+	 * Start the bulk deactivate process for a group of plugins.
+	 *
+	 * @since 4.5.0
+	 */
+	wp.updates.bulkDeactivatePlugins = function( plugins ) {
+		var $message;
+
+		// Set up the progress indicaator.
+		wp.updates.setupProgressIndicator();
+
+		_.each( plugins, function( plugin ) {
+			$message = $( '#the-list' ).find( '.deactivate a[data-plugin="' + plugin.plugin + '"]' );
+
+			// Start the progress indicator for this row.
+			$message.parents( 'tr' ).addClass( 'in-progress' );
+
+			wp.updates.updateQueue.push( {
+				type: 'bulk-deactivate-plugin',
+				data: plugin
+			} );
+		} );
+
+		// Start the bulk plugin updates. Reset the count for totals, successes and failures.
+		wp.updates.pluginsToDeactivateCount  = plugins.length;
+		wp.updates.pluginDeactivateSuccesses = 0;
+		wp.updates.pluginDeactivateFailures  = 0;
+		wp.updates.updateLock                = false;
+		wp.updates.updateProgressMessage( wp.updates.getPluginDeactivateProgress() );
+
+		// Start processing the queue
+		wp.updates.queueChecker();
+	};
+
+	wp.updates.getPluginActivateProgress = function() {
+		var updateMessage = wp.updates.l10n.activatePluginsQueuedMsg.replace( '%d', wp.updates.pluginsToActivateCount );
+
+		if ( 0 !== wp.updates.pluginActivateSuccesses ) {
+		updateMessage += ' ' + wp.updates.l10n.successMsg.replace( '%d', wp.updates.pluginActivateSuccesses );
+		}
+		if ( 0 !== wp.updates.pluginActivateFailures ) {
+		updateMessage += ' ' + wp.updates.l10n.failureMsg.replace( '%d', wp.updates.pluginActivateFailures );
+		}
+
+		return updateMessage;
+	}
+
+	wp.updates.getPluginDeactivateProgress = function() {
+		var updateMessage = wp.updates.l10n.deactivatePluginsQueuedMsg.replace( '%d', wp.updates.pluginsToDeactivateCount );
+
+		if ( 0 !== wp.updates.pluginDeactivateSuccesses ) {
+		updateMessage += ' ' + wp.updates.l10n.successMsg.replace( '%d', wp.updates.pluginDeactivateSuccesses );
+		}
+		if ( 0 !== wp.updates.pluginDeactivateFailures ) {
+		updateMessage += ' ' + wp.updates.l10n.failureMsg.replace( '%d', wp.updates.pluginDeactivateFailures );
+		}
+
+		return updateMessage;
+	}
+
+	/**
 	 * Build a string describing the bulk update progress.
 	 */
 	wp.updates.getPluginUpdateProgress = function() {
 		var updateMessage = wp.updates.l10n.updatePluginsQueuedMsg.replace( '%d', wp.updates.pluginsToUpdateCount );
 
 		if ( 0 !== wp.updates.pluginUpdateSuccesses ) {
-		updateMessage += ' ' + wp.updates.l10n.updatedPluginsSuccessMsg.replace( '%d', wp.updates.pluginUpdateSuccesses );
+		updateMessage += ' ' + wp.updates.l10n.successMsg.replace( '%d', wp.updates.pluginUpdateSuccesses );
 		}
 		if ( 0 !== wp.updates.pluginUpdateFailures ) {
-		updateMessage += ' ' + wp.updates.l10n.updatedPluginsFailureMsg.replace( '%d', wp.updates.pluginUpdateFailures );
+		updateMessage += ' ' + wp.updates.l10n.failureMsg.replace( '%d', wp.updates.pluginUpdateFailures );
 		}
 
 		return updateMessage;
@@ -1078,10 +1172,10 @@ window.wp = window.wp || {};
 					case 'bulk-update-plugin':
 						updateMessage = wp.updates.l10n.updatedPluginsMsg;
 						if ( 0 !== wp.updates.pluginUpdateSuccesses ) {
-							updateMessage += ' ' + wp.updates.l10n.updatedPluginsSuccessMsg.replace( '%d', wp.updates.pluginUpdateSuccesses );
+							updateMessage += ' ' + wp.updates.l10n.successMsg.replace( '%d', wp.updates.pluginUpdateSuccesses );
 						}
 						if ( 0 !== wp.updates.pluginUpdateFailures ) {
-							updateMessage += ' ' + wp.updates.l10n.updatedPluginsFailureMsg.replace( '%d', wp.updates.pluginUpdateFailures );
+							updateMessage += ' ' + wp.updates.l10n.failureMsg.replace( '%d', wp.updates.pluginUpdateFailures );
 						}
 						wp.updates.updateProgressMessage( updateMessage, 'is-dismissible' );
 						break;
@@ -1275,17 +1369,11 @@ window.wp = window.wp || {};
 			plugins = [];
 			event.preventDefault();
 
-			// Uncheck the bulk checkboxes.
-			$( '.manage-column [type="checkbox"]' ).prop( 'checked', false );
-
 			// Find all the checkboxes which have been checked.
 			$bulkActionForm
 				.find( 'input[name="checked[]"]:checked' )
 				.each( function( index, element ) {
 					var $checkbox = $( element );
-
-					// Uncheck the box.
-					$checkbox.prop( 'checked', false );
 
 					// Only add updatable plugins to the queue.
 					if ( $checkbox.parents( 'tr' ).hasClass( 'update' ) ) {
@@ -1295,8 +1383,94 @@ window.wp = window.wp || {};
 						} );
 					}
 			} );
+
+			// Uncheck all checkboxes.
+			$( '#the-list [type="checkbox"]' ).prop( 'checked', false );
+
 			if ( 0 !== plugins.length ) {
 				wp.updates.bulkUpdatePlugins( plugins );
+			}
+		} );
+
+		/**
+		 * Bulk activate for plugins.
+		 */
+		$bulkActionForm.on( 'click', '[type="submit"]', function( event ) {
+			var plugins;
+
+			if ( 'activate-selected' !== $( event.target ).siblings( 'select' ).val() ) {
+				return;
+			}
+
+			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
+				wp.updates.requestFilesystemCredentials( event );
+			}
+
+			plugins = [];
+			event.preventDefault();
+
+
+			// Find all the checkboxes which have been checked.
+			$bulkActionForm
+				.find( 'input[name="checked[]"]:checked' )
+				.each( function( index, element ) {
+					var $checkbox = $( element );
+
+					// Add plugins that can be activated to the queue.
+					if ( $checkbox.parents( 'tr' ).hasClass( 'inactive' ) ) {
+						plugins.push( {
+							plugin: $checkbox.val(),
+							slug:   $checkbox.parents( 'tr' ).prop( 'id' )
+						} );
+					}
+			} );
+
+			// Uncheck all checkboxes.
+			$( '#the-list [type="checkbox"]' ).prop( 'checked', false );
+
+			if ( 0 !== plugins.length ) {
+				wp.updates.bulkActivatePlugins( plugins );
+			}
+		} );
+
+		/**
+		 * Bulk deactivate for plugins.
+		 */
+		$bulkActionForm.on( 'click', '[type="submit"]', function( event ) {
+			var plugins;
+
+			if ( 'deactivate-selected' !== $( event.target ).siblings( 'select' ).val() ) {
+				return;
+			}
+
+			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
+				wp.updates.requestFilesystemCredentials( event );
+			}
+
+			plugins = [];
+			event.preventDefault();
+
+
+			// Find all the checkboxes which have been checked.
+			$bulkActionForm
+				.find( 'input[name="checked[]"]:checked' )
+				.each( function( index, element ) {
+					var $checkbox = $( element );
+
+					// Add plugins that can be deactivated to the queue.
+					if ( $checkbox.parents( 'tr' ).hasClass( 'active' ) ) {
+						plugins.push( {
+							plugin: $checkbox.val(),
+							slug:   $checkbox.parents( 'tr' ).prop( 'id' )
+						} );
+					}
+			} );
+
+			// Uncheck the bulk checkboxes.
+			$( '.manage-column [type="checkbox"]' ).prop( 'checked', false );
+
+			if ( 0 !== plugins.length ) {
+				wp.updates.bulkDeactivatePlugins( plugins );
 			}
 		} );
 

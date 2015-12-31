@@ -150,6 +150,10 @@ class Shiny_Updates {
 			'updatedPluginsFailureMsg'  => __( 'Failures: %d.' ),
 			/* translators: 1. Total plugins to update. */
 			'updatePluginsQueuedMsg'    => __( '%d plugin updates queued.' ),
+			/* translators: 1. Total plugins to activate. */
+			'activatePluginsQueuedMsg'    => __( '%d plugin activates queued.' ),
+			/* translators: 1. Total plugins to deactivate. */
+			'deactivatePluginsQueuedMsg'    => __( '%d plugin deactivates queued.' ),
 			'updateQueued'              => __( 'Update queued.' ),
 		) );
 
@@ -308,6 +312,7 @@ class Shiny_Updates {
 	function capture_any_redirects() {
 		// Prevent any redirects.
 		add_filter( 'wp_redirect', function( $location ) {
+			error_log( $location );
 			return false;
 		} );
 
