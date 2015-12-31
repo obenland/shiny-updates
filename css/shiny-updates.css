@@ -70,7 +70,7 @@
 }
 
 #the-list tr.in-progress:after {
-	content: url(../images/spinner.gif);
+	content: url(../../../../wp-admin/images/spinner.gif);
 	position: absolute;
 	left: 15px;
 	margin-top: 10px;
