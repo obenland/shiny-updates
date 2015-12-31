@@ -93,30 +93,21 @@ window.wp = window.wp || {};
 		}
 
 		if ( ! wp.updates.updateLock ) {
-		message = wp.updates.l10n.updatingLabel.replace( '%s', name );
-		$message.attr( 'aria-label', message );
+			message = wp.updates.l10n.updatingLabel.replace( '%s', name );
+			$message.attr( 'aria-label', message );
 
-		$message.addClass( 'updating-message' );
-			if ( $message.html() !== wp.updates.l10n.updating ) {
-			$message.data( 'originaltext', $message.html() );
-		}
+			$message.addClass( 'updating-message' );
+				if ( $message.html() !== wp.updates.l10n.updating ) {
+				$message.data( 'originaltext', $message.html() );
+			}
 
-		// Start ptogress for plugin.
-		wp.updates.updateProgressMessage( message );
-		$message.text( wp.updates.l10n.updating );
+			// Start ptogress for plugin.
+			wp.updates.updateProgressMessage( message );
+			$message.text( wp.updates.l10n.updating );
 
 			$document.trigger( 'wp-plugin-updating' );
 		}
-		if ( wp.updates.updateLock ) {
-			wp.updates.updateQueue.push( {
-				type: 'update-plugin',
-				data: {
-					plugin: plugin,
-					slug: slug
-				}
-			} );
-			return;
-		}
+
 		wp.updates.ajax( 'update-plugin', { plugin: plugin, slug: slug } )
 			.done( wp.updates.updateSuccess )
 			.fail( wp.updates.updateError );
