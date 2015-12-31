@@ -1062,7 +1062,7 @@ window.wp = window.wp || {};
 	 * @since 4.5.0 Can handle multiple job types.
 	 */
 	wp.updates.queueChecker = function() {
-		var job;
+		var job, updateMessage;
 
 		if ( wp.updates.updateLock || wp.updates.updateQueue.length <= 0 ) {
 
