@@ -12,6 +12,9 @@ Hide the ugly parts of updating WordPress.
 
 Removes the ugly bits of updating plugins, themes and such.
 
+Development for this plugin takes place at https://github.com/obenland/shiny-updates
+Please report issues, submit patches, and follow along on GitHub!
+
 == Installation ==
 
 1. Download Shiny Updates.

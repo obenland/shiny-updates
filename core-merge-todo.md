@@ -8,3 +8,13 @@
     - [ ] Opt-in to auto updates for major WordPress releases, plugins, and themes.
 - [ ] Language Pack install support.
 - [ ] Apply shiny-updates-core-patch.diff.
+
+- Install Plugins
+- Update Plugins
+- Bulk update Plugins (network admin)
+- Delete Plugins
+
+- Install Themes
+- Update Themes (network admin)
+- Bulk update Themes (network admin only)
+- Delete Themes

@@ -1,6 +1,8 @@
 <?php
 /**
  * Auto Updates Settings.
+ *
+ * @package Shiny_Updates
  */
 
 /**
@@ -50,7 +52,7 @@ add_action( 'all_admin_notices', 'shiny_auto_updates_notices' );
 /**
  * Whitelists the new options.
  *
- * @param array $options
+ * @param array $options White listed options.
  * @return array
  */
 function shiny_auto_updates_whitelist_options( $options ) {
@@ -62,22 +64,22 @@ add_action( 'whitelist_options', 'shiny_auto_updates_whitelist_options' );
  * Section description.
  */
 function shiny_auto_updates_description() {
-	_e( 'A fancy description describing whats going on here.' );
+	esc_html_e( 'A fancy description describing whats going on here.' );
 }
 
 /**
  * Renders the sample checkbox setting field.
  *
- * @param array $args
+ * @param array $args Extra arguments used when outputting the field.
  */
 function shiny_auto_updates_checkbox_field( $args ) {
 	?>
 	<label for="<?php echo esc_attr( $args['label_for'] ); ?>">
 		<input type="checkbox" id="<?php echo esc_attr( $args['label_for'] ); ?>" name="<?php echo esc_attr( $args['label_for'] ); ?>" value="1" <?php checked( get_option( $args['label_for'], false ) ); ?> />
-		<?php echo $args['label']; ?>
+		<?php echo esc_html( $args['label'] ); ?>
 	</label>
 	<?php if ( ! empty( $args['description'] ) ) : ?>
-		<p class="description"><?php echo $args['description']; ?></p>
+		<p class="description"><?php echo esc_html( $args['description'] ); ?></p>
 	<?php endif;
 }
 
