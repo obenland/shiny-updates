@@ -309,8 +309,7 @@ class Shiny_Updates {
 	 */
 	function wp_capture_any_redirects() {
 		// Prevent any redirects.
-		add_filter( 'wp_redirect', 'wp_handle_plugin_redirects' );
-
+		add_filter( 'wp_redirect',  array( $this, 'wp_handle_plugin_redirects' ) );
 	}
 
 	/**
