@@ -12,7 +12,7 @@ Removes the ugly bits of updating plugins, themes and such.
 
 ## Description #
 
-Shiny updates was initially part of WordPress 4.2 and this continues that work. 
+Shiny updates was initially part of WordPress 4.2 and this continues that work to remove the ugly bits of updating plugins, themes and such.
 
 ## Installation
 
@@ -24,7 +24,7 @@ Also available on https://wordpress.org/plugins/shiny-updates/ which is automati
 
 ## Get Involved
 
-Active development is taking place on GitHub, at https://github.com/obenland/shiny-updates.
+Active development is taking place on GitHub, at https://github.com/obenland/shiny-updates. Please report issues, submit patches, and follow along on GitHub!
 
 Weekly meetings are Tuesdays at 19:00 UTC in the #feature-shinyupdates channel on http://wordpress.slack.com/ -- if you don't have a Slack account, sign up at http://chat.wordpress.org/
 
