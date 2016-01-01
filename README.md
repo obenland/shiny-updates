@@ -1,19 +1,18 @@
-# Shiny Updates [![Build Status](https://travis-ci.org/obenland/shiny-updates.svg?branch=master)](https://travis-ci.org/obenland/shiny-updates)
+Shiny Updates [![Build Status](https://travis-ci.org/obenland/shiny-updates.svg?branch=master)](https://travis-ci.org/obenland/shiny-updates)
+===============
+* Contributors: pento, obenland, adamsilverstein
+* Tags: updates
+* Requires at least: 4.2
+* Tested up to: 4.5
+* Stable tag: 2
+* License: GPLv2 or later
+* License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Contributors: pento, obenland, adamsilverstein
-Tags: updates
-Requires at least: 4.2
-Tested up to: 4.5
-Stable tag: 2
-License: GPLv2 or later
+Removes the ugly bits of updating plugins, themes and such.
 
-"Shiny updates" was being developed as part of WordPress 4.2, but not everything made it into core. This initiative is to continue that work of removing the ugly bits of updating plugins, themes and such.
+## Description #
 
-Existing plugin install process:
-![Existing plugin install process](/Animated gif - existing plugin install.gif?raw=true "Existing plugin install process")
-
-Example of shiny plugin install process:
-![Example of shiny plugin install process](/Animated gif - shiny plugin install.gif?raw=true "Example of shiny plugin install process")
+Shiny updates was initially part of WordPress 4.2 and this continues that work. 
 
 ## Installation
 
@@ -25,7 +24,7 @@ Also available on https://wordpress.org/plugins/shiny-updates/ which is automati
 
 ## Get Involved
 
-Active development is taking place on GitHub, at https://github.com/obenland/shiny-updates
+Active development is taking place on GitHub, at https://github.com/obenland/shiny-updates.
 
 Weekly meetings are Tuesdays at 19:00 UTC in the #feature-shinyupdates channel on http://wordpress.slack.com/ -- if you don't have a Slack account, sign up at http://chat.wordpress.org/
 
@@ -46,3 +45,19 @@ Start `grunt watch` or `npm start` to auto-build Shiny Updates as you work:
 ```bash
 grunt watch
 ```
+
+## Screenshots
+
+Existing plugin install process:
+![Existing plugin install process](/Animated gif - existing plugin install.gif?raw=true "Existing plugin install process")
+
+Example of shiny plugin install process:
+![Example of shiny plugin install process](/Animated gif - shiny plugin install.gif?raw=true "Example of shiny plugin install process")
+
+## Changelog
+
+### 2
+* Lots of improvements after v1 of Shiny Updates was shipped with 4.2.
+
+### 0.1
+* Initial release.
