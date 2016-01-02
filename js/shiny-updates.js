@@ -256,7 +256,7 @@ window.wp = window.wp || {};
 	 * @param {String}  message      A string to display in the prigress indicator.
 	 * @param {boolean} isError      Whether the message indicates an error.
 	 * @param {boolean} appendToLine Whether to append the message to the current line,
-	 *                               Otherwise create a new line. Default false..
+	 *                               Otherwise create a new line. Default false.
 	 */
 	wp.updates.updateProgressMessage = function( message, messageClass, appendToLine ) {
 
