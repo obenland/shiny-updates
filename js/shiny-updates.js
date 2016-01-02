@@ -345,8 +345,11 @@ window.wp = window.wp || {};
 						}
 					)
 				);
+
+				// Speak the message.
 				wp.a11y.speak( currentMessage.message, 'notice-error' === currentMessage.messageClass ? 'assertive' : '' );
 
+				// Trigger an update event developers can hook into.
 				$( document ).trigger( 'wp-progress-updated', currentMessage );
 
 				// After a brief delay, unlock and call the queue again.
