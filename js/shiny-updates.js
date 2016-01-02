@@ -215,6 +215,8 @@ window.wp = window.wp || {};
 
 	/**
 	 * Set up the progress indicator.
+	 *
+	 * @since 4.5.0
 	 */
 	wp.updates.setupProgressIndicator = function() {
 		var $progressTemplate;
@@ -257,6 +259,7 @@ window.wp = window.wp || {};
 	 * @param {boolean} isError      Whether the message indicates an error.
 	 * @param {boolean} appendToLine Whether to append the message to the current line,
 	 *                               Otherwise create a new line. Default false.
+	 * @since 4.5.0
 	 */
 	wp.updates.updateProgressMessage = function( message, messageClass, appendToLine ) {
 
@@ -269,6 +272,13 @@ window.wp = window.wp || {};
 		}
 	};
 
+	/**
+	 * Complete progress for the bulk update process.
+	 *
+	 * Indicate the final status of the process, make the notice dismissable.
+	 *
+	 * @since 4.5.0
+	 */
 	wp.updates.finishProgressUpdates = function() {
 
 		//Choose a final status color, default to yellow.
@@ -288,13 +298,12 @@ window.wp = window.wp || {};
 		// Make the notice dismissable and add the final status class.
 		wp.updates.updateProgressMessage( '', 'is-dismissible ' + finalStatusClass );
 
-		// Remove our show details click handler.
-		$( document ).off( 'click', 'a.progress-show-details' );
-
 	};
 
 	/**
 	 * Process the message queue, showing messages in a throttled manner.
+	 *
+	 * @since 4.5.0
 	 */
 	wp.updates.processMessageQueue = function() {
 		var currentMessage;
