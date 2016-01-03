@@ -1,2 +1,4 @@
 Gruntfile.js
 tests/vendor/
+phpcs/
+wpcs/

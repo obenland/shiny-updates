@@ -1,3 +1,8 @@
 {
-  "excludeFiles" : ["test/tests/vendor/**"]
+  "excludeFiles" : [
+    "tests/vendor/**",
+    "node_modules/**",
+    "phpcs/**",
+    "wpcs/**"
+  ]
 }

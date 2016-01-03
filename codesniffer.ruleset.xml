@@ -14,5 +14,7 @@
     </rule>
 
     <!-- Include sniffs for PHP cross-version compatibility. -->
-    <rule ref="PHPCompatibility"/>
+    <rule ref="PHPCompatibility">
+        <exclude name="PHPCompatibility.PHP.DefaultTimezoneRequired" />
+    </rule>
 </ruleset>
