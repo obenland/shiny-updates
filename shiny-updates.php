@@ -77,11 +77,6 @@ class Shiny_Updates {
 		if ( get_option( 'wp_auto_update_themes' ) ) {
 			add_filter( 'auto_update_theme', '__return_true' );
 		}
-
-		// Prevent redirects during ajax requests.
-		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-			add_action( 'admin_init', array( $this, 'wp_capture_any_redirects' ), 1 );
-		}
 	}
 
 	/**
@@ -170,7 +165,7 @@ class Shiny_Updates {
 	}
 
 	/**
-	 * Filter the action links displayed for each plugin in the Plugins list table.
+	 * Add identifying data attributes to plugin action links in the Plugins list table.
 	 *
 	 * @param array  $actions     An array of plugin action links.
 	 * @param string $plugin_file Path to the plugin file relative to the plugins directory.
@@ -179,20 +174,21 @@ class Shiny_Updates {
 	 * @return array
 	 */
 	function plugin_action_links( $actions, $plugin_file, $plugin_data, $context ) {
-		// Adjust the delete action, adding data attributes.
+		$slug = empty( $plugin_data['slug'] ) ? dirname( $plugin_file ) : $plugin_data['slug'];
+
 		if ( ! empty( $actions['delete'] ) ) {
-			$slug = empty( $plugin_data['slug'] ) ? dirname( $plugin_file ) : $plugin_data['slug'];
+			/* translators: %s: plugin name */
 			$actions['delete'] = '<a data-plugin="' . $plugin_file . '" data-slug="' . $slug . '" href="' . wp_nonce_url( 'plugins.php?action=delete-selected&amp;checked[]=' . $plugin_file . '&amp;plugin_status=' . $context . '&amp;paged=' . $GLOBALS['page'] . '&amp;s=' . $GLOBALS['s'], 'bulk-plugins' ) . '" class="delete" aria-label="' . esc_attr( sprintf( __( 'Delete %s' ), $plugin_data['Name'] ) ) . '">' . __( 'Delete' ) . '</a>';
 		}
 
-		// Adjust the activate and deactivate action, adding data attributes. Always show both.
-		if ( ! empty( $actions['activate'] ) || ! empty( $actions['deactivate'] ) ) {
-			$slug = empty( $plugin_data['slug'] ) ? dirname( $plugin_file ) : $plugin_data['slug'];
+		if ( ! empty( $actions['activate'] ) ) {
 			/* translators: %s: plugin name */
 			$actions['activate'] = '<a data-plugin="' . $plugin_file . '" data-slug="' . $slug . '" href="' . wp_nonce_url( 'plugins.php?action=activate&amp;plugin=' . $plugin_file . '&amp;plugin_status=' . $context . '&amp;paged=' . $GLOBALS['page'] . '&amp;s=' . $GLOBALS['s'], 'activate-plugin_' . $plugin_file ) . '" class="edit" aria-label="' . esc_attr( sprintf( __( 'Activate %s' ), $plugin_data['Name'] ) ) . '">' . __( 'Activate' ) . '</a>';
+		}
+
+		if ( ! empty( $actions['deactivate'] ) ) {
 			/* translators: %s: plugin name */
 			$actions['deactivate'] = '<a data-plugin="' . $plugin_file . '" data-slug="' . $slug . '" href="' . wp_nonce_url( 'plugins.php?action=deactivate&amp;plugin=' . $plugin_file . '&amp;plugin_status=' . $context . '&amp;paged=' . $GLOBALS['page'] . '&amp;s=' . $GLOBALS['s'], 'deactivate-plugin_' . $plugin_file ) . '" aria-label="' . esc_attr( sprintf( __( 'Deactivate %s' ), $plugin_data['Name'] ) ) . '">' . __( 'Deactivate' ) . '</a>';
-
 		}
 
 		return $actions;
@@ -303,25 +299,6 @@ class Shiny_Updates {
 	public function load_auto_updates_settings() {
 		include_once plugin_dir_path( __FILE__ ) . 'auto-updates.php';
 	}
-
-	/**
-	 * Capture any redirects from plugin activation or deactivation.
-	 */
-	function wp_capture_any_redirects() {
-		// Prevent any redirects.
-		add_filter( 'wp_redirect',  array( $this, 'wp_handle_plugin_redirects' ) );
-	}
-
-	/**
-	 * Handle redirects attempted during plugin activation or deactivation.
-	 *
-	 * @param string $location The redirect url being called.
-	 *
-	 * @todo Just discard these?
-	 */
-	function wp_handle_plugin_redirects( $location ) {
-		return false;
-	}
 }
 add_action( 'init', array( 'Shiny_Updates', 'init' ) );
 
@@ -364,13 +341,20 @@ function wp_ajax_activate_plugin() {
 	if ( is_wp_error( $result ) ) {
 		$error_code = $result->get_error_code();
 		/* Translators: %s refers to the activation error code */
-		$status['error'] = __( sprintf( 'Plugin activation error: %s', $error_code ) );
+		$status['error'] = sprintf( __( 'Plugin activation error: %s' ), $error_code );
 		wp_send_json_error( $status );
 	}
 
+	global $wp_list_table, $hook_suffix;
+	$hook_suffix   = 'plugins.php';
+	$wp_list_table = _get_list_table( 'WP_Plugins_List_Table' );
+
+	ob_start();
+	$wp_list_table->single_row( array( $plugin, get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin ) ) );
+	$status['item'] = ob_get_clean();
+
 	wp_send_json_success( $status );
 }
-
 
 /**
  * AJAX handler for deactivating a plugin.
@@ -407,6 +391,21 @@ function wp_ajax_deactivate_plugin() {
 
 	// Deactivate the plugin.
 	deactivate_plugins( $plugin, false, is_network_admin() );
+
+	global $wp_list_table, $hook_suffix;
+	$hook_suffix   = 'plugins.php';
+	$wp_list_table = _get_list_table( 'WP_Plugins_List_Table' );
+
+	// Remove custom action links, but keep our data attributes.
+	remove_all_filters( 'network_admin_plugin_action_links' );
+	remove_all_filters( "network_admin_plugin_action_links_{$plugin}" );
+	remove_all_filters( 'plugin_action_links' );
+	remove_all_filters( "plugin_action_links_{$plugin}" );
+	add_filter( 'plugin_action_links', array( Shiny_Updates::init(), 'plugin_action_links' ), 10, 4 );
+
+	ob_start();
+	$wp_list_table->single_row( array( $plugin, get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin ) ) );
+	$status['item'] = ob_get_clean();
 
 	wp_send_json_success( $status );
 }

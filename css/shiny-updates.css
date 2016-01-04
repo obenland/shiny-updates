@@ -61,21 +61,13 @@
 	vertical-align: top;
 }
 
-.active .activate {
-	display: none;
-}
-
-.inactive .deactivate {
-	display: none;
-}
-
-#the-list tr.in-progress:after {
+.wp-list-table.plugins tr.in-progress:after {
 	content: url(../../../../wp-admin/images/spinner.gif);
+	margin-top: 10px;
 	position: absolute;
 	left: 15px;
-	margin-top: 10px;
 }
 
-#the-list tr.in-progress input {
+.wp-list-table.plugins tr.in-progress input {
 	display: none;
 }

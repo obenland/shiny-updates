@@ -551,8 +551,7 @@ window.wp = window.wp || {};
 	 */
 	wp.updates.activatePluginSuccess = function( response ) {
 		$( '#the-list' ).find( '.activate a[data-plugin="' + response.plugin + '"]' ).parents( 'tr' )
-			.removeClass( 'in-progress inactive' )
-			.addClass( 'active' );
+			.replaceWith( response.item );
 
 		wp.updates.updateProgressMessage( wp.updates.l10n.activatedMsg );
 
@@ -609,8 +608,7 @@ window.wp = window.wp || {};
 	 */
 	wp.updates.deactivatePluginSuccess = function( response ) {
 		$( '#the-list' ).find( '.deactivate a[data-plugin="' + response.plugin + '"]' ).parents( 'tr' )
-			.removeClass( 'in-progress active' )
-			.addClass( 'inactive' );
+			.replaceWith( response.item );
 
 		wp.updates.updateProgressMessage( wp.updates.l10n.deactivatedMsg );
 
@@ -1058,7 +1056,7 @@ window.wp = window.wp || {};
 		/**
 		 * Deactivate a plugin.
 		 */
-		$pluginList.find( '.deactivate' ).on( 'click', function( event ) {
+		$pluginList.on( 'click', '.deactivate', function( event ) {
 			var $button = $( event.target );
 			event.preventDefault();
 
@@ -1068,7 +1066,7 @@ window.wp = window.wp || {};
 		/**
 		 * Activate a plugin.
 		 */
-		$pluginList.find( '.activate' ).on( 'click', function( event ) {
+		$pluginList.on( 'click', '.activate', function( event ) {
 			var $button = $( event.target );
 			event.preventDefault();
 
@@ -1078,7 +1076,7 @@ window.wp = window.wp || {};
 		/**
 		 * Install a plugin.
 		 */
-		$pluginList.find( '.install-now' ).on( 'click', function( event ) {
+		$pluginList.on( 'click', '.install-now', function( event ) {
 			var $button = $( event.target );
 			event.preventDefault();
 
@@ -1104,7 +1102,7 @@ window.wp = window.wp || {};
 		/**
 		 * Delete a plugin.
 		 */
-		$pluginList.find( 'a.delete' ).on( 'click', function( event ) {
+		$pluginList.on( 'click', 'a.delete', function( event ) {
 			var $link = $( event.target );
 			event.preventDefault();
 
