@@ -4,6 +4,8 @@ window.wp = window.wp || {};
 (function( $, wp ) {
 	var $document = $( document );
 
+	wp.updates.progressMessages = [];
+
 	// Not needed in core.
 	wp.updates = wp.updates || {};
 
@@ -42,7 +44,7 @@ window.wp = window.wp || {};
 			private_key:     wp.updates.filesystemCredentials.ssh.privateKey
 		});
 
-		return wp.ajax.post( action, data ).always( wp.updates.ajaxAlways );
+		return wp.ajax.post( action, data );
 	};
 
 	/**
@@ -95,10 +97,11 @@ window.wp = window.wp || {};
 			$message.attr( 'aria-label', message );
 
 			$message.addClass( 'updating-message' );
-			if ( $message.html() !== wp.updates.l10n.updating ) {
+				if ( $message.html() !== wp.updates.l10n.updating ) {
 				$message.data( 'originaltext', $message.html() );
 			}
 
+			// Start ptogress for plugin.
 			wp.updates.updateProgressMessage( message );
 			$message.text( wp.updates.l10n.updating );
 
@@ -107,7 +110,8 @@ window.wp = window.wp || {};
 
 		wp.updates.ajax( 'update-plugin', { plugin: plugin, slug: slug } )
 			.done( wp.updates.updateSuccess )
-			.fail( wp.updates.updateError );
+			.fail( wp.updates.updateError )
+			.always( wp.updates.ajaxAlways );
 	};
 
 	/**
@@ -140,7 +144,9 @@ window.wp = window.wp || {};
 
 		$updateMessage.removeClass( 'updating-message' ).addClass( 'updated-message' );
 		$updateMessage.text( wp.updates.l10n.updated );
-		wp.updates.updateProgressMessage( wp.updates.l10n.updatedMsg );
+
+		// Finish progress for plugin.
+		wp.updates.updateProgressMessage( wp.updates.l10n.updatedMsg, 'notice-success', true );
 
 		wp.updates.decrementCount( 'plugin' );
 
@@ -200,7 +206,8 @@ window.wp = window.wp || {};
 			} );
 		}
 
-		wp.updates.updateProgressMessage( errorMessage, 'notice-error' );
+		// Complete the progress for this plugin update with a failure.
+		wp.updates.updateProgressMessage( errorMessage, 'notice-error', true );
 
 		$document.trigger( 'wp-plugin-update-error', response );
 		wp.updates.pluginUpdateFailures++;
@@ -208,6 +215,8 @@ window.wp = window.wp || {};
 
 	/**
 	 * Set up the progress indicator.
+	 *
+	 * @since 4.5.0
 	 */
 	wp.updates.setupProgressIndicator = function() {
 		var $progressTemplate;
@@ -232,30 +241,72 @@ window.wp = window.wp || {};
 			wp.updates.progressUpdates  = $( '#wp-progress-placeholder' );
 		}
 
+		$( document ).on( 'click', 'a.progress-show-details,a.progress-hide-details', function( evnt ) {
+			$( evnt.currentTarget ).parents( '#wp-progress-placeholder' ).toggleClass( 'show-details' );
+		} );
+
+		/**
+		 * Clear any previous messages.
+		 */
+		wp.updates.progressMessages = [];
+
 	};
 
 	/**
 	 * Update the progress indicator with a new message.
 	 *
-	 * @param {String}  message A string to display in the prigress indicator.
-	 * @param {boolean} isError Whether the message indicates an error.
+	 * @param {String}  message      A string to display in the prigress indicator.
+	 * @param {boolean} isError      Whether the message indicates an error.
+	 * @param {boolean} appendToLine Whether to append the message to the current line,
+	 *                               Otherwise create a new line. Default false.
+	 * @since 4.5.0
 	 */
-	wp.updates.updateProgressMessage = function( message, messageClass ) {
+	wp.updates.updateProgressMessage = function( message, messageClass, appendToLine ) {
 
 		// Check to ensure progress updater is set up.
 		if ( ! _.isUndefined( wp.updates.progressUpdates ) ) {
 
 			// Add the message to a queue so we can display messages in a throttled manner.
-			wp.updates.messageQueue.push( { message: message, messageClass: messageClass } );
+			wp.updates.messageQueue.push( { message: message, messageClass: messageClass, appendToLine: appendToLine } );
 			wp.updates.processMessageQueue();
 		}
 	};
 
 	/**
+	 * Complete progress for the bulk update process.
+	 *
+	 * Indicate the final status of the process, make the notice dismissable.
+	 *
+	 * @since 4.5.0
+	 */
+	wp.updates.finishProgressUpdates = function() {
+
+		//Choose a final status color, default to yellow.
+		var finalStatusClass = 'notice-warning';
+
+		// Only success, green.
+		if ( wp.updates.pluginUpdateSuccesses > 0 && 0 === wp.updates.pluginUpdateFailures ) {
+			finalStatusClass = 'notice-success';
+		} else {
+
+			// Only failures, red.
+			if ( wp.updates.pluginUpdateFailures > 0 && 0 === wp.updates.pluginUpdateSuccesses ) {
+				finalStatusClass = 'notice-error';
+			}
+		}
+
+		// Make the notice dismissable and add the final status class.
+		wp.updates.updateProgressMessage( '', 'is-dismissible ' + finalStatusClass );
+
+	};
+
+	/**
 	 * Process the message queue, showing messages in a throttled manner.
+	 *
+	 * @since 4.5.0
 	 */
 	wp.updates.processMessageQueue = function() {
-		var queuedMessage;
+		var currentMessage;
 
 		// If we are already displaying a message, pause briefly and try again.
 		if ( wp.updates.messageLock ) {
@@ -268,20 +319,38 @@ window.wp = window.wp || {};
 				// Lock message displaying until our message displays briefly.
 				wp.updates.messageLock = true;
 
-				queuedMessage = wp.updates.messageQueue.shift();
+				// Get the latest message from the queue.
+				currentMessage = wp.updates.messageQueue.shift();
+				if ( '' !== currentMessage.message ) {
+
+					// If appendToLine is set, insert message at end of current line.
+					if ( currentMessage.appendToLine ) {
+						wp.updates.progressMessages[ wp.updates.progressMessages.length - 1 ] =
+							wp.updates.progressMessages[ wp.updates.progressMessages.length - 1 ] +=
+								' ' + currentMessage.message;
+					} else {
+
+						// Create a new progress line.
+						wp.updates.progressMessages.push( currentMessage.message );
+					}
+				}
 
 				// Update the progress message.
-				wp.updates.progressUpdates.append(
+				wp.updates.progressUpdates.html(
 					wp.updates.progressTemplate(
 						{
-							message: queuedMessage.message,
-							noticeClass: _.isUndefined( queuedMessage.messageClass ) ? 'notice-success' : 'notice-error'
+							header:  wp.updates.getPluginUpdateProgress(),
+							messages: wp.updates.progressMessages,
+							noticeClass: _.isUndefined( currentMessage.messageClass ) ? 'notice-success' : currentMessage.messageClass
 						}
 					)
 				);
-				wp.a11y.speak( wp.updates.l10n.updatingMsg, 'notice-error' === queuedMessage.messageClass ? 'assertive' : '' );
 
-				$( document ).trigger( 'wp-progress-updated' );
+				// Speak the message.
+				wp.a11y.speak( currentMessage.message, 'notice-error' === currentMessage.messageClass ? 'assertive' : '' );
+
+				// Trigger an update event developers can hook into.
+				$( document ).trigger( 'wp-progress-updated', currentMessage );
 
 				// After a brief delay, unlock and call the queue again.
 				setTimeout( function() {
@@ -322,7 +391,7 @@ window.wp = window.wp || {};
 			$message.text( wp.updates.l10n.updateQueued );
 
 			wp.updates.updatePlugin( plugin.plugin, plugin.slug );
-		} );
+			} );
 	};
 
 	/**
@@ -362,7 +431,8 @@ window.wp = window.wp || {};
 
 		wp.updates.ajax( 'install-plugin', { slug: slug } )
 			.done( wp.updates.installPluginSuccess )
-			.fail( wp.updates.installPluginError );
+			.fail( wp.updates.installPluginError )
+			.always( wp.updates.ajaxAlways );
 	};
 
 	/**
@@ -440,7 +510,8 @@ window.wp = window.wp || {};
 
 		wp.updates.ajax( 'delete-plugin', { plugin: plugin, slug: slug } )
 			.done( wp.updates.deletePluginSuccess )
-			.fail( wp.updates.deletePluginError );
+			.fail( wp.updates.deletePluginError )
+			.always( wp.updates.ajaxAlways );
 	};
 
 	/**
@@ -503,7 +574,8 @@ window.wp = window.wp || {};
 
 		wp.updates.ajax( 'update-theme', { 'slug': slug } )
 			.done( wp.updates.updateThemeSuccess )
-			.fail( wp.updates.updateThemeError );
+			.fail( wp.updates.updateThemeError )
+			.always( wp.updates.ajaxAlways );
 	};
 
 	/**
@@ -573,7 +645,8 @@ window.wp = window.wp || {};
 
 		wp.updates.ajax( 'install-theme', { 'slug': slug } )
 			.done( wp.updates.installThemeSuccess )
-			.fail( wp.updates.installThemeError );
+			.fail( wp.updates.installThemeError )
+			.always( wp.updates.ajaxAlways );
 	};
 
 	/**
@@ -649,7 +722,8 @@ window.wp = window.wp || {};
 
 		wp.updates.ajax( 'delete-theme', { 'slug': slug } )
 			.done( wp.updates.deleteThemeSuccess )
-			.fail( wp.updates.deleteThemeError );
+			.fail( wp.updates.deleteThemeError )
+			.always( wp.updates.ajaxAlways );
 	};
 
 	/**
@@ -941,6 +1015,6 @@ window.wp = window.wp || {};
 				delete wp.updates.searchRequest;
 			} );
 		} );
-	} );
+		} );
 
 } )( jQuery, window.wp );

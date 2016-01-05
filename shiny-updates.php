@@ -3,7 +3,7 @@
  * Plugin Name: Shiny Updates
  * Description: Hide the ugly parts of updating WordPress.
  * Author: the WordPress team
- * Version: 2
+ * Version: 2-20161225
  * License: GPL2
  *
  * @package Shiny_Updates
@@ -85,13 +85,33 @@ class Shiny_Updates {
 		?>
 		<div id="wp-progress-placeholder"></div>
 		<script id="tmpl-wp-progress-template" type="text/html">
-			<div class="notice wp-progress-update is-dismissible <# if ( data.noticeClass ) { #> {{ data.noticeClass }} <# } #>">
-				<p>
-					<# if ( data.message ) { #>
-						{{ data.message }}
+			<div class="notice wp-progress-update <# if ( data.noticeClass ) { #> {{ data.noticeClass }} <# } #>">
+				<p class="progress-header">
+					<# if ( data.header ) { #>
+						{{ data.header }}
 					<# } #>
+					<a href="#" class="progress-show-details">
+						<?php _e( 'Details' ); ?>
+					</a>
+					<a href="#" class="progress-hide-details">
+						<?php _e( 'Hide details' ); ?>
+					</a>
 				</p>
+				<div class="progress-details">
+					<#
+					if ( data.messages ) {
+						_.each( data.messages, function( message ) {
+					#>
+						<li>
+							{{ message }}
+						</li>
+					<#
+						} );
+					}
+					#>
+				</div>
 			</div>
+		</p>
 		</script>
 		<?php
 	}
