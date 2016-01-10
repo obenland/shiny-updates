@@ -47,8 +47,9 @@ class Shiny_Updates {
 		// Plugin deletions.
 		add_action( 'wp_ajax_delete-plugin', 'wp_ajax_delete_plugin' );
 
-		// Plugin activations.
-		add_action( 'wp_ajax_activate-plugin', array( $this, 'wp_ajax_activate_plugin' ) );
+		// Plugin activation/deactivation.
+		add_action( 'wp_ajax_activate-plugin', 'wp_ajax_activate_plugin' );
+		add_action( 'wp_ajax_deactivate-plugin', 'wp_ajax_deactivate_plugin' );
 
 		// Plugin row actions.
 		add_filter( 'plugin_action_links', array( $this, 'plugin_action_links' ), 10, 4 );
@@ -113,31 +114,45 @@ class Shiny_Updates {
 
 		wp_enqueue_script( 'shiny-updates', plugin_dir_url( __FILE__ ) . 'js/shiny-updates.js', array( 'updates' ), null, true );
 		wp_localize_script( 'shiny-updates', 'shinyUpdates', array(
-			'installNow'                => __( 'Install Now' ),
-			'installing'                => __( 'Installing...' ),
-			'installed'                 => __( 'Installed!' ),
-			'installFailedShort'        => __( 'Install Failed!' ),
+			'installNow'                 => __( 'Install Now' ),
+			'installing'                 => __( 'Installing...' ),
+			'installed'                  => __( 'Installed!' ),
+			'installFailedShort'         => __( 'Install Failed!' ),
 			/* translators: Error string for a failed installation. */
-			'installFailed'             => __( 'Installation failed: %s' ),
+			'installFailed'              => __( 'Installation failed: %s' ),
 			/* translators: Plugin/Theme name and version */
-			'installingLabel'           => __( 'Installing %s...' ), // no ellipsis
+			'installingLabel'            => __( 'Installing %s...' ), // no ellipsis
 			/* translators: Plugin/Theme name and version */
-			'installedLabel'            => __( '%s installed!' ),
+			'installedLabel'             => __( '%s installed!' ),
 			/* translators: Plugin/Theme name and version */
-			'installFailedLabel'        => __( '%s installation failed' ),
-			'installingMsg'             => __( 'Installing... please wait.' ),
-			'installedMsg'              => __( 'Installation completed successfully.' ),
-			'aysDelete'                 => __( 'Are you sure you want to delete this plugin?' ),
-			'deletinggMsg'              => __( 'Deleting... please wait.' ),
-			'deletedMsg'                => __( 'Plugin successfully deleted.' ),
-			'updatedPluginsMsg'         => __( 'Plugin updates complete.' ),
+			'installFailedLabel'         => __( '%s installation failed' ),
+			'installingMsg'              => __( 'Installing... please wait.' ),
+			'installedMsg'               => __( 'Installation completed successfully.' ),
+			'aysDelete'                  => __( 'Are you sure you want to delete this plugin?' ),
+			'deletingMsg'                => __( 'Deleting... please wait.' ),
+			'activatingMsg'              => __( 'Activating... please wait.' ),
+			'activatedMsg'               => __( 'Activated.' ),
+			/* translators: Plugin/Theme name */
+			'activateFailedLabel'        => __( '%s activation failed' ),
+			'activateFailedShort'        => __( 'Activation Failed!' ),
+			'deactivatingMsg'            => __( 'Dectivating... please wait.' ),
+			'deactivatedMsg'             => __( 'Deactivated.' ),
+			/* translators: Plugin/Theme name */
+			'deactivateFailedLabel'      => __( '%s deactivate failed' ),
+			'deactivateFailedShort'      => __( 'Deactivate Failed!' ),
+			'deletedMsg'                 => __( 'Plugin successfully deleted.' ),
+			'updatedPluginsMsg'          => __( 'Plugin updates complete.' ),
+			/* translators: 1. Plugins  successes. 2. Plugin  failures. */
+			'successMsg'                 => __( 'Successes: %d.' ),
 			/* translators: 1. Plugins update successes. 2. Plugin update failures. */
-			'updatedPluginsSuccessMsg'  => __( 'Successes: %d.' ),
-			/* translators: 1. Plugins update successes. 2. Plugin update failures. */
-			'updatedPluginsFailureMsg'  => __( 'Failures: %d.' ),
+			'failureMsg'                 => __( 'Failures: %d.' ),
 			/* translators: 1. Total plugins to update. */
-			'updatePluginsQueuedMsg'    => __( '%d plugin updates queued.' ),
-			'updateQueued'              => __( 'Update queued.' ),
+			'updatePluginsQueuedMsg'     => __( '%d plugin updates queued.' ),
+			/* translators: 1. Total plugins to activate. */
+			'activatePluginsQueuedMsg'   => __( '%d plugin activates queued.' ),
+			/* translators: 1. Total plugins to deactivate. */
+			'deactivatePluginsQueuedMsg' => __( '%d plugin deactivates queued.' ),
+			'updateQueued'               => __( 'Update queued.' ),
 		) );
 
 		if ( in_array( $hook, array( 'themes.php', 'theme-install.php' ), true ) ) {
@@ -150,7 +165,7 @@ class Shiny_Updates {
 	}
 
 	/**
-	 * Filter the action links displayed for each plugin in the Plugins list table.
+	 * Add identifying data attributes to plugin action links in the Plugins list table.
 	 *
 	 * @param array  $actions     An array of plugin action links.
 	 * @param string $plugin_file Path to the plugin file relative to the plugins directory.
@@ -159,17 +174,21 @@ class Shiny_Updates {
 	 * @return array
 	 */
 	function plugin_action_links( $actions, $plugin_file, $plugin_data, $context ) {
-		// Adjust the delete action, adding data attributes.
+		$slug = empty( $plugin_data['slug'] ) ? dirname( $plugin_file ) : $plugin_data['slug'];
+
 		if ( ! empty( $actions['delete'] ) ) {
-			$slug = empty( $plugin_data['slug'] ) ? dirname( $plugin_file ) : $plugin_data['slug'];
+			/* translators: %s: plugin name */
 			$actions['delete'] = '<a data-plugin="' . $plugin_file . '" data-slug="' . $slug . '" href="' . wp_nonce_url( 'plugins.php?action=delete-selected&amp;checked[]=' . $plugin_file . '&amp;plugin_status=' . $context . '&amp;paged=' . $GLOBALS['page'] . '&amp;s=' . $GLOBALS['s'], 'bulk-plugins' ) . '" class="delete" aria-label="' . esc_attr( sprintf( __( 'Delete %s' ), $plugin_data['Name'] ) ) . '">' . __( 'Delete' ) . '</a>';
 		}
 
-		// Adjust the activate action, adding data attributes.
 		if ( ! empty( $actions['activate'] ) ) {
-			$slug = empty( $plugin_data['slug'] ) ? dirname( $plugin_file ) : $plugin_data['slug'];
 			/* translators: %s: plugin name */
 			$actions['activate'] = '<a data-plugin="' . $plugin_file . '" data-slug="' . $slug . '" href="' . wp_nonce_url( 'plugins.php?action=activate&amp;plugin=' . $plugin_file . '&amp;plugin_status=' . $context . '&amp;paged=' . $GLOBALS['page'] . '&amp;s=' . $GLOBALS['s'], 'activate-plugin_' . $plugin_file ) . '" class="edit" aria-label="' . esc_attr( sprintf( __( 'Activate %s' ), $plugin_data['Name'] ) ) . '">' . __( 'Activate' ) . '</a>';
+		}
+
+		if ( ! empty( $actions['deactivate'] ) ) {
+			/* translators: %s: plugin name */
+			$actions['deactivate'] = '<a data-plugin="' . $plugin_file . '" data-slug="' . $slug . '" href="' . wp_nonce_url( 'plugins.php?action=deactivate&amp;plugin=' . $plugin_file . '&amp;plugin_status=' . $context . '&amp;paged=' . $GLOBALS['page'] . '&amp;s=' . $GLOBALS['s'], 'deactivate-plugin_' . $plugin_file ) . '" aria-label="' . esc_attr( sprintf( __( 'Deactivate %s' ), $plugin_data['Name'] ) ) . '">' . __( 'Deactivate' ) . '</a>';
 		}
 
 		return $actions;
@@ -293,9 +312,110 @@ add_action( 'init', array( 'Shiny_Updates', 'init' ) );
 
 /**
  * AJAX handler for activating a plugin.
+ *
+ * @todo switch to existing link nonces.
  */
 function wp_ajax_activate_plugin() {
+	check_ajax_referer( 'updates' );
 
+	if ( empty( $_POST['plugin'] ) || empty( $_POST['slug'] ) ) {
+		wp_send_json_error( array( 'errorCode' => 'no_plugin_specified' ) );
+	}
+
+	$plugin = filter_var( wp_unslash( $_POST['plugin'] ), FILTER_SANITIZE_STRING );
+
+	// Set up the default status to return.
+	$status = array(
+		'activate' => 'plugin',
+		'slug'     => sanitize_key( $_POST['slug'] ),
+		'plugin'   => $plugin,
+	);
+
+	// Verify user can activate plugins.
+	if ( ! current_user_can( 'activate_plugins' ) ) {
+		$status['error'] = __( 'You do not have sufficient permissions to activate plugins for this site.' );
+		wp_send_json_error( $status );
+	}
+
+	// Check for network only plugins.
+	if ( is_multisite() && ! is_network_admin() && is_network_only_plugin( $plugin ) ) {
+		$status['error'] = __( 'This plugin cannot be activated.' );
+		wp_send_json_error( $status );
+	}
+
+	// Attempt to activate the plugin.
+	$result = activate_plugin( $plugin, null, is_network_admin() );
+
+	if ( is_wp_error( $result ) ) {
+		$error_code = $result->get_error_code();
+		/* Translators: %s refers to the activation error code */
+		$status['error'] = sprintf( __( 'Plugin activation error: %s' ), $error_code );
+		wp_send_json_error( $status );
+	}
+
+	global $wp_list_table, $hook_suffix;
+	$hook_suffix   = 'plugins.php';
+	$wp_list_table = _get_list_table( 'WP_Plugins_List_Table' );
+
+	ob_start();
+	$wp_list_table->single_row( array( $plugin, get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin ) ) );
+	$status['item'] = ob_get_clean();
+
+	wp_send_json_success( $status );
+}
+
+/**
+ * AJAX handler for deactivating a plugin.
+ *
+ * @todo switch to existing link nonces.
+ */
+function wp_ajax_deactivate_plugin() {
+	check_ajax_referer( 'updates' );
+
+	if ( empty( $_POST['plugin'] ) || empty( $_POST['slug'] ) ) {
+		wp_send_json_error( array( 'errorCode' => 'no_plugin_specified' ) );
+	}
+
+	$plugin = filter_var( wp_unslash( $_POST['plugin'] ), FILTER_SANITIZE_STRING );
+
+	// Set up the default status to return.
+	$status = array(
+		'deactivate' => 'plugin',
+		'slug'       => sanitize_key( $_POST['slug'] ),
+		'plugin'     => $plugin,
+	);
+
+	// Verify user can activate plugins.
+	if ( ! current_user_can( 'activate_plugins' ) ) {
+		$status['error'] = __( 'You do not have sufficient permissions to deactivate plugins for this site.' );
+		wp_send_json_error( $status );
+	}
+
+	// Check for network only plugins.
+	if ( is_multisite() && ! is_network_admin() && is_network_only_plugin( $plugin ) ) {
+		$status['error'] = __( 'This plugin cannot be deactivated.' );
+		wp_send_json_error( $status );
+	}
+
+	// Deactivate the plugin.
+	deactivate_plugins( $plugin, false, is_network_admin() );
+
+	global $wp_list_table, $hook_suffix;
+	$hook_suffix   = 'plugins.php';
+	$wp_list_table = _get_list_table( 'WP_Plugins_List_Table' );
+
+	// Remove custom action links, but keep our data attributes.
+	remove_all_filters( 'network_admin_plugin_action_links' );
+	remove_all_filters( "network_admin_plugin_action_links_{$plugin}" );
+	remove_all_filters( 'plugin_action_links' );
+	remove_all_filters( "plugin_action_links_{$plugin}" );
+	add_filter( 'plugin_action_links', array( Shiny_Updates::init(), 'plugin_action_links' ), 10, 4 );
+
+	ob_start();
+	$wp_list_table->single_row( array( $plugin, get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin ) ) );
+	$status['item'] = ob_get_clean();
+
+	wp_send_json_success( $status );
 }
 
 /**

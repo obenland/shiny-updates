@@ -10,6 +10,15 @@ window.wp = window.wp || {};
 	// Not needed in core.
 	wp.updates.l10n = _.extend( wp.updates.l10n, window.shinyUpdates );
 
+	// Map some bulk action language strings.
+	wp.updates.bulkActions                = {};
+	wp.updates.bulkActions.update         = {};
+	wp.updates.bulkActions.activate       = {};
+	wp.updates.bulkActions.deactivate     = {};
+	wp.updates.bulkActions.update.msg     = wp.updates.l10n.updatePluginsQueuedMsg;
+	wp.updates.bulkActions.activate.msg   = wp.updates.l10n.activatePluginsQueuedMsg;
+	wp.updates.bulkActions.deactivate.msg = wp.updates.l10n.deactivatePluginsQueuedMsg;
+
 	/**
 	 * Handles Ajax requests to WordPress.
 	 *
@@ -64,6 +73,12 @@ window.wp = window.wp || {};
 			} );
 		}
 	};
+
+	/**
+	 * ===============================================================================
+	 * PLUGIN UPDATES
+	 * ===============================================================================
+	 */
 
 	/**
 	 * Send an Ajax request to the server to update a plugin.
@@ -147,7 +162,7 @@ window.wp = window.wp || {};
 		wp.updates.updateDoneSuccessfully = true;
 
 		$document.trigger( 'wp-plugin-update-success', response );
-		wp.updates.pluginUpdateSuccesses++;
+		wp.updates.bulkActions.updates.successes++;
 	};
 
 	/**
@@ -200,8 +215,14 @@ window.wp = window.wp || {};
 		wp.updates.updateProgressMessage( errorMessage, 'notice-error' );
 
 		$document.trigger( 'wp-plugin-update-error', response );
-		wp.updates.pluginUpdateFailures++;
+		wp.updates.bulkActions.updates.failures++;
 	};
+
+	/**
+	 * ===============================================================================
+	 * PROGRESS INDICATOR
+	 * ===============================================================================
+	 */
 
 	/**
 	 * Set up the progress indicator.
@@ -276,7 +297,7 @@ window.wp = window.wp || {};
 						}
 					)
 				);
-				wp.a11y.speak( wp.updates.l10n.updatingMsg, 'notice-error' === queuedMessage.messageClass ? 'assertive' : '' );
+				wp.a11y.speak( queuedMessage.message, 'notice-error' === queuedMessage.messageClass ? 'assertive' : '' );
 
 				$( document ).trigger( 'wp-progress-updated' );
 
@@ -290,22 +311,25 @@ window.wp = window.wp || {};
 	};
 
 	/**
-	 * Send an Ajax request to the server to update plugins in bulk.
+	 * ===============================================================================
+	 * BULK PLUGIN ACTIONS
+	 * ===============================================================================
+	 */
+
+	/**
+	 * Start the bulk update process for a group of plugins.
 	 *
 	 * @since 4.5.0
 	 */
 	wp.updates.bulkUpdatePlugins = function( plugins ) {
 		var $message;
 
-		// Set up the progress indicaator.
-		wp.updates.setupProgressIndicator();
-
 		// Start the bulk plugin updates. Reset the count for totals, successes and failures.
-		wp.updates.pluginsToUpdateCount  = plugins.length;
-		wp.updates.pluginUpdateSuccesses = 0;
-		wp.updates.pluginUpdateFailures  = 0;
+		wp.updates.bulkActions.updates.count     = plugins.length;
+		wp.updates.bulkActions.updates.successes = 0;
+		wp.updates.bulkActions.updates.failures  = 0;
 		wp.updates.updateProgressMessage(
-			wp.updates.getPluginUpdateProgress()
+			wp.updates.getPluginActionProgress( 'update' )
 		);
 
 		_.each( plugins, function( plugin ) {
@@ -323,21 +347,88 @@ window.wp = window.wp || {};
 	};
 
 	/**
-	 * Build a string describing the bulk update progress.
+	 * Start the bulk activate process for a group of plugins.
+	 *
+	 * @since 4.5.0
 	 */
-	wp.updates.getPluginUpdateProgress = function() {
-		var updateMessage = wp.updates.l10n.updatePluginsQueuedMsg.replace( '%d', wp.updates.pluginsToUpdateCount );
+	wp.updates.bulkActivatePlugins = function( plugins ) {
 
-		if ( 0 !== wp.updates.pluginUpdateSuccesses ) {
-		updateMessage += ' ' + wp.updates.l10n.updatedPluginsSuccessMsg.replace( '%d', wp.updates.pluginUpdateSuccesses );
+		// Start the bulk plugin updates. Reset the count for totals, successes and failures.
+		wp.updates.bulkActions.activate.count     = plugins.length;
+		wp.updates.bulkActions.activate.successes = 0;
+		wp.updates.bulkActions.activate.failures  = 0;
+		wp.updates.updateLock                     = false;
+		wp.updates.updateProgressMessage( wp.updates.getPluginActionProgress( 'activate' ) );
+
+		_.each( plugins, function( plugin ) {
+			wp.updates.activatePlugin( plugin.plugin, plugin.slug );
+		} );
+	};
+
+	/**
+	 * Start the bulk deactivate process for a group of plugins.
+	 *
+	 * @since 4.5.0
+	 */
+	wp.updates.bulkDeactivatePlugins = function( plugins ) {
+
+		// Start the bulk plugin updates. Reset the count for totals, successes and failures.
+		wp.updates.bulkActions.deactivate.count     = plugins.length;
+		wp.updates.bulkActions.deactivate.successes = 0;
+		wp.updates.bulkActions.deactivate.failures  = 0;
+		wp.updates.updateLock                       = false;
+		wp.updates.updateProgressMessage( wp.updates.getPluginActionProgress( 'deactivate' ) );
+
+		_.each( plugins, function( plugin ) {
+			wp.updates.deactivatePlugin( plugin.plugin, plugin.slug );
+		} );
+	};
+
+	/**
+	 * Build the success/failure detail message for a bulk progress update.
+	 *
+	 * @param {string} updateMsg The main update message to use for this operation.
+	 * @param {int}    total     The total number of operations in this bulk group.
+	 * @param {int}    successes The number of successes for this bulk operation.
+	 * @param {int}    failures  The number of failures for this bulk operation.
+	 *
+	 * @since 4.5.0
+	 */
+	function buildSuccessFailureUpdate( updateMsg, total, successes, failures ) {
+		var updateMessage = updateMsg.replace( '%d', total );
+
+		if ( 0 !== successes ) {
+			updateMessage += ' ' + wp.updates.l10n.successMsg.replace( '%d', successes );
 		}
-		if ( 0 !== wp.updates.pluginUpdateFailures ) {
-		updateMessage += ' ' + wp.updates.l10n.updatedPluginsFailureMsg.replace( '%d', wp.updates.pluginUpdateFailures );
+
+		if ( 0 !== failures ) {
+			updateMessage += ' ' + wp.updates.l10n.failureMsg.replace( '%d', failures );
 		}
 
 		return updateMessage;
+	}
 
+	/**
+	 * Build a progress update string for bulk plugin actions.
+	 *
+	 * @param {string} action The type of action being performed, one of 'update', 'activate' or 'deactivate'.
+	 *
+	 * @since 4.5.0
+	 */
+	wp.updates.getPluginActionProgress = function( action ) {
+		return buildSuccessFailureUpdate(
+			wp.updates.bulkActions[ action ].msg,
+			wp.updates.bulkActions[ action ].count,
+			wp.updates.bulkActions[ action ].successes,
+			wp.updates.bulkActions[ action ].failures
+		);
 	};
+
+	/**
+	 * ===============================================================================
+	 * INSTALL PLUGIN
+	 * ===============================================================================
+	 */
 
 	/**
 	 * Send an Ajax request to the server to install a plugin.
@@ -425,6 +516,126 @@ window.wp = window.wp || {};
 	};
 
 	/**
+	 * ===============================================================================
+	 * ACTIVATE PLUGIN
+	 * ===============================================================================
+	 */
+
+	/**
+	 * Send an Ajax request to the server to activate a plugin.
+	 *
+	 * @since 4.5.0
+	 *
+	 * @param {string} plugin
+	 * @param {string} slug
+	 */
+	wp.updates.activatePlugin = function( plugin, slug ) {
+		$( '#the-list' ).find( '.activate a[data-plugin="' + plugin + '"]' ).parents( 'tr' ).addClass( 'in-progress' );
+
+		wp.updates.updateProgressMessage( wp.updates.l10n.activatingMsg );
+
+		wp.updates.ajax( 'activate-plugin', { plugin: plugin, slug: slug } )
+			.done( wp.updates.activatePluginSuccess )
+			.fail( wp.updates.activatePluginError );
+	};
+
+	/**
+	 * On plugin activate success, update the UI with the result.
+	 *
+	 * @since 4.5.0
+	 *
+	 * @param {object} response
+	 */
+	wp.updates.activatePluginSuccess = function( response ) {
+		$( '#the-list' ).find( '.activate a[data-plugin="' + response.plugin + '"]' ).parents( 'tr' )
+			.replaceWith( response.item );
+
+		wp.updates.updateProgressMessage( wp.updates.l10n.activatedMsg );
+
+		$document.trigger( 'wp-plugin-activate-success', response );
+	};
+
+	/**
+	 * On plugin activate failure, update the UI appropriately.
+	 *
+	 * @since 4.5.0
+	 *
+	 * @param {object} response
+	 */
+	wp.updates.activatePluginError = function( response ) {
+		$( '#the-list' ).find( '.activate a[data-plugin="' + response.plugin + '"]' ).parents( 'tr' )
+			.removeClass( 'in-progress' )
+			.after( wp.updates.l10n.activateFailedLabel.replace( '%s', pluginData[ response.plugin ].Name ) );
+
+		wp.updates.updateProgressMessage( wp.updates.l10n.activateFailedShort, 'notice-error' );
+
+		$document.trigger( 'wp-plugin-activate-error', response );
+	};
+
+	/**
+	 * ===============================================================================
+	 * DEACTIVATE PLUGIN
+	 * ===============================================================================
+	 */
+
+	/**
+	 * Send an Ajax request to the server to deactivate a plugin.
+	 *
+	 * @since 4.5.0
+	 *
+	 * @param {string} plugin
+	 * @param {string} slug
+	 */
+	wp.updates.deactivatePlugin = function( plugin, slug ) {
+		$( '#the-list' ).find( '.deactivate a[data-plugin="' + plugin + '"]' ).parents( 'tr' ).addClass( 'in-progress' );
+
+		wp.updates.updateProgressMessage( wp.updates.l10n.deactivatingMsg );
+
+		wp.updates.ajax( 'deactivate-plugin', { plugin: plugin, slug: slug } )
+			.done( wp.updates.deactivatePluginSuccess )
+			.fail( wp.updates.deactivatePluginError );
+	};
+
+	/**
+	 * On plugin deactivate success, update the UI with the result.
+	 *
+	 * @since 4.5.0
+	 *
+	 * @param {object} response
+	 */
+	wp.updates.deactivatePluginSuccess = function( response ) {
+		$( '#the-list' ).find( '.deactivate a[data-plugin="' + response.plugin + '"]' ).parents( 'tr' )
+			.replaceWith( response.item );
+
+		wp.updates.updateProgressMessage( wp.updates.l10n.deactivatedMsg );
+
+		$document.trigger( 'wp-plugin-deactivate-success', response );
+	};
+
+	/**
+	 * On plugin deactivate failure, update the UI appropriately.
+	 *
+	 * @since 4.5.0
+	 *
+	 * @param {object} response
+	 */
+	wp.updates.deactivatePluginError = function( response ) {
+		$( '#the-list' ).find( '.deactivate a[data-plugin="' + response.plugin + '"]' )
+			.removeClass( 'in-progress' )
+			.after( wp.updates.l10n.deactivateFailedLabel.replace( '%s', pluginData[ response.plugin ].Name ) );
+
+		wp.updates.updateProgressMessage( wp.updates.l10n.deactivateFailedShort, 'notice-error' );
+
+		$document.trigger( 'wp-plugin-deactivate-error', response );
+	};
+
+	/**
+	 * ===============================================================================
+	 * DELETE PLUGIN
+	 * ===============================================================================
+	 */
+
+	/**
 	 * Send an Ajax request to the server to delete a plugin.
 	 *
 	 * @since 4.5.0
@@ -476,6 +687,12 @@ window.wp = window.wp || {};
 
 		$document.trigger( 'wp-plugin-delete-error', response );
 	};
+
+	/**
+	 * ===============================================================================
+	 * UPDATE THEME
+	 * ===============================================================================
+	 */
 
 	/**
 	 * Send an Ajax request to the server to update a theme.
@@ -546,6 +763,12 @@ window.wp = window.wp || {};
 
 		$document.trigger( 'wp-theme-update-error', response );
 	};
+
+	/**
+	 * ===============================================================================
+	 * INSTALL THEME
+	 * ===============================================================================
+	 */
 
 	/**
 	 * Send an Ajax request to the server to install a theme.
@@ -624,7 +847,13 @@ window.wp = window.wp || {};
 	};
 
 	/**
-	 * Send an Ajax request to the server to install a theme.
+	 * ===============================================================================
+	 * DELETE THEME
+	 * ===============================================================================
+	 */
+
+	/**
+	 * Send an Ajax request to the server to delete a theme.
 	 *
 	 * @since 4.5.0
 	 *
@@ -699,6 +928,12 @@ window.wp = window.wp || {};
 	};
 
 	/**
+	 * ===============================================================================
+	 * BULK PROCESSING QUEUE
+	 * ===============================================================================
+	 */
+
+	/**
 	 * If an install/update job has been placed in the queue, queueChecker pulls it out and runs it.
 	 *
 	 * @since 4.2.0
@@ -717,6 +952,14 @@ window.wp = window.wp || {};
 		switch ( job.type ) {
 			case 'install-plugin':
 				wp.updates.installPlugin( job.data.slug );
+				break;
+
+			case 'activate-plugin':
+				wp.updates.activatePlugin( job.data.plugin, job.data.slug );
+				break;
+
+			case 'deactivate-plugin':
+				wp.updates.deactivatePlugin( job.data.plugin, job.data.slug );
 				break;
 
 			case 'update-plugin':
@@ -744,6 +987,12 @@ window.wp = window.wp || {};
 				break;
 		}
 	};
+
+	/**
+	 * ===============================================================================
+	 * FILESYSTEM CREDENTIALS MODAL
+	 * ===============================================================================
+	 */
 
 	/**
 	 * Request the users filesystem credentials if we don't have them already.
@@ -788,14 +1037,43 @@ window.wp = window.wp || {};
 		$document.trigger( 'credential-modal-cancel' );
 	};
 
+	/**
+	 * ===============================================================================
+	 * EVENT HANDLERS
+	 * ===============================================================================
+	 */
+
 	$( function() {
 		var $pluginList     = $( '#the-list' ),
 			$bulkActionForm = $( '#bulk-action-form' );
 
+		// Set up the progress indicator.
+		wp.updates.setupProgressIndicator();
+
+		/**
+		 * Deactivate a plugin.
+		 */
+		$pluginList.on( 'click', '.deactivate', function( event ) {
+			var $button = $( event.target );
+			event.preventDefault();
+
+			wp.updates.deactivatePlugin( $button.data( 'plugin' ), $button.data( 'slug' ) );
+		} );
+
+		/**
+		 * Activate a plugin.
+		 */
+		$pluginList.on( 'click', '.activate', function( event ) {
+			var $button = $( event.target );
+			event.preventDefault();
+
+			wp.updates.activatePlugin( $button.data( 'plugin' ), $button.data( 'slug' ) );
+		} );
+
 		/**
 		 * Install a plugin.
 		 */
-		$pluginList.find( '.install-now' ).on( 'click', function( event ) {
+		$pluginList.on( 'click', '.install-now', function( event ) {
 			var $button = $( event.target );
 			event.preventDefault();
 
@@ -821,7 +1099,7 @@ window.wp = window.wp || {};
 		/**
 		 * Delete a plugin.
 		 */
-		$pluginList.find( 'a.delete' ).on( 'click', function( event ) {
+		$pluginList.on( 'click', 'a.delete', function( event ) {
 			var $link = $( event.target );
 			event.preventDefault();
 
@@ -837,24 +1115,36 @@ window.wp = window.wp || {};
 		} );
 
 		/**
-		 * Bulk update for plugins.
+		 * Bulk actions for plugins.
 		 */
 		$bulkActionForm.on( 'click', '[type="submit"]', function( event ) {
-			var plugins;
+			var plugins = [], qualifier, bulkActionHandler;
 
-			if ( 'update-selected' !== $( event.target ).siblings( 'select' ).val() ) {
-				return;
+			event.preventDefault();
+
+			switch ( $( event.target ).siblings( 'select' ).val() ) {
+				case 'update-selected':
+					qualifier         = 'update';
+					bulkActionHandler = wp.updates.bulkUpdatePlugins;
+					break;
+
+				case 'activate-selected':
+					qualifier         = 'inactive';
+					bulkActionHandler = wp.updates.bulkActivatePlugins;
+					break;
+
+				case 'deactivate-selected':
+					qualifier         = 'active';
+					bulkActionHandler = wp.updates.bulkDeactivatePlugins;
+					break;
+
+				default:
+					return;
 			}
 
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
 				wp.updates.requestFilesystemCredentials( event );
 			}
-
-			plugins = [];
-			event.preventDefault();
-
-			// Uncheck the bulk checkboxes.
-			$( '.manage-column [type="checkbox"]' ).prop( 'checked', false );
 
 			// Find all the checkboxes which have been checked.
 			$bulkActionForm
@@ -862,19 +1152,23 @@ window.wp = window.wp || {};
 				.each( function( index, element ) {
 					var $checkbox = $( element );
 
-					// Uncheck the box.
-					$checkbox.prop( 'checked', false );
+					// Only add qualifying plugins to the queue.
+					if ( $checkbox.parents( 'tr' ).hasClass( qualifier ) ) {
 
-					// Only add updatable plugins to the queue.
-					if ( $checkbox.parents( 'tr' ).hasClass( 'update' ) ) {
+						// Processing checkbox, so uncheck.
+						$checkbox .prop( 'checked', false );
 						plugins.push( {
 							plugin: $checkbox.val(),
 							slug:   $checkbox.parents( 'tr' ).prop( 'id' )
 						} );
 					}
 			} );
+
+			// Un-check the bulk select checkbox.
+			$( '.manage-column [type="checkbox"]' ).prop( 'checked', false );
+
 			if ( 0 !== plugins.length ) {
-				wp.updates.bulkUpdatePlugins( plugins );
+				bulkActionHandler( plugins );
 			}
 		} );
 
@@ -899,9 +1193,9 @@ window.wp = window.wp || {};
 		} );
 
 		/**
-		 * Make notices dismissable.
+		 * Make notices dismissible.
  		 */
-		$( document ) .on( 'wp-progress-updated wp-theme-update-error wp-theme-install-error', function() {
+		$document.on( 'wp-progress-updated wp-theme-update-error wp-theme-install-error', function() {
 			$( '.notice.is-dismissible' ).each( function() {
 				var $el = $( this ),
 					$button = $( '<button type="button" class="notice-dismiss"><span class="screen-reader-text"></span></button>' ),

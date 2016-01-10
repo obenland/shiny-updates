@@ -60,3 +60,14 @@
 	margin: 0 8px 0 -2px;
 	vertical-align: top;
 }
+
+.wp-list-table.plugins tr.in-progress:after {
+	content: url(../../../../wp-admin/images/spinner.gif);
+	margin-top: 10px;
+	position: absolute;
+	left: 15px;
+}
+
+.wp-list-table.plugins tr.in-progress input {
+	display: none;
+}
