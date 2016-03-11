@@ -64,7 +64,7 @@ add_action( 'whitelist_options', 'shiny_auto_updates_whitelist_options' );
  * Section description.
  */
 function shiny_auto_updates_description() {
-	esc_html_e( 'A fancy description describing what&#8217;s going on here.' );
+	esc_html_e( 'You can define below, which parts of the site will be updated automatically. Please understand, that checking everything might break your site at any time in the future.' );
 }
 
 /**
