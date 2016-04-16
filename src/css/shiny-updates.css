@@ -13,7 +13,7 @@
 .plugin-card .update-now:before,
 .plugin-card .install-now:before,
 .theme .update-message:before {
-	color: #ffb900;
+	color: #f56e28;
 	content: "\f463";
 }
 
@@ -36,7 +36,7 @@
 
 .theme-info .updating-message:before,
 .theme-install.updating-message:before {
-	color: #ffb900;
+	color: #f56e28;
 	content: "\f463";
 	-webkit-animation: rotation 2s infinite linear;
 	animation: rotation 2s infinite linear;
@@ -64,7 +64,7 @@
 .button.installing::before {
 	-webkit-animation: rotation 2s infinite linear;
 	animation: rotation 2s infinite linear;
-	color: #ffb900;
+	color: #f56e28;
 	content: '\f463';
 	display: inline-block;
 	font: normal 20px/1 'dashicons';
@@ -119,7 +119,7 @@ tr.active.update + tr.plugin-update-tr .plugin-update {
 }
 
 .update-message p:before {
-	color: #ffb900;
+	color: #f56e28;
 	display: inline-block;
 	font: normal 20px/1 dashicons;
 	content: "\f463";
