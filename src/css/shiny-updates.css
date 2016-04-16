@@ -84,7 +84,7 @@
 	-moz-osx-font-smoothing: grayscale;
 	speak: none;
 	margin: 0 8px 0 -2px;
-	vertical-align: top;
+	vertical-align: text-top;
 }
 
 /* Inline notifications */

@@ -399,7 +399,7 @@ window.wp = window.wp || {};
 	wp.updates.installPluginSuccess = function( response ) {
 		var $message = $( '.plugin-card-' + response.slug ).find( '.install-now' );
 
-		$message.removeClass( 'updating-message' ).addClass( 'updated-message button-disabled' );
+		$message.removeClass( 'updating-message' ).addClass( 'installed updated-message button-disabled' );
 		$message.text( wp.updates.l10n.installed );
 		wp.a11y.speak( wp.updates.l10n.installedMsg, 'polite' );
 
