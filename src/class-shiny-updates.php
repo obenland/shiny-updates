@@ -180,7 +180,8 @@ class Shiny_Updates {
 				'installFailedLabel'        => __( '%s installation failed' ),
 				'installingMsg'             => __( 'Installing... please wait.' ),
 				'installedMsg'              => __( 'Installation completed successfully.' ),
-				'aysDelete'                 => __( 'Are you sure you want to delete this item?' ),
+				/* translators: Plugin name */
+				'aysDelete'                 => __( 'Are you sure you want to delete %s?' ),
 				'deleting'                  => __( 'Deleting...' ),
 				'deleteFailed'              => __( 'Deletion failed: %s' ),
 				'deleted'                   => __( 'Deleted!' ),

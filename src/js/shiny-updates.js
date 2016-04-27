@@ -1162,7 +1162,7 @@ window.wp = window.wp || {};
 			var $pluginRow = $( event.target ).parents( 'tr' );
 			event.preventDefault();
 
-			if ( ! window.confirm( wp.updates.l10n.aysDelete ) ) {
+			if ( ! window.confirm( wp.updates.l10n.aysDelete.replace( '%s', $pluginRow.find( '.plugin-title strong' ).text() ) ) ) {
 				return;
 			}
 
@@ -1204,7 +1204,7 @@ window.wp = window.wp || {};
 			var $link = $( event.target ).parents( 'tr' );
 			event.preventDefault();
 
-			if ( ! window.confirm( wp.updates.l10n.aysDelete ) ) {
+			if ( ! window.confirm( wp.updates.l10n.aysDelete.replace( '%s', $link.find( '.plugin-title strong' ).text() ) ) ) {
 				return;
 			}
 
