@@ -239,3 +239,52 @@ function su_theme_update_row( $theme_key, $theme ) {
 
 	echo '</p></div></td></tr>';
 }
+
+/**
+ * Prints CSS used for the shiny update table.
+ */
+function su_admin_head() {
+	?>
+	<style>
+		.wrap > h2,
+		.wrap > p,
+		.wrap > .core-updates,
+		.wrap > [name=upgrade-plugins],
+		.wrap > [name=upgrade-themes] {
+			display: none;
+		}
+
+		.wp-list-table.updates .manage-column.column-type {
+			width: 10%;
+		}
+
+		.wp-list-table.updates .manage-column.column-action {
+			width: 10%;
+		}
+	</style>
+	<?php
+}
+
+add_action( 'admin_head-update-core.php', 'su_admin_head' );
+
+/**
+ * Displays the shiny update table.
+ *
+ * Includes core, plugin and theme updates.
+ */
+function su_update_table() {
+	?>
+	<div class="shiny-update-table">
+		<h2><?php _e( 'Available Updates' ); ?></h2>
+		<?php
+		require_once( 'class-shiny-updates-list-table.php' );
+
+		$updates_table = new Shiny_Updates_List_Table();
+		$updates_table->prepare_items();
+		$updates_table->display();
+		?>
+	</div>
+	<?php
+}
+
+add_action( 'core_upgrade_preamble', 'su_update_table' );
