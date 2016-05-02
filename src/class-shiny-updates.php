@@ -63,19 +63,6 @@ class Shiny_Updates {
 
 		// Plugin modal installations.
 		add_action( 'install_plugins_pre_plugin-information', array( $this, 'install_plugin_information' ), 9 );
-
-		// Auto Updates.
-		add_action( 'admin_init', array( $this, 'load_auto_updates_settings' ) );
-
-		if ( get_site_option( 'wp_auto_update_core' ) ) {
-			add_filter( 'allow_major_auto_core_updates', '__return_true' );
-		}
-		if ( get_site_option( 'wp_auto_update_plugins' ) ) {
-			add_filter( 'auto_update_plugin', '__return_true' );
-		}
-		if ( get_site_option( 'wp_auto_update_themes' ) ) {
-			add_filter( 'auto_update_theme', '__return_true' );
-		}
 	}
 
 	/**
@@ -614,12 +601,5 @@ class Shiny_Updates {
 	public function update_plugin() {
 		remove_action( 'wp_ajax_update-plugin', 'wp_ajax_update_plugin', 1 );
 		add_action( 'wp_ajax_update-plugin', 'wpsu_ajax_update_plugin', 1 );
-	}
-
-	/**
-	 * Loads auto updates settings for `update-core.php`.
-	 */
-	public function load_auto_updates_settings() {
-		include_once plugin_dir_path( __FILE__ ) . 'auto-updates.php';
 	}
 }
