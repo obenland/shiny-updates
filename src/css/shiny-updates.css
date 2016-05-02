@@ -19,14 +19,13 @@
 
 .wrap .notice p:before,
 .theme .notice:before,
-.theme-info .updating-message::before,
-.theme-info .updated-message::before,
-.theme-install.updating-message::before {
+.theme-info .updating-message:before,
+.theme-info .updated-message:before,
+.theme-install.updating-message:before {
 	display: inline-block;
 	font: normal 18px/1 dashicons;
 	-webkit-font-smoothing: antialiased;
 	margin-right: 6px;
-	speak: none;
 	vertical-align: text-bottom;
 }
 
@@ -46,8 +45,8 @@
 	color: #fff;
 }
 
-.theme .updated-message::before,
-.theme-info .updated-message::before {
+.theme .updated-message:before,
+.theme-info .updated-message:before {
 	color: #79ba49;
 	content: '\f147';
 }
@@ -61,7 +60,7 @@
 	right: 0;
 }
 
-.button.installing::before {
+.button.installing:before {
 	-webkit-animation: rotation 2s infinite linear;
 	animation: rotation 2s infinite linear;
 	color: #f56e28;
@@ -70,19 +69,17 @@
 	font: normal 20px/1 'dashicons';
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-	speak: none;
 	margin: 0 8px 0 -2px;
 	vertical-align: top;
 }
 
-.button.installed::before {
+.button.installed:before {
 	color: #79ba49;
 	content: '\f147';
 	display: inline-block;
 	font: normal 20px/1 'dashicons';
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-	speak: none;
 	margin: 0 8px 0 -2px;
 	vertical-align: text-top;
 }
@@ -100,14 +97,25 @@ tr.active.update + tr.plugin-update-tr .plugin-update {
 }
 
 .plugins .plugin-update-tr .update-message {
-	margin: 5px 20px 15px 31px;
-	padding: 1px 12px 1px 40px;
+	margin: 5px 20px 15px 40px;
+	padding: 1px 12px 1px 35px;
 }
 
 .plugin-update-tr .update-message:before {
 	content: '';
 	display: none;
 	margin: auto;
+}
+
+@media screen and (max-width: 782px) {
+	.plugins .active.update + .plugin-update-tr:before {
+		background-color: #f7fcfe;
+		border-left: 4px solid #00a0d2;
+	}
+
+	.plugins .plugin-update-tr .update-message {
+		margin-left: 0;
+	}
 }
 
 .widefat.plugins td p {
@@ -123,8 +131,7 @@ tr.active.update + tr.plugin-update-tr .plugin-update {
 	display: inline-block;
 	font: normal 20px/1 dashicons;
 	content: "\f463";
-	margin: 0 10px 0 -30px;
-	speak: none;
+	margin: 0 10px 0 -25px;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	vertical-align: top;
@@ -174,6 +181,7 @@ div.updated {
 	border-left-color: #46b450;
 }
 
+tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-success.notice-alt,
 .notice-success.notice-alt {
 	background-color: #ecf7ed;
 }
@@ -203,4 +211,17 @@ tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-error.notic
 
 .notice-info.notice-alt {
 	background-color: #e5f5fa;
+}
+
+@media aural {
+	.wrap .notice p:before,
+	.theme .notice:before,
+	.theme-info .updating-message:before,
+	.theme-info .updated-message:before,
+	.theme-install.updating-message:before,
+	.button.installing:before,
+	.button.installed:before,
+	.update-message p:before {
+		speak: none;
+	}
 }
