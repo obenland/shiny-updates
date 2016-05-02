@@ -1530,6 +1530,36 @@ window.wp = window.wp || {};
 	} );
 
 	/**
+	 * Install plugin from the details modal on `plugin-install.php`.
+	 *
+	 * @since 4.X.0
+	 *
+	 * @param {Event} event Event interface.
+	 */
+	$( '#plugin_install_from_iframe' ).on( 'click', function( event ) {
+		var target = window.parent === window ? null : window.parent,
+			job;
+
+		$.support.postMessage = !! window.postMessage;
+
+		if ( false === $.support.postMessage || null === target || -1 !== window.parent.location.pathname.indexOf( 'update-core.php' ) ) {
+			return;
+		}
+
+		event.preventDefault();
+
+		job = {
+			action: 'installPlugin',
+			type: 'install-plugin',
+			data: {
+				slug: $( this ).data( 'slug' )
+			}
+		};
+
+		target.postMessage( JSON.stringify( job ), window.location.origin );
+	} );
+
+	/**
 	 * Handles postMessage events.
 	 *
 	 * @since 4.2.0
@@ -1562,6 +1592,7 @@ window.wp = window.wp || {};
 				break;
 
 			case 'updatePlugin':
+			case 'installPlugin':
 				/* jscs:disable requireCamelCaseOrUpperCaseIdentifiers */
 				window.tb_remove();
 				/* jscs:enable */
