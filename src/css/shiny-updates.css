@@ -45,6 +45,7 @@
 	color: #fff;
 }
 
+.plugin-card .updated-message:before,
 .theme .updated-message:before,
 .theme-info .updated-message:before {
 	color: #79ba49;
