@@ -26,16 +26,11 @@
 	color: #fff;
 }
 
-<<<<<<< HEAD
-.plugin-card .updated-message:before,
-.theme .updated-message:before,
-.theme-info .updated-message:before {
+.plugin-card .updated-message:before {
 	color: #79ba49;
 	content: '\f147';
 }
 
-=======
->>>>>>> master
 .theme-install-php .theme .notice-error {
 	display: block;
 	left: 0;
