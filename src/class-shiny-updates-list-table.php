@@ -122,7 +122,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	 */
 	public function get_columns() {
 		$action = sprintf(
-			'<form method="post" action="%s" name="upgrade-all">%s<input class="button button-primary" type="submit" value="%s" name="upgrade-all" /></form>',
+			'<form method="post" action="%s" name="upgrade-all">%s<button class="button button-primary" type="submit" value="" name="upgrade-all">%s</button></form>',
 			'update-core.php?action=do-all-upgrade',
 			wp_nonce_field( 'upgrade-core', '_wpnonce', true, false ),
 			esc_attr__( 'Update All' )
@@ -144,12 +144,18 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	 * @param object $item The current item.
 	 */
 	public function single_row( $item ) {
-		$data = "data-type='" . esc_attr( $item['type'] ) . "'";
+		$data       = '';
+		$attributes = array( 'data-type' => $item['type'] );
 
 		if ( 'theme' === $item['type'] ) {
-			$data .= "data-slug='" . esc_attr( $item['slug'] ) . "'";
+			$attributes['data-slug'] = $item['slug'];
 		} else if ( 'plugin' === $item['type'] ) {
-			$data .= "data-plugin='" . esc_attr( $item['slug'] ) . "'";
+			$attributes['data-slug']   = $item['slug'];
+			$attributes['data-plugin'] = $item['data']->update->slug;
+		}
+
+		foreach ( $attributes as $attribute => $value ) {
+			$data .= $attribute . '="' . esc_attr( $value ) . '" ';
 		}
 
 		echo "<tr $data>";
@@ -220,6 +226,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 		} else {
 			$compat = '<br />' . sprintf( __( 'Compatibility with WordPress %1$s: Unknown' ), $this->cur_wp_version );
 		}
+
 		// Get plugin compat for updated version of WordPress.
 		if ( $this->core_update_version ) {
 			if ( isset( $plugin->update->tested ) && version_compare( $plugin->update->tested, $this->core_update_version, '>=' ) ) {
@@ -231,6 +238,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 				$compat .= '<br />' . sprintf( __( 'Compatibility with WordPress %1$s: Unknown' ), $this->core_update_version );
 			}
 		}
+
 		// Get the upgrade notice for the new plugin version.
 		if ( isset( $plugin->update->upgrade_notice ) ) {
 			$upgrade_notice = '<br />' . strip_tags( $plugin->update->upgrade_notice );
@@ -320,11 +328,32 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 		$slug        = $item['slug'];
 		$checkbox_id = 'checkbox_' . md5( $slug );
 		$form_action = sprintf( 'update-core.php?action=do-%s-upgrade', $item['type'] );
+		$data        = '';
+		$attributes  = array();
+
+		if ( 'plugin' === $item['type'] ) {
+			$attributes['data-plugin'] = esc_attr( $item['slug'] );
+			$attributes['data-slug']   = esc_attr( $item['data']->update->slug );
+			$attributes['data-name']   = esc_attr( $item['data']->Name );
+			$attributes['aria-label']  = esc_attr( sprintf( __( 'Update %s now' ), $item['data']->Name ) );
+		}
+
+		foreach ( $attributes as $attribute => $value ) {
+			$data .= $attribute . '="' . esc_attr( $value ) . '" ';
+		}
+
 		?>
 		<form method="post" action="<?php echo esc_url( $form_action ); ?>" name="upgrade-all">
 			<?php wp_nonce_field( 'upgrade-core' ); ?>
 			<input type="hidden" name="checked[]" id="<?php echo $checkbox_id; ?>" value="<?php echo esc_attr( $slug ); ?>"/>
-			<?php submit_button( esc_attr__( 'Update' ), 'button update-link', $checkbox_id, false ); ?>
+			<?php
+			printf(
+				'<button type="submit" name="%1$s" id="$1s" class="button update-link" %2$s>%3$s</button>',
+				$checkbox_id,
+				$data,
+				esc_attr__( 'Update' )
+			);
+			?>
 		</form>
 		<?php
 	}

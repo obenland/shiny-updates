@@ -258,7 +258,6 @@ window.wp = window.wp || {};
 			$updateRow = $( 'tr[data-plugin="' + plugin + '"]' );
 			$message   = $updateRow.find( '.update-message' ).addClass( 'updating-message' ).find( 'p' );
 			message    = wp.updates.l10n.updatingLabel.replace( '%s', $updateRow.find( '.plugin-title strong' ).text() );
-
 		} else if ( 'plugin-install' === pagenow ) {
 			$card    = $( '.plugin-card-' + slug );
 			$message = $card.find( '.update-now' ).addClass( 'updating-message' );
@@ -266,6 +265,10 @@ window.wp = window.wp || {};
 
 			// Remove previous error messages, if any.
 			$card.removeClass( 'plugin-card-update-failed' ).find( '.notice.notice-error' ).remove();
+		} else if ( 'update-core' === pagenow ) {
+			$updateRow = $( 'tr[data-plugin="' + plugin + '"]' );
+			$message   = $updateRow.find( '.update-link' ).addClass( 'updating-message' );
+			message    = wp.updates.l10n.updatingLabel.replace( '%s', $message.data( 'name' ) );
 		}
 
 		if ( ! wp.updates.updateLock ) {
@@ -310,6 +313,8 @@ window.wp = window.wp || {};
 
 		} else if ( 'plugin-install' === pagenow ) {
 			$updateMessage = $( '.plugin-card-' + response.slug ).find( '.update-now' ).removeClass( 'updating-message' ).addClass( 'button-disabled updated-message' );
+		} else if ( 'update-core' === pagenow ) {
+			$updateMessage = $( 'tr[data-plugin="' + plugin + '"]' ).find( '.update-link' ).removeClass( 'updating-message' ).addClass( 'button-disabled updated-message' );
 		}
 
 		$updateMessage
@@ -370,6 +375,12 @@ window.wp = window.wp || {};
 						.text( wp.updates.l10n.updateNow );
 				}, 200 );
 			} );
+		} else if ( 'update-core' === pagenow ) {
+			$message = $( 'tr[data-plugin="' + response.plugin ).find( '.update-link' ).text( wp.updates.l10n.updateFailedShort ).removeClass( 'updating-message' );
+
+			setTimeout( function () {
+				$message.text( wp.updates.l10n.update );
+			}, 500 );
 		}
 
 		wp.a11y.speak( errorMessage, 'assertive' );
@@ -585,6 +596,8 @@ window.wp = window.wp || {};
 
 		if ( 'themes-network' === pagenow ) {
 			$notice = $( '[data-slug="' + slug + '"]' ).find( '.update-message' );
+		} else if ( 'update-core' === pagenow ) {
+			$notice = $( '[data-slug="' + slug + '"]' ).find( '.update-link' );
 		} else {
 			$notice = $( '#update-theme' ).closest( '.notice' );
 			if ( ! $notice.length ) {
@@ -624,6 +637,12 @@ window.wp = window.wp || {};
 			// Update the version number in the row.
 			newText = $theme.find( '.theme-version-author-uri' ).html().replace( response.oldVersion, response.newVersion );
 			$theme.find( '.theme-version-author-uri' ).html( newText );
+		} else if ( 'update-core' === pagenow ) {
+			$notice = $( 'tr[data-slug="' + response.slug + '"]' ).find( '.update-link' ).removeClass( 'updating-message' ).addClass( 'button-disabled updated-message' );
+
+			$notice
+				.attr( 'aria-label', wp.updates.l10n.updatedLabel.replace( '%s', response.pluginName ) )
+				.text( wp.updates.l10n.updated );
 		} else {
 			$notice = $( '.theme-info .notice' );
 			if ( ! $notice.length ) {
@@ -664,6 +683,12 @@ window.wp = window.wp || {};
 
 		if ( 'themes-network' === pagenow ) {
 			$notice = $theme.find( '.update-message ' );
+		} else if ( 'update-core' === pagenow ) {
+			$notice = $( 'tr[data-slug="' + response.slug ).find( '.update-link' ).text( wp.updates.l10n.updateFailedShort ).removeClass( 'updating-message' );
+
+			setTimeout( function () {
+				$notice.text( wp.updates.l10n.update );
+			}, 500 );
 		} else {
 			$notice = $( '.theme-info .notice' );
 			if ( ! $notice.length ) {
@@ -1207,6 +1232,26 @@ window.wp = window.wp || {};
 			}
 
 			wp.updates.deletePlugin( $pluginRow.data( 'plugin' ), $pluginRow.data( 'slug' ) );
+		} );
+
+		/**
+		 * Click handler for theme updates in List Table view.
+		 *
+		 * @since 4.2.0
+		 *
+		 * @param {Event} event Event interface.
+		 */
+		$theList.on( 'click', '[data-type="theme"] .update-link', function( event ) {
+			var $themeRow = $( event.target ).parents( 'tr' );
+			event.preventDefault();
+
+			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
+				wp.updates.requestFilesystemCredentials( event );
+			}
+
+			// Return the user to the input box of the theme's table row after closing the modal.
+			wp.updates.$elToReturnFocusToFromCredentialsModal = $themeRow.find( '.check-column input' );
+			wp.updates.updateTheme( $themeRow.data( 'slug' ) );
 		} );
 
 		/**
