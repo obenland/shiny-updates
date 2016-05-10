@@ -1,8 +1,16 @@
 <?php
+/**
+ * This file holds the shiny updates list table class.
+ */
 
+/**
+ * List table used on the available updates screen.
+ */
 class Shiny_Updates_List_Table extends WP_List_Table {
 	/**
 	 * The current WordPress version.
+	 *
+	 * @access protected
 	 *
 	 * @var string
 	 */
@@ -10,6 +18,8 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 
 	/**
 	 * The available WordPress version, if applicable.
+	 *
+	 * @access protected
 	 *
 	 * @var string|false
 	 */
@@ -28,7 +38,8 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	/**
 	 * Prepares the list of items for displaying.
 	 *
-	 * @uses WP_List_Table::set_pagination_args()
+	 * @access public
+	 * @uses   WP_List_Table::set_pagination_args()
 	 */
 	public function prepare_items() {
 		global $wp_version;
@@ -87,7 +98,9 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Message to be displayed when there are no items
+	 * Message to be displayed when there are no items.
+	 *
+	 * @access public
 	 */
 	public function no_items() {
 		_e( 'Your site is up to date, there are no available updates.' );
@@ -95,6 +108,8 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 
 	/**
 	 * Get a list of columns.
+	 *
+	 * @access public
 	 *
 	 * @return array
 	 */
@@ -116,6 +131,8 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	/**
 	 * Handles the title column output.
 	 *
+	 * @access public
+	 *
 	 * @param array $item The current item.
 	 */
 	public function column_title( $item ) {
@@ -129,6 +146,8 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 
 	/**
 	 * Handles the title column output for a theme update item.
+	 *
+	 * @access public
 	 *
 	 * @param array $item The current item.
 	 */
@@ -152,6 +171,8 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 
 	/**
 	 * Handles the title column output for a plugin update item.
+	 *
+	 * @access public
 	 *
 	 * @param array $item The current item.
 	 */
@@ -212,6 +233,8 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	/**
 	 * Handles the title column output for a core update item.
 	 *
+	 * @access public
+	 *
 	 * @param array $item The current item.
 	 */
 	public function column_title_core( $item ) {
@@ -230,6 +253,8 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 
 	/**
 	 * Handles the type column output.
+	 *
+	 * @access public
 	 *
 	 * @param array $item The current item.
 	 */
@@ -253,6 +278,8 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	/**
 	 * Handles the action column output.
 	 *
+	 * @access public
+	 *
 	 * @param array $item The current item.
 	 */
 	public function column_action( $item ) {
@@ -269,8 +296,11 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Lists a single core update.
 	 *
 	 * @global string $wp_version
+	 *
+	 * @access public
 	 *
 	 * @param object  $update
 	 */
@@ -326,7 +356,5 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 		echo '</p>';
 
 		echo '</form>';
-
 	}
-
 }
