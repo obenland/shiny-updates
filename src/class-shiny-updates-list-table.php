@@ -129,6 +129,27 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Generates content for a single row of the table
+	 *
+	 * @access public
+	 *
+	 * @param object $item The current item.
+	 */
+	public function single_row( $item ) {
+		$data = '';
+
+		if ( 'theme' === $item['type'] ) {
+			$data = "data-slug='" . $item['slug'] . "'";
+		} else if ( 'plugin' === $item['type'] ) {
+			$data = "data-plugin='" . $item['slug'] . "'";
+		}
+
+		echo "<tr $data>";
+		$this->single_row_columns( $item );
+		echo '</tr>';
+	}
+
+	/**
 	 * Handles the title column output.
 	 *
 	 * @access public
