@@ -119,89 +119,113 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	 * @param array $item The current item.
 	 */
 	public function column_title( $item ) {
-		if ( 'theme' === $item['type'] ) {
-			/* @var WP_Theme $theme */
-			$theme = $item['data'];
-			?>
-			<p>
-				<img src="<?php echo esc_url( $theme->get_screenshot() ); ?>" width="85" height="64" class="updates-table-screenshot" alt=""/>
-				<strong><?php echo $theme->display( 'Name' ); ?></strong>
-				<?php
-				/* translators: 1: theme version, 2: new version */
-				printf( __( 'You have version %1$s installed. Update to %2$s.' ),
-					$theme->display( 'Version' ),
-					$theme->update['new_version']
-				);
-				?>
-			</p>
+		if ( method_exists( $this, 'column_title_' . $item['type'] ) ) {
+			call_user_func(
+				array( $this, 'column_title_' . $item['type'] ),
+				$item
+			);
+		}
+	}
+
+	/**
+	 * Handles the title column output for a theme update item.
+	 *
+	 * @param array $item The current item.
+	 */
+	public function column_title_theme( $item ) {
+		/* @var WP_Theme $theme */
+		$theme = $item['data'];
+		?>
+		<p>
+			<img src="<?php echo esc_url( $theme->get_screenshot() ); ?>" width="85" height="64" class="updates-table-screenshot" alt=""/>
+			<strong><?php echo $theme->display( 'Name' ); ?></strong>
 			<?php
-		} elseif ( 'plugin' === $item['type'] ) {
-			$plugin = $item['data'];
-
-			// Get plugin compat for running version of WordPress.
-			if ( isset( $plugin->update->tested ) && version_compare( $plugin->update->tested, $this->cur_wp_version, '>=' ) ) {
-				$compat = '<br />' . sprintf( __( 'Compatibility with WordPress %1$s: 100%% (according to its author)' ), $this->cur_wp_version );
-			} elseif ( isset( $plugin->update->compatibility->{$this->cur_wp_version} ) ) {
-				$compat = $plugin->update->compatibility->{$this->cur_wp_version};
-				$compat = '<br />' . sprintf( __( 'Compatibility with WordPress %1$s: %2$d%% (%3$d "works" votes out of %4$d total)' ), $this->cur_wp_version, $compat->percent, $compat->votes, $compat->total_votes );
-			} else {
-				$compat = '<br />' . sprintf( __( 'Compatibility with WordPress %1$s: Unknown' ), $this->cur_wp_version );
-			}
-			// Get plugin compat for updated version of WordPress.
-			if ( $this->core_update_version ) {
-				if ( isset( $plugin->update->tested ) && version_compare( $plugin->update->tested, $this->core_update_version, '>=' ) ) {
-					$compat .= '<br />' . sprintf( __( 'Compatibility with WordPress %1$s: 100%% (according to its author)' ), $this->core_update_version );
-				} elseif ( isset( $plugin->update->compatibility->{$this->core_update_version} ) ) {
-					$update_compat = $plugin->update->compatibility->{$this->core_update_version};
-					$compat .= '<br />' . sprintf( __( 'Compatibility with WordPress %1$s: %2$d%% (%3$d "works" votes out of %4$d total)' ), $this->core_update_version, $update_compat->percent, $update_compat->votes, $update_compat->total_votes );
-				} else {
-					$compat .= '<br />' . sprintf( __( 'Compatibility with WordPress %1$s: Unknown' ), $this->core_update_version );
-				}
-			}
-			// Get the upgrade notice for the new plugin version.
-			if ( isset( $plugin->update->upgrade_notice ) ) {
-				$upgrade_notice = '<br />' . strip_tags( $plugin->update->upgrade_notice );
-			} else {
-				$upgrade_notice = '';
-			}
-
-			$details_url = self_admin_url( 'plugin-install.php?tab=plugin-information&plugin=' . $plugin->update->slug . '&section=changelog&TB_iframe=true&width=640&height=662' );
-			$details     = sprintf(
-				'<a href="%1$s" class="thickbox open-plugin-details-modal" aria-label="%2$s">%3$s</a>',
-				esc_url( $details_url ),
-				/* translators: 1: plugin name, 2: version number */
-				esc_attr( sprintf( __( 'View %1$s version %2$s details' ), $plugin->Name, $plugin->update->new_version ) ),
-				/* translators: %s: plugin version */
-				sprintf( __( 'View version %s details.' ), $plugin->update->new_version )
+			/* translators: 1: theme version, 2: new version */
+			printf( __( 'You have version %1$s installed. Update to %2$s.' ),
+				$theme->display( 'Version' ),
+				$theme->update['new_version']
 			);
 			?>
-			<p>
-				<strong><?php echo $plugin->Name; ?></strong>
-				<?php
-				/* translators: 1: plugin version, 2: new version */
-				printf( __( 'You have version %1$s installed. Update to %2$s.' ),
-					$plugin->Version,
-					$plugin->update->new_version
-				);
-				echo ' ' . $details . $compat . $upgrade_notice;
-				?>
-			</p>
-			<?php
-		} else if ( 'core' === $item['type'] ) {
-			?>
-			<p>
-				<img src="<?php echo esc_url( admin_url( 'images/wordpress-logo.svg' ) ); ?>" width="85" height="85" class="updates-table-screenshot" alt=""/>
-				<strong><?php _e( 'WordPress' ); ?></strong>
-				<?php
-				foreach ( (array) $item['data'] as $update ) {
-					$this->_list_core_update( $update );
-				}
-				?>
-			</p>
-			<?php
+		</p>
+		<?php
+	}
+
+	/**
+	 * Handles the title column output for a plugin update item.
+	 *
+	 * @param array $item The current item.
+	 */
+	public function column_title_plugin( $item ) {
+		$plugin = $item['data'];
+
+		// Get plugin compat for running version of WordPress.
+		if ( isset( $plugin->update->tested ) && version_compare( $plugin->update->tested, $this->cur_wp_version, '>=' ) ) {
+			$compat = '<br />' . sprintf( __( 'Compatibility with WordPress %1$s: 100%% (according to its author)' ), $this->cur_wp_version );
+		} elseif ( isset( $plugin->update->compatibility->{$this->cur_wp_version} ) ) {
+			$compat = $plugin->update->compatibility->{$this->cur_wp_version};
+			$compat = '<br />' . sprintf( __( 'Compatibility with WordPress %1$s: %2$d%% (%3$d "works" votes out of %4$d total)' ), $this->cur_wp_version, $compat->percent, $compat->votes, $compat->total_votes );
 		} else {
-			var_dump( $item );
+			$compat = '<br />' . sprintf( __( 'Compatibility with WordPress %1$s: Unknown' ), $this->cur_wp_version );
 		}
+		// Get plugin compat for updated version of WordPress.
+		if ( $this->core_update_version ) {
+			if ( isset( $plugin->update->tested ) && version_compare( $plugin->update->tested, $this->core_update_version, '>=' ) ) {
+				$compat .= '<br />' . sprintf( __( 'Compatibility with WordPress %1$s: 100%% (according to its author)' ), $this->core_update_version );
+			} elseif ( isset( $plugin->update->compatibility->{$this->core_update_version} ) ) {
+				$update_compat = $plugin->update->compatibility->{$this->core_update_version};
+				$compat .= '<br />' . sprintf( __( 'Compatibility with WordPress %1$s: %2$d%% (%3$d "works" votes out of %4$d total)' ), $this->core_update_version, $update_compat->percent, $update_compat->votes, $update_compat->total_votes );
+			} else {
+				$compat .= '<br />' . sprintf( __( 'Compatibility with WordPress %1$s: Unknown' ), $this->core_update_version );
+			}
+		}
+		// Get the upgrade notice for the new plugin version.
+		if ( isset( $plugin->update->upgrade_notice ) ) {
+			$upgrade_notice = '<br />' . strip_tags( $plugin->update->upgrade_notice );
+		} else {
+			$upgrade_notice = '';
+		}
+
+		$details_url = self_admin_url( 'plugin-install.php?tab=plugin-information&plugin=' . $plugin->update->slug . '&section=changelog&TB_iframe=true&width=640&height=662' );
+		$details     = sprintf(
+			'<a href="%1$s" class="thickbox open-plugin-details-modal" aria-label="%2$s">%3$s</a>',
+			esc_url( $details_url ),
+			/* translators: 1: plugin name, 2: version number */
+			esc_attr( sprintf( __( 'View %1$s version %2$s details' ), $plugin->Name, $plugin->update->new_version ) ),
+			/* translators: %s: plugin version */
+			sprintf( __( 'View version %s details.' ), $plugin->update->new_version )
+		);
+		?>
+		<p>
+			<strong><?php echo $plugin->Name; ?></strong>
+			<?php
+			/* translators: 1: plugin version, 2: new version */
+			printf( __( 'You have version %1$s installed. Update to %2$s.' ),
+				$plugin->Version,
+				$plugin->update->new_version
+			);
+			echo ' ' . $details . $compat . $upgrade_notice;
+			?>
+		</p>
+		<?php
+	}
+
+	/**
+	 * Handles the title column output for a core update item.
+	 *
+	 * @param array $item The current item.
+	 */
+	public function column_title_core( $item ) {
+		?>
+		<p>
+			<img src="<?php echo esc_url( admin_url( 'images/wordpress-logo.svg' ) ); ?>" width="85" height="85" class="updates-table-screenshot" alt=""/>
+			<strong><?php _e( 'WordPress' ); ?></strong>
+			<?php
+			foreach ( (array) $item['data'] as $update ) {
+				$this->_list_core_update( $update );
+			}
+			?>
+		</p>
+		<?php
 	}
 
 	/**
