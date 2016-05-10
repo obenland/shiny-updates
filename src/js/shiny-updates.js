@@ -172,6 +172,7 @@ window.wp = window.wp || {};
 	 * @since 4.X.0
 	 *
 	 * @param {object} response
+	 * @param {array}  response.debug Debug inforamation. Optional.
 	 */
 	wp.updates.ajaxAlways = function( response ) {
 		wp.updates.updateLock = false;
@@ -288,7 +289,12 @@ window.wp = window.wp || {};
 	 *
 	 * @since 4.2.0
 	 *
-	 * @param {object} response
+	 * @param {object} response            Response from the server.
+	 * @param {string} response.slug       Slug of the plugin to be updated.
+	 * @param {string} response.plugin     Basename of the plugin to be updated.
+	 * @param {string} response.pluginName Name of the plugin to be updated.
+	 * @param {string} response.oldVersion Old version of the plugin.
+	 * @param {string} response.newVersion New version of the plugin.
 	 */
 	wp.updates.updateSuccess = function( response ) {
 		var $pluginRow, $updateMessage, newText;
@@ -321,7 +327,12 @@ window.wp = window.wp || {};
 	 *
 	 * @since 4.2.0
 	 *
-	 * @param {object} response
+	 * @param {object} response            Response from the server.
+	 * @param {string} response.slug       Slug of the plugin to be updated.
+	 * @param {string} response.plugin     Basename of the plugin to be updated.
+	 * @param {string} response.pluginName Name of the plugin to be updated.
+	 * @param {string} response.error      The error that occurred.
+	 * @param {string} response.errorCode  Error code for the error that occurred.
 	 */
 	wp.updates.updateError = function( response ) {
 		var $card, $message, errorMessage;
@@ -394,7 +405,8 @@ window.wp = window.wp || {};
 	 *
 	 * @since 4.X.0
 	 *
-	 * @param {object} response
+	 * @param {object} response      Response from the server.
+	 * @param {string} response.slug Slug of the plugin to be installed.
 	 */
 	wp.updates.installPluginSuccess = function( response ) {
 		var $message = $( '.plugin-card-' + response.slug ).find( '.install-now' );
@@ -411,7 +423,12 @@ window.wp = window.wp || {};
 	 *
 	 * @since 4.X.0
 	 *
-	 * @param {object} response
+	 * @param {object} response            Response from the server.
+	 * @param {string} response.slug       Slug of the plugin to be installed.
+	 * @param {string} response.plugin     Basename of the plugin to be installed.
+	 * @param {string} response.pluginName Name of the plugin to be installed.
+	 * @param {string} response.error      The error that occurred.
+	 * @param {string} response.errorCode  Error code for the error that occurred.
 	 */
 	wp.updates.installPluginError = function( response ) {
 		var $card   = $( '.plugin-card-' + response.slug ),
@@ -427,7 +444,7 @@ window.wp = window.wp || {};
 
 		$card
 			.addClass( 'plugin-card-update-failed' )
-			.append( '<div class="notice notice-error is-dismissible"><p>' + errorMessage + '</p></div>' );
+			.append( '<div class="notice notice-error notice-alt is-dismissible"><p>' + errorMessage + '</p></div>' );
 
 		$card.on( 'click', '.notice.is-dismissible .notice-dismiss', function() {
 
@@ -469,7 +486,9 @@ window.wp = window.wp || {};
 	 *
 	 * @since 4.X.0
 	 *
-	 * @param {object} response
+	 * @param {object} response        Response from the server.
+	 * @param {string} response.slug   Slug of the plugin to be deleted.
+	 * @param {string} response.plugin Basename of the plugin to be deleted.
 	 */
 	wp.updates.deletePluginSuccess = function( response ) {
 
@@ -538,7 +557,10 @@ window.wp = window.wp || {};
 	 *
 	 * @since 4.X.0
 	 *
-	 * @param {object} response
+	 * @param {object} response           Response from the server.
+	 * @param {string} response.plugin    Basename of the plugin to be deleted.
+	 * @param {string} response.error     The error that occurred.
+	 * @param {string} response.errorCode Error code for the error that occurred.
 	 */
 	wp.updates.deletePluginError = function( response ) {
 		if ( response.errorCode && 'unable_to_connect_to_filesystem' === response.errorCode ) {
@@ -559,23 +581,23 @@ window.wp = window.wp || {};
 	 * @param {string} slug Theme stylesheet.
 	 */
 	wp.updates.updateTheme = function( slug ) {
-		var $message;
+		var $notice, message;
 
 		if ( 'themes-network' === pagenow ) {
-			$message = $( 'tr[data-slug="' + slug + '"]' ).find( '.update-message' ).addClass( 'updating-message' ).find( 'p' );
+			$notice = $( '[data-slug="' + slug + '"]' ).find( '.update-message' );
 		} else {
-			$message = $( '#update-theme' ).closest( '.notice' );
-			if ( ! $message.length ) {
-				$message = $( '[data-slug="' + slug + '"]' ).find( '.update-message' );
+			$notice = $( '#update-theme' ).closest( '.notice' );
+			if ( ! $notice.length ) {
+				$notice = $( '[data-slug="' + slug + '"]' ).find( '.update-message' );
 			}
-			$message.addClass( 'updating-message' );
 		}
 
-		if ( $message.html() !== wp.updates.l10n.updating ) {
-			$message.data( 'originaltext', $message.html() );
+		message = $notice.find( 'p' ).text();
+		if ( message !== wp.updates.l10n.updating ) {
+			$notice.data( 'originaltext', message );
 		}
 
-		$message.text( wp.updates.l10n.updating );
+		$notice.replaceWith( wp.updates.adminNotice( { className: 'update-message updating-message notice-warning notice-alt', message: wp.updates.l10n.updating } ) );
 		wp.a11y.speak( wp.updates.l10n.updatingMsg, 'polite' );
 
 		wp.updates.ajax( 'update-theme', { 'slug': slug } )
@@ -589,27 +611,30 @@ window.wp = window.wp || {};
 	 * @since 4.X.0
 	 *
 	 * @param {object} response
+	 * @param {string} response.slug       Slug of the theme to be updated.
+	 * @param {string} response.oldVersion Old version of the theme.
+	 * @param {string} response.newVersion New version of the theme.
 	 */
 	wp.updates.updateThemeSuccess = function( response ) {
-		var $message, newText, $theme = $( '[data-slug="' + response.slug + '"]' );
+		var $notice, newText, $theme = $( '[data-slug="' + response.slug + '"]' );
 
 		if ( 'themes-network' === pagenow ) {
-			$message = $theme.find( '.update-message' ).removeClass( 'updating-message notice-warning' ).addClass( 'updated-message notice-success' ).find( 'p' );
+			$notice = $theme.find( '.update-message' );
 
 			// Update the version number in the row.
 			newText = $theme.find( '.theme-version-author-uri' ).html().replace( response.oldVersion, response.newVersion );
 			$theme.find( '.theme-version-author-uri' ).html( newText );
 		} else {
-			$message = $( '.theme-info .notice' );
-			if ( ! $message.length ) {
-				$message = $theme.find( '.update-message' );
+			$notice = $( '.theme-info .notice' );
+			if ( ! $notice.length ) {
+				$notice = $theme.find( '.update-message' );
 			}
-			$message.removeClass( 'updating-message notice-warning' ).addClass( 'updated-message notice-success is-dismissible' );
+
 			$( '.theme-version' ).text( response.newVersion );
 			$( 'body.modal-open' ).length ? $( '.load-customize:visible' ).focus() : $theme.find( '.load-customize' ).focus();
 		}
 
-		$message.text( wp.updates.l10n.updated );
+		$notice.replaceWith( wp.updates.adminNotice( { className: 'update-message updated-message notice-success notice-alt', message: wp.updates.l10n.updated } ) );
 		wp.a11y.speak( wp.updates.l10n.updatedMsg, 'polite' );
 
 		wp.updates.decrementCount( 'theme' );
@@ -622,12 +647,15 @@ window.wp = window.wp || {};
 	 *
 	 * @since 4.X.0
 	 *
-	 * @param {object} response
+	 * @param {object} response           Response from the server.
+	 * @param {string} response.slug      Slug of the theme to be updated.
+	 * @param {string} response.error     The error that occurred.
+	 * @param {string} response.errorCode Error code for the error that occurred.
 	 */
 	wp.updates.updateThemeError = function( response ) {
 		var $theme = $( '[data-slug="' + response.slug + '"]' ),
 			errorMessage = wp.updates.l10n.updateFailed.replace( '%s', response.error ),
-			$message;
+			$notice;
 
 		if ( response.errorCode && 'unable_to_connect_to_filesystem' === response.errorCode ) {
 			wp.updates.credentialError( response, 'update-theme' );
@@ -635,17 +663,16 @@ window.wp = window.wp || {};
 		}
 
 		if ( 'themes-network' === pagenow ) {
-			$message = $theme.find( '.update-message ' ).removeClass( 'updating-message notice-warning' ).addClass( 'notice-error' ).find( 'p' );
+			$notice = $theme.find( '.update-message ' );
 		} else {
-			$message = $( '.theme-info .notice' );
-			if ( ! $message.length ) {
-				$message = $theme.find( '.notice' );
+			$notice = $( '.theme-info .notice' );
+			if ( ! $notice.length ) {
+				$notice = $theme.find( '.notice' );
 			}
-			$message.removeClass( 'updating-message notice-warning' ).addClass( 'notice-error is-dismissible' );
 			$( 'body.modal-open' ).length ? $( '.load-customize:visible' ).focus() : $theme.find( '.load-customize' ).focus();
 		}
 
-		$message.text( errorMessage );
+		$notice.replaceWith( wp.updates.adminNotice( { className: 'update-message notice-error notice-alt is-dismissible', message: errorMessage } ) );
 		wp.a11y.speak( errorMessage, 'polite' );
 
 		$document.trigger( 'wp-theme-update-error', response );
@@ -670,7 +697,7 @@ window.wp = window.wp || {};
 		wp.a11y.speak( wp.updates.l10n.installingMsg, 'polite' );
 
 		// Remove previous error messages, if any.
-		$( '.install-theme-info, #' + slug ).removeClass( 'theme-install-failed' ).find( '.notice.notice-error' ).remove();
+		$( '.install-theme-info, [data-slug="' + slug + '"]' ).removeClass( 'theme-install-failed' ).find( '.notice.notice-error' ).remove();
 
 		wp.updates.ajax( 'install-theme', { 'slug': slug } )
 			.done( wp.updates.installThemeSuccess )
@@ -682,7 +709,8 @@ window.wp = window.wp || {};
 	 *
 	 * @since 4.X.0
 	 *
-	 * @param {object} response
+	 * @param {object} response      Response from the server.
+	 * @param {string} response.slug Slug of the theme to be installed.
 	 */
 	wp.updates.installThemeSuccess = function( response ) {
 		var $card    = $( '.wp-full-overlay-header, #' + response.slug ),
@@ -701,7 +729,10 @@ window.wp = window.wp || {};
 	 *
 	 * @since 4.X.0
 	 *
-	 * @param {object} response
+	 * @param {object} response           Response from the server.
+	 * @param {string} response.slug      Slug of the theme to be installed.
+	 * @param {string} response.error     The error that occurred.
+	 * @param {string} response.errorCode Error code for the error that occurred.
 	 */
 	wp.updates.installThemeError = function( response ) {
 		var $card, $button,
@@ -717,7 +748,7 @@ window.wp = window.wp || {};
 			$button = $( '.theme-install[data-slug="' + response.slug + '"]' );
 			$card   = $( '.install-theme-info' ).prepend( $message );
 		} else {
-			$card   = $( '#' + response.slug ).addClass( 'theme-install-failed' ).append( $message );
+			$card   = $( '[data-slug="' + response.slug + '"]' ).addClass( 'theme-install-failed' ).append( $message );
 			$button = $card.find( '.theme-install' );
 		}
 
@@ -760,7 +791,8 @@ window.wp = window.wp || {};
 	 *
 	 * @since 4.X.0
 	 *
-	 * @param {object} response
+	 * @param {object} response      Response from the server.
+	 * @param {string} response.slug Slug of the theme to be deleted.
 	 */
 	wp.updates.deleteThemeSuccess = function( response ) {
 		var $themeRow = $( '[data-slug="' + response.slug + '"]' );
@@ -805,7 +837,10 @@ window.wp = window.wp || {};
 	 *
 	 * @since 4.X.0
 	 *
-	 * @param {object} response
+	 * @param {object} response           Response from the server.
+	 * @param {string} response.slug      Slug of the theme to be deleted.
+	 * @param {string} response.error     The error that occurred.
+	 * @param {string} response.errorCode Error code for the error that occurred.
 	 */
 	wp.updates.deleteThemeError = function( response ) {
 		var errorMessage = wp.updates.l10n.deleteFailed.replace( '%s', response.error ),
@@ -959,6 +994,7 @@ window.wp = window.wp || {};
 	 * @since 4.X.0 Triggers an event for callbacks to listen to and add their actions.
 	 */
 	wp.updates.requestForCredentialsModalCancel = function() {
+		var plugin = wp.updates.updateQueue[0].data.plugin;
 
 		// No updateLock and no updateQueue means we already have cleared things up.
 		if ( false === wp.updates.updateLock && 0 === wp.updates.updateQueue.length ) {
@@ -971,7 +1007,7 @@ window.wp = window.wp || {};
 
 		wp.updates.requestForCredentialsModalClose();
 
-		$document.trigger( 'credential-modal-cancel' );
+		$document.trigger( 'credential-modal-cancel', plugin );
 	};
 
 	/**
@@ -1380,12 +1416,14 @@ window.wp = window.wp || {};
 		 * Handle events after the credential modal was closed.
 		 *
 		 * @since 4.X.0
+		 *
+		 * @param {Event}  event  Event interface.
+		 * @param {string} plugin The plugin identifier.
 		 */
-		$document.on( 'credential-modal-cancel', function() {
-			var plugin, $message;
+		$document.on( 'credential-modal-cancel', function( event, plugin ) {
+			var $message;
 
 			if ( 'plugins' === pagenow || 'plugins-network' === pagenow ) {
-				plugin   = wp.updates.updateQueue[0].data.plugin;
 				$message = $( 'tr[data-plugin="' + plugin + '"]' ).find( '.update-message' );
 			} else if ( 'plugin-install' === pagenow ) {
 				$message = $( '.update-now.updating-message' );

@@ -135,6 +135,7 @@ class Shiny_Updates {
 			'plugins'    => $plugins,
 			'totals'     => $totals,
 			'l10n'       => array(
+				'searchResults'             => __( 'Search results for &#8220;%s&#8221;' ),
 				'noPlugins'                 => __( 'You do not appear to have any plugins available at this time.' ),
 				'noItemsSelected'           => __( 'Please select at least one item to perform this action on.' ),
 				'updating'                  => __( 'Updating...' ), // No ellipsis.
@@ -231,7 +232,7 @@ class Shiny_Updates {
 			<# } #>
 
 			<# if ( data.hasUpdate ) { #>
-				<div class="update-message notice inline notice-warning notice-alt"><?php _e( 'New version available. <button class="button-link" type="button">Update now</button>' ); ?></div>
+				<div class="update-message notice inline notice-warning notice-alt"><p><?php _e( 'New version available. <button class="button-link" type="button">Update now</button>' ); ?></p></div>
 			<# } #>
 
 			<span class="more-details" id="{{ data.id }}-action"><?php _e( 'Theme Details' ); ?></span>
