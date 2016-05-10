@@ -290,7 +290,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 		<form method="post" action="<?php echo esc_url( $form_action ); ?>" name="upgrade-all">
 			<?php wp_nonce_field( 'upgrade-core' ); ?>
 			<input type="hidden" name="checked[]" id="<?php echo $checkbox_id; ?>" value="<?php echo esc_attr( $slug ); ?>"/>
-			<?php submit_button( esc_attr__( 'Update' ), 'button', $checkbox_id, false ); ?>
+			<?php submit_button( esc_attr__( 'Update' ), 'button update-link', $checkbox_id, false ); ?>
 		</form>
 		<?php
 	}
