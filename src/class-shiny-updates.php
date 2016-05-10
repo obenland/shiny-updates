@@ -147,6 +147,7 @@ class Shiny_Updates {
 				'noItemsSelected'           => __( 'Please select at least one item to perform this action on.' ),
 				'updating'                  => __( 'Updating...' ), // No ellipsis.
 				'updated'                   => __( 'Updated!' ),
+				'update'                    => __( 'Update' ),
 				'updateNow'                 => __( 'Update Now' ),
 				'updateFailedShort'         => __( 'Update Failed!' ),
 				/* translators: Error string for a failed update */

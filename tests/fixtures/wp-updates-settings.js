@@ -6,6 +6,7 @@ window._wpUpdatesSettings = {
 		'noItemsSelected': 'Please select at least one item to perform this action on.',
 		'updating': 'Updating...',
 		'updated': 'Updated!',
+		'update': 'Update',
 		'updateNow': 'Update Now',
 		'updateFailedShort': 'Update Failed!',
 		'updateFailed': 'Update Failed: %s',
