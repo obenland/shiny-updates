@@ -1,8 +1,7 @@
-/* global pagenow */
-window.wp = window.wp || {};
-
 (function( $, wp ) {
 	var $document = $( document );
+
+	wp = wp || {};
 
 	/**
 	 * The WP Updates object.
