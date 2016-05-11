@@ -190,6 +190,23 @@ tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-error.notic
 	background-color: #e5f5fa;
 }
 
+.update-core-php .wrap > h2,
+.update-core-php .wrap > p,
+.update-core-php .wrap > .core-updates,
+.update-core-php .wrap > [name=upgrade-translations],
+.update-core-php .wrap > [name=upgrade-plugins],
+.update-core-php .wrap > [name=upgrade-themes] {
+	display: none;
+}
+
+.wp-list-table.updates .manage-column.column-type {
+	width: 10%;
+}
+
+.wp-list-table.updates .manage-column.column-action {
+	width: 10%;
+}
+
 @media aural {
 	.wrap .notice p:before,
 	.theme .notice:before,
