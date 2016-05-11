@@ -17,12 +17,12 @@ window._wpUpdatesSettings = {
 		'updatedMsg': 'Update completed successfully.',
 		'updateCancel': 'Update canceled.',
 		'beforeunload': 'Plugin updates may not complete if you navigate away from this page.',
-		'installNow': 'Install Now' ,
+		'installNow': 'Install Now',
 		'installing': 'Installing...',
 		'installed': 'Installed!',
 		'installFailedShort': 'Install Failed!',
 		'installFailed': 'Installation failed: %s',
-		'installingLabel': 'Installing %s...', // no ellipsis
+		'installingLabel': 'Installing %s...', // No ellipsis
 		'installedLabel': '%s installed!',
 		'installFailedLabel': '%s installation failed',
 		'installingMsg': 'Installing... please wait.',

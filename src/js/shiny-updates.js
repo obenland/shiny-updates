@@ -314,7 +314,7 @@ window.wp = window.wp || {};
 		} else if ( 'plugin-install' === pagenow ) {
 			$updateMessage = $( '.plugin-card-' + response.slug ).find( '.update-now' ).removeClass( 'updating-message' ).addClass( 'button-disabled updated-message' );
 		} else if ( 'update-core' === pagenow ) {
-			$updateMessage = $( 'tr[data-plugin="' + plugin + '"]' ).find( '.update-link' ).removeClass( 'updating-message' ).addClass( 'button-disabled updated-message' );
+			$updateMessage = $( 'tr[data-plugin="' + response.plugin + '"]' ).find( '.update-link' ).removeClass( 'updating-message' ).addClass( 'button-disabled updated-message' );
 		}
 
 		$updateMessage
@@ -378,7 +378,7 @@ window.wp = window.wp || {};
 		} else if ( 'update-core' === pagenow ) {
 			$message = $( 'tr[data-plugin="' + response.plugin ).find( '.update-link' ).text( wp.updates.l10n.updateFailedShort ).removeClass( 'updating-message' );
 
-			setTimeout( function () {
+			setTimeout( function() {
 				$message.text( wp.updates.l10n.update );
 			}, 500 );
 		}
@@ -686,7 +686,7 @@ window.wp = window.wp || {};
 		} else if ( 'update-core' === pagenow ) {
 			$notice = $( 'tr[data-slug="' + response.slug ).find( '.update-link' ).text( wp.updates.l10n.updateFailedShort ).removeClass( 'updating-message' );
 
-			setTimeout( function () {
+			setTimeout( function() {
 				$notice.text( wp.updates.l10n.update );
 			}, 500 );
 		} else {
