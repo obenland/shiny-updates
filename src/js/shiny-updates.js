@@ -106,7 +106,7 @@ window.wp = window.wp || {};
 	 *
 	 * @type {jQuery}
 	 */
-	wp.updates.$elToReturnFocusToFromCredentialsModal;
+	wp.updates.$elToReturnFocusToFromCredentialsModal = undefined;
 
 	/**
 	 * Adds or updates an admin notice.
