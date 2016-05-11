@@ -1579,118 +1579,117 @@ window.wp = window.wp || {};
 		$( '#typeselector' ).on( 'change', function() {
 			$( 'input.wp-filter-search' ).trigger( 'search' );
 		} );
-	} );
 
-	/**
-	 * Update plugin from the details modal on `plugin-install.php`.
-	 *
-	 * @since 4.2.0
-	 *
-	 * @param {Event} event Event interface.
-	 */
-	$( '#plugin_update_from_iframe' ).on( 'click', function( event ) {
-		var target = window.parent === window ? null : window.parent,
-			job;
+		/**
+		 * Update plugin from the details modal on `plugin-install.php`.
+		 *
+		 * @since 4.2.0
+		 *
+		 * @param {Event} event Event interface.
+		 */
+		$( '#plugin_update_from_iframe' ).on( 'click', function( event ) {
+			var target = window.parent === window ? null : window.parent,
+			    job;
 
-		$.support.postMessage = !! window.postMessage;
+			$.support.postMessage = !! window.postMessage;
 
-		if ( false === $.support.postMessage || null === target || -1 !== window.parent.location.pathname.indexOf( 'update-core.php' ) ) {
-			return;
-		}
-
-		event.preventDefault();
-
-		job = {
-			action: 'updatePlugin',
-			type: 'update-plugin',
-			data: {
-				plugin: $( this ).data( 'plugin' ),
-				slug: $( this ).data( 'slug' )
+			if ( false === $.support.postMessage || null === target || -1 !== window.parent.location.pathname.indexOf( 'update-core.php' ) ) {
+				return;
 			}
-		};
 
-		target.postMessage( JSON.stringify( job ), window.location.origin );
-	} );
+			event.preventDefault();
 
-	/**
-	 * Install plugin from the details modal on `plugin-install.php`.
-	 *
-	 * @since 4.X.0
-	 *
-	 * @param {Event} event Event interface.
-	 */
-	$( '#plugin_install_from_iframe' ).on( 'click', function( event ) {
-		var target = window.parent === window ? null : window.parent,
-			job;
+			job = {
+				action: 'updatePlugin',
+				type: 'update-plugin',
+				data: {
+					plugin: $( this ).data( 'plugin' ),
+					slug: $( this ).data( 'slug' )
+				}
+			};
 
-		$.support.postMessage = !! window.postMessage;
+			target.postMessage( JSON.stringify( job ), window.location.origin );
+		} );
 
-		if ( false === $.support.postMessage || null === target || -1 !== window.parent.location.pathname.indexOf( 'update-core.php' ) ) {
-			return;
-		}
+		/**
+		 * Install plugin from the details modal on `plugin-install.php`.
+		 *
+		 * @since 4.X.0
+		 *
+		 * @param {Event} event Event interface.
+		 */
+		$( '#plugin_install_from_iframe' ).on( 'click', function( event ) {
+			var target = window.parent === window ? null : window.parent,
+			    job;
 
-		event.preventDefault();
+			$.support.postMessage = !! window.postMessage;
 
-		job = {
-			action: 'installPlugin',
-			type: 'install-plugin',
-			data: {
-				slug: $( this ).data( 'slug' )
+			if ( false === $.support.postMessage || null === target || -1 !== window.parent.location.pathname.indexOf( 'update-core.php' ) ) {
+				return;
 			}
-		};
 
-		target.postMessage( JSON.stringify( job ), window.location.origin );
+			event.preventDefault();
+
+			job = {
+				action: 'installPlugin',
+				type: 'install-plugin',
+				data: {
+					slug: $( this ).data( 'slug' )
+				}
+			};
+
+			target.postMessage( JSON.stringify( job ), window.location.origin );
+		} );
+
+		/**
+		 * Handles postMessage events.
+		 *
+		 * @since 4.2.0
+		 * @since 4.X.0 Switched `update-plugin` action to use the updateQueue.
+		 *
+		 * @param {Event} event Event interface.
+		 */
+		$( window ).on( 'message', function( event ) {
+			var originalEvent  = event.originalEvent,
+			    expectedOrigin = document.location.protocol + '//' + document.location.hostname,
+			    message;
+
+			if ( originalEvent.origin !== expectedOrigin ) {
+				return;
+			}
+
+			message = $.parseJSON( originalEvent.data );
+
+			if ( 'undefined' === typeof message.action ) {
+				return;
+			}
+
+			switch ( message.action ) {
+				/*
+				 * Called from `wp-admin/includes/class-wp-upgrader-skins.php`.
+				 * @todo Check if that can be removed once this plugin was merged.
+				 */
+				case 'decrementUpdateCount':
+					wp.updates.decrementCount( message.upgradeType );
+					break;
+
+				case 'updatePlugin':
+				case 'installPlugin':
+					/* jscs:disable requireCamelCaseOrUpperCaseIdentifiers */
+					window.tb_remove();
+					/* jscs:enable */
+
+					wp.updates.updateQueue.push( message );
+					wp.updates.queueChecker();
+					break;
+			}
+		} );
+
+		/**
+		 * Adds a callback to display a warning before leaving the page.
+		 *
+		 * @since 4.2.0
+		 */
+		$( window ).on( 'beforeunload', wp.updates.beforeunload );
 	} );
-
-	/**
-	 * Handles postMessage events.
-	 *
-	 * @since 4.2.0
-	 * @since 4.X.0 Switched `update-plugin` action to use the updateQueue.
-	 *
-	 * @param {Event} event Event interface.
-	 */
-	$( window ).on( 'message', function( event ) {
-		var originalEvent  = event.originalEvent,
-			expectedOrigin = document.location.protocol + '//' + document.location.hostname,
-			message;
-
-		if ( originalEvent.origin !== expectedOrigin ) {
-			return;
-		}
-
-		message = $.parseJSON( originalEvent.data );
-
-		if ( 'undefined' === typeof message.action ) {
-			return;
-		}
-
-		switch ( message.action ) {
-			/*
-			 * Called from `wp-admin/includes/class-wp-upgrader-skins.php`.
-			 * @todo Check if that can be removed once this plugin was merged.
-			 */
-			case 'decrementUpdateCount':
-				wp.updates.decrementCount( message.upgradeType );
-				break;
-
-			case 'updatePlugin':
-			case 'installPlugin':
-				/* jscs:disable requireCamelCaseOrUpperCaseIdentifiers */
-				window.tb_remove();
-				/* jscs:enable */
-
-				wp.updates.updateQueue.push( message );
-				wp.updates.queueChecker();
-				break;
-		}
-	} );
-
-	/**
-	 * Adds a callback to display a warning before leaving the page.
-	 *
-	 * @since 4.2.0
-	 */
-	$( window ).on( 'beforeunload', wp.updates.beforeunload );
-
 } )( jQuery, window.wp );
