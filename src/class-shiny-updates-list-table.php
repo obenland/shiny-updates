@@ -54,6 +54,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 		$core_updates = (array) get_core_updates();
 		$plugins      = (array) get_plugin_updates();
 		$themes       = (array) get_theme_updates();
+		$translations = (array) wp_get_translation_updates();
 
 		if ( ! empty( $core_updates ) ) {
 			$this->items[] = array(
@@ -76,6 +77,14 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 				'type' => 'theme',
 				'slug' => $stylesheet,
 				'data' => $theme,
+			);
+		}
+
+		if ( ! empty( $translations ) || 'en_US' !== get_locale() ) {
+			$this->items[] = array(
+				'type' => 'translation',
+				'slug' => 'translation',
+				'data' => $translations,
 			);
 		}
 
@@ -293,6 +302,28 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Handles the title column output for the translations item.
+	 *
+	 * @since  4.X.0
+	 * @access public
+	 *
+	 * @param array $item The current item.
+	 */
+	public function column_title_translation( $item ) {
+		?>
+		<p>
+		<img src="<?php echo esc_url( admin_url( 'images/wordpress-logo.svg' ) ); ?>" width="85" height="85" class="updates-table-screenshot" alt=""/>
+		<strong><?php _e( 'Translations' ); ?></strong>
+		<?php if ( ! $item['data'] ) : ?>
+			<p> <?php _e( 'Your translations are all up to date.' ); ?></p>
+		<?php else : ?>
+			<p><?php _e( 'New translations are available.' ); ?></p>
+		<?php endif; ?>
+		</p>
+		<?php
+	}
+
+	/**
 	 * Handles the type column output.
 	 *
 	 * @since  4.X.0
@@ -309,7 +340,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 				echo __( 'Theme' );
 				break;
 			case 'translation':
-				echo __( 'Translation' );
+				echo __( 'Translations' );
 				break;
 			default:
 				echo __( 'Core' );
@@ -328,6 +359,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 		$slug        = $item['slug'];
 		$checkbox_id = 'checkbox_' . md5( $slug );
 		$form_action = sprintf( 'update-core.php?action=do-%s-upgrade', $item['type'] );
+		$nonce_action = 'translation' === $item['type'] ? 'upgrade-translations' : 'upgrade-core';
 		$data        = '';
 		$attributes  = array();
 
@@ -344,7 +376,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 
 		?>
 		<form method="post" action="<?php echo esc_url( $form_action ); ?>" name="upgrade-all">
-			<?php wp_nonce_field( 'upgrade-core' ); ?>
+			<?php wp_nonce_field( $nonce_action ); ?>
 			<input type="hidden" name="checked[]" id="<?php echo $checkbox_id; ?>" value="<?php echo esc_attr( $slug ); ?>"/>
 			<?php
 			printf(

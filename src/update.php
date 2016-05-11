@@ -249,6 +249,7 @@ function su_admin_head() {
 		.wrap > h2,
 		.wrap > p,
 		.wrap > .core-updates,
+		.wrap > [name=upgrade-translations],
 		.wrap > [name=upgrade-plugins],
 		.wrap > [name=upgrade-themes] {
 			display: none;
