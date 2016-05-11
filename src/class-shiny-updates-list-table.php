@@ -312,7 +312,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	public function column_title_translation( $item ) {
 		?>
 		<p>
-		<img src="<?php echo esc_url( admin_url( 'images/wordpress-logo.svg' ) ); ?>" width="85" height="85" class="updates-table-screenshot" alt=""/>
+		<span class="dashicons dashicons-translation"></span>
 		<strong><?php _e( 'Translations' ); ?></strong>
 		<?php if ( ! $item['data'] ) : ?>
 			<p> <?php _e( 'Your translations are all up to date.' ); ?></p>

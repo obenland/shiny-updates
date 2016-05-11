@@ -207,6 +207,14 @@ tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-error.notic
 	width: 10%;
 }
 
+.wp-list-table.updates .dashicons-translation {
+	width: 85px;
+	height: 85px;
+	font-size: 85px;
+	float: left;
+	margin: 0 10px 5px 0;
+}
+
 @media aural {
 	.wrap .notice p:before,
 	.theme .notice:before,
