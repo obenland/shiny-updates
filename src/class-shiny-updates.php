@@ -45,6 +45,9 @@ class Shiny_Updates {
 		add_action( 'wp_ajax_delete-plugin', 'wp_ajax_delete_plugin' );
 
 		// Plugin activations.
+		add_filter( 'plugin_install_action_links', array( $this, 'plugin_install_actions' ), 10, 2 );
+
+		// Plugin activations.
 		add_action( 'wp_ajax_activate-plugin', array( $this, 'wp_ajax_activate_plugin' ) );
 
 		// Themes.
@@ -63,6 +66,40 @@ class Shiny_Updates {
 
 		// Plugin modal installations.
 		add_action( 'install_plugins_pre_plugin-information', array( $this, 'install_plugin_information' ), 9 );
+	}
+
+	/**
+	 * Filter the actions available on the new plugin screen, enabling activation
+	 * for plugins that are installed and inactive.
+	 */
+	function plugin_install_actions( $action_links, $plugin ) {
+
+		// Ensure user has capability to activate plugins.
+		if ( ! current_user_can( 'activate_plugins' ) ) {
+			return $action_links;
+		}
+
+		$status = install_plugin_install_status( $plugin );
+
+		// If the plugin is installed, potentially add an activation link.
+		if ( 'latest_installed' === $status['status'] || 'newer_installed' === $status['status'] ) {
+
+			$installed_plugins = get_plugins();
+
+			// Find the corrent plugin by slug, extracting its file.
+			// @todo Pass more plugin info to the filter so we don't have to find it again here?
+			foreach ( $installed_plugins as $plugin_file => $plugin_data ) {
+
+				if ( sanitize_title( $plugin_data['Name'] ) === $plugin['slug'] ) {
+					if ( ! is_plugin_active( $plugin_file ) ) {
+						$action_links[] = '<a href="' . wp_nonce_url( 'plugins.php?action=activate&amp;plugin=' . esc_attr( $plugin_file ), 'activate-plugin_' . esc_attr( $plugin_file ) ) . '" >' . __( 'Activate' ) . '</a>';
+					}
+					break;
+				}
+			}
+
+		}
+		return $action_links;
 	}
 
 	/**
