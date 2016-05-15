@@ -207,6 +207,10 @@ tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-error.notic
 	width: 10%;
 }
 
+.wp-list-table.updates .manage-column.column-action form {
+	margin: 0;
+}
+
 .wp-list-table.updates .dashicons-translation {
 	width: 85px;
 	height: 85px;
