@@ -131,9 +131,10 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	 */
 	public function get_columns() {
 		$action = sprintf(
-			'<form method="post" action="%s" name="upgrade-all">%s<button class="button button-primary" type="submit" value="" name="upgrade-all">%s</button></form>',
+			'<form method="post" action="%s" name="upgrade-all">%s<button class="button button-primary" type="submit" value="" name="upgrade-all" %s>%s</button></form>',
 			'update-core.php?action=do-all-upgrade',
 			wp_nonce_field( 'upgrade-core', '_wpnonce', true, false ),
+			empty( $this->items ) ? 'disabled' : '',
 			esc_attr__( 'Update All' )
 		);
 
