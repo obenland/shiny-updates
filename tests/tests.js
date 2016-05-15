@@ -1,30 +1,27 @@
 /*global QUnit */
 
 QUnit.module( 'wp.updates' );
-QUnit.test( 'Update lock', function( assert ) {
-	assert.deepEqual( wp.updates.updateLock, false, 'Update lock should be false.' );
+
+QUnit.test( 'Initially, the update lock should be false', function( assert ) {
+	assert.strictEqual( wp.updates.updateLock, false );
 });
 
-QUnit.test( 'Ajax nonce', function( assert ) {
-	assert.deepEqual( wp.updates.ajaxNonce, window._wpUpdatesSettings.ajax_nonce, 'Ajax nonce should be a string equal to _wpUpdatesSettings value.' );
+QUnit.test( 'The nonce should be set correctly', function( assert ) {
+	assert.equal( wp.updates.ajaxNonce, window._wpUpdatesSettings.ajax_nonce );
 });
 
-QUnit.test( 'Decrement count', function( assert ) {
-	assert.deepEqual( wp.updates.ajaxNonce, window._wpUpdatesSettings.ajax_nonce, 'Ajax nonce should be a string equal to _wpUpdatesSettings value.' );
-});
+// QUnit.test( 'decrementCount correctly decreases the update number', function( assert ) {});
 
-QUnit.test( 'before unload should not fire by default', function( assert ) {
+QUnit.test( '`beforeunload` should only fire when locked', function( assert ) {
 	wp.updates.updateLock = false;
-	assert.deepEqual( wp.updates.beforeunload(), undefined );
-});
-QUnit.test( 'before unload should fire when update lock is active', function( assert ) {
+	assert.notOk( wp.updates.beforeunload(), '`beforeunload` should not fire.' );
 	wp.updates.updateLock = true;
-	assert.deepEqual( wp.updates.beforeunload(), window._wpUpdatesSettings.l10n.beforeunload );
+	assert.equal( wp.updates.beforeunload(), window._wpUpdatesSettings.l10n.beforeunload, '`beforeunload` should equal the localized `beforeunload` string.' );
 	wp.updates.updateLock = false;
 });
 
 QUnit.module( 'wp.updates.plugins' );
-QUnit.test( 'queue plugin update when locked', function( assert ) {
+QUnit.test( 'Plugins are queued when the lock is set', function( assert ) {
 	var value = [
 		{
 			type: 'update-plugin',
