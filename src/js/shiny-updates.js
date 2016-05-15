@@ -689,6 +689,7 @@ window.wp = window.wp || {};
 		var $message = $( '.theme-install[data-slug="' + slug + '"]' );
 
 		$message.addClass( 'updating-message' );
+		$message.parents( '.theme' ).addClass( 'focus' );
 		if ( $message.html() !== wp.updates.l10n.installing ) {
 			$message.data( 'originaltext', $message.html() );
 		}
@@ -716,7 +717,7 @@ window.wp = window.wp || {};
 		var $card    = $( '.wp-full-overlay-header, #' + response.slug ),
 			$message = $card.find( '.theme-install' );
 
-		$card.addClass( 'is-installed' ); // Hides the button, should show banner.
+		$card.removeClass( 'focus' ).addClass( 'is-installed' ); // Hides the button, should show banner.
 		$message.removeClass( 'updating-message' ).addClass( 'updated-message disabled' );
 		$message.text( wp.updates.l10n.installed );
 		wp.a11y.speak( wp.updates.l10n.installedMsg, 'polite' );
@@ -748,7 +749,7 @@ window.wp = window.wp || {};
 			$button = $( '.theme-install[data-slug="' + response.slug + '"]' );
 			$card   = $( '.install-theme-info' ).prepend( $message );
 		} else {
-			$card   = $( '[data-slug="' + response.slug + '"]' ).addClass( 'theme-install-failed' ).append( $message );
+			$card   = $( '[data-slug="' + response.slug + '"]' ).removeClass( 'focus' ).addClass( 'theme-install-failed' ).append( $message );
 			$button = $card.find( '.theme-install' );
 		}
 
