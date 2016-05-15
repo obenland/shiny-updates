@@ -20,7 +20,13 @@ QUnit.test( '`beforeunload` should only fire when locked', function( assert ) {
 	wp.updates.updateLock = false;
 });
 
+// FTP creds... exist?
+// Admin notice?
+
 QUnit.module( 'wp.updates.plugins' );
+
+// QUnit.test( 'Update lock is set when plugins are updating', function( assert ) {});
+
 QUnit.test( 'Plugins are queued when the lock is set', function( assert ) {
 	var value = [
 		{
@@ -43,5 +49,17 @@ QUnit.test( 'Plugins are queued when the lock is set', function( assert ) {
 	wp.updates.updateQueue = [];
 });
 
+// QUnit.test( 'If plugins are installing (lock is set), the beforeUnload function should fire', function( assert ) {} );
+// QUnit.test( 'Starting a plugin update should call the update API (?)', function( assert ) {} );
+// QUnit.test( 'Installing a plugin should call the API', function( assert ) {} );
+// QUnit.test( 'Deleting a plugin should call the API', function( assert ) {} );
+// QUnit.test( 'A successful update changes the message?', function( assert ) {} );
+// QUnit.test( 'A failed update changes the message?', function( assert ) {} );
+
 QUnit.module( 'wp.updates.themes' );
-QUnit.module( 'wp.updates' );
+// QUnit.test( 'If themes are installing (lock is set), the beforeUnload function should fire', function( assert ) {} );
+// QUnit.test( 'Starting a theme update should call the update API (?)', function( assert ) {} );
+// QUnit.test( 'Installing a theme should call the API', function( assert ) {} );
+// QUnit.test( 'Deleting a theme should call the API', function( assert ) {} );
+// QUnit.test( 'A successful update changes the message?', function( assert ) {} );
+// QUnit.test( 'A failed update changes the message?', function( assert ) {} );
