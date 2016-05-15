@@ -399,7 +399,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	 * @since  4.X.0
 	 * @access public
 	 *
-	 * @param object  $update     The current core update item.
+	 * @param object $update The current core update item.
 	 */
 	protected function _list_core_update( $update ) {
 		global $wp_version;
@@ -419,29 +419,22 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 			$current = true;
 		}
 
-		$form_action  = 'update-core.php?action=do-core-upgrade';
-		$show_buttons = true;
+		$form_action = 'update-core.php?action=do-core-upgrade';
 		if ( 'development' == $update->response ) {
-			$message  = __( 'You are using a development version of WordPress. You can update to the latest nightly build automatically or download the nightly build and install it manually:' );
-			$download = __( 'Download nightly build' );
+			$message = __( 'You are using a development version of WordPress. You can update to the latest nightly build automatically:' );
 		} else {
 			if ( $current ) {
-				$message     = sprintf( __( 'If you need to re-install version %s, you can do so here or download the package and re-install manually:' ), $version_string );
+				$message     = sprintf( __( 'If you need to re-install version %s, you can do so here:' ), $version_string );
 				$form_action = 'update-core.php?action=do-core-reinstall';
 			} else {
-				$message      = sprintf( __( 'You can update to <a href="https://codex.wordpress.org/Version_%1$s">WordPress %2$s</a> automatically or download the package and install it manually:' ), $update->current, $version_string );
-				$show_buttons = false;
+				$message = sprintf( __( 'You can update to <a href="https://codex.wordpress.org/Version_%1$s">WordPress %2$s</a> automatically:' ), $update->current, $version_string );
 			}
 
-			$download = sprintf( __( 'Download %s' ), $version_string );
 		}
 
 		echo '<p>';
 		echo $message;
 
-		if ( $show_buttons ) {
-			echo '&nbsp;<a href="' . esc_url( $update->download ) . '">' . $download . '</a>&nbsp;';
-		}
 		echo '</p>';
 
 		echo '<form method="post" action="' . $form_action . '" name="upgrade" class="upgrade">';
