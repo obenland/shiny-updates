@@ -63,6 +63,9 @@ class Shiny_Updates {
 
 		// Plugin modal installations.
 		add_action( 'install_plugins_pre_plugin-information', array( $this, 'install_plugin_information' ), 9 );
+
+		// Translation updates.
+		add_action( 'wp_ajax_update-translations', 'wp_ajax_update_translations', -1 );
 	}
 
 	/**

@@ -811,6 +811,34 @@
 	};
 
 	/**
+	 * Send an Ajax request to the server to update translations.
+	 *
+	 * @since 4.X.0
+	 */
+	wp.updates.updateTranslations = function() {
+		var $updateRow, $message, message;
+
+		$updateRow = $( 'tr[data-type="translation"]' );
+		$message   = $updateRow.find( '.update-link' ).addClass( 'updating-message' );
+		message    = wp.updates.l10n.updatingLabel.replace( '%s', $message.data( 'name' ) );
+
+		if ( !wp.updates.updateLock ) {
+			$message.attr( 'aria-label', message );
+
+			if ( $message.html() !== wp.updates.l10n.updating ) {
+				$message.data( 'originaltext', $message.html() );
+			}
+			$message.text( wp.updates.l10n.updating );
+
+			$document.trigger( 'wp-plugin-updating' );
+		}
+
+		wp.updates.ajax( 'update-translations', {} )
+			.done( wp.updates.updateSuccess )
+			.fail( wp.updates.updateError );
+	};
+
+	/**
 	 * On theme delete success, update the UI appropriately.
 	 *
 	 * @since 4.X.0
@@ -1454,6 +1482,39 @@
 
 				themeAction( $themeRow.data( 'slug' ) );
 			} );
+		} );
+
+		/**
+		 * Click handler for updates in the Update List Table view.
+		 *
+		 * @since 4.X.0
+		 *
+		 * @param {Event} event Event interface.
+		 */
+		$document.on( 'click', '.wp-list-table.updates .update-link', function ( event ) {
+			var $itemRow   = $( event.target ).parents( 'tr' ),
+			    updateType = $itemRow.data( 'type' );
+
+			event.preventDefault();
+
+			if ( wp.updates.shouldRequestFilesystemCredentials && !wp.updates.updateLock ) {
+				wp.updates.requestFilesystemCredentials( event );
+			}
+
+			// Return the user back to where he left off after closing the modal.
+			wp.updates.$elToReturnFocusToFromCredentialsModal = $( event.target );
+
+			switch ( updateType ) {
+				case 'plugin':
+					// wp.updates.updatePlugin( $itemRow.data( 'plugin' ), $itemRow.data( 'slug' ) );
+					break;
+				case 'theme':
+					// wp.updates.updateTheme( $itemRow.data( 'slug' ) );
+					break;
+				case 'translation':
+					wp.updates.updateTranslations();
+					break;
+			}
 		} );
 
 		/**
