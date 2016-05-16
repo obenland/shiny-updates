@@ -900,7 +900,7 @@
 		$message   = $updateRow.find( '.update-link' ).addClass( 'updating-message' );
 		message    = wp.updates.l10n.updatingMsg;
 
-		if ( !wp.updates.updateLock ) {
+		if ( ! wp.updates.updateLock ) {
 			$message.attr( 'aria-label', message );
 
 			if ( $message.html() !== wp.updates.l10n.updating ) {
@@ -944,16 +944,15 @@
 	 * @param {object} response Response from the server.
 	 */
 	wp.updates.updateTranslationsError = function( response ) {
+		var errorMessage = wp.updates.l10n.updateFailed.replace( '%s', response.error ),
+		    $message = $( 'tr[data-type="translation"]' ).find( '.update-link' ).text( wp.updates.l10n.updateFailedShort ).removeClass( 'updating-message' );
+
 		if ( response.errorCode && 'unable_to_connect_to_filesystem' === response.errorCode && wp.updates.shouldRequestFilesystemCredentials ) {
 			wp.updates.credentialError( response, 'update-translations' );
 			return;
 		}
 
-		var errorMessage = wp.updates.l10n.updateFailed.replace( '%s', response.error );
-
-		var $message = $( 'tr[data-type="translation"]' ).find( '.update-link' ).text( wp.updates.l10n.updateFailedShort ).removeClass( 'updating-message' );
-
-		setTimeout( function () {
+		setTimeout( function() {
 			$message.text( wp.updates.l10n.update );
 		}, 500 );
 
@@ -974,7 +973,7 @@
 		$message   = $updateRow.find( '.update-link' ).addClass( 'updating-message' );
 		message    = wp.updates.l10n.updatingMsg;
 
-		if ( !wp.updates.updateLock ) {
+		if ( ! wp.updates.updateLock ) {
 			$message.attr( 'aria-label', message );
 
 			if ( $message.html() !== wp.updates.l10n.updating ) {
@@ -1023,16 +1022,15 @@
 	 * @param {object} response Response from the server.
 	 */
 	wp.updates.updateCoreError = function( response ) {
+		var errorMessage = wp.updates.l10n.updateFailed.replace( '%s', response.error ),
+		    $message = $( 'tr[data-type="core"]' ).find( '.update-link' ).text( wp.updates.l10n.updateFailedShort ).removeClass( 'updating-message' );
+
 		if ( response.errorCode && 'unable_to_connect_to_filesystem' === response.errorCode && wp.updates.shouldRequestFilesystemCredentials ) {
 			wp.updates.credentialError( response, 'update-translations' );
 			return;
 		}
 
-		var errorMessage = wp.updates.l10n.updateFailed.replace( '%s', response.error );
-
-		var $message = $( 'tr[data-type="core"]' ).find( '.update-link' ).text( wp.updates.l10n.updateFailedShort ).removeClass( 'updating-message' );
-
-		setTimeout( function () {
+		setTimeout( function() {
 			$message.text( wp.updates.l10n.update );
 		}, 500 );
 
@@ -1616,13 +1614,13 @@
 		 *
 		 * @param {Event} event Event interface.
 		 */
-		$document.on( 'click', '.wp-list-table.updates .update-link', function ( event ) {
+		$document.on( 'click', '.wp-list-table.updates .update-link', function( event ) {
 			var $itemRow   = $( event.target ).parents( 'tr' ),
 			    updateType = $itemRow.data( 'type' );
 
 			event.preventDefault();
 
-			if ( wp.updates.shouldRequestFilesystemCredentials && !wp.updates.updateLock ) {
+			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
 				wp.updates.requestFilesystemCredentials( event );
 			}
 
