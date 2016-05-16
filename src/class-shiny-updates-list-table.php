@@ -374,11 +374,12 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 		foreach ( $attributes as $attribute => $value ) {
 			$data .= $attribute . '="' . esc_attr( $value ) . '" ';
 		}
-
 		?>
 		<form method="post" action="<?php echo esc_url( $form_action ); ?>" name="upgrade-all">
 			<?php wp_nonce_field( $nonce_action ); ?>
-			<input type="hidden" name="checked[]" id="<?php echo $checkbox_id; ?>" value="<?php echo esc_attr( $slug ); ?>"/>
+			<?php if ( 'core' !== $item['type'] ) : ?>
+				<input type="hidden" name="checked[]" id="<?php echo $checkbox_id; ?>" value="<?php echo esc_attr( $slug ); ?>"/>
+			<?php endif; ?>
 			<?php
 			printf(
 				'<button type="submit" name="%1$s" id="$1$s" class="button update-link" %2$s>%3$s</button>',
