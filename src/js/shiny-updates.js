@@ -1007,8 +1007,6 @@
 
 		wp.a11y.speak( wp.updates.l10n.updatedMsg, 'polite' );
 
-		wp.updates.decrementCount( 'translations' );
-
 		$document.trigger( 'wp-core-update-success', response );
 
 		window.location = response.redirect;
@@ -1026,7 +1024,7 @@
 		    $message = $( 'tr[data-type="core"]' ).find( '.update-link' ).text( wp.updates.l10n.updateFailedShort ).removeClass( 'updating-message' );
 
 		if ( response.errorCode && 'unable_to_connect_to_filesystem' === response.errorCode && wp.updates.shouldRequestFilesystemCredentials ) {
-			wp.updates.credentialError( response, 'update-translations' );
+			wp.updates.credentialError( response, 'update-core' );
 			return;
 		}
 
