@@ -588,6 +588,15 @@ function wp_ajax_update_core() {
 		return;
 	}
 
+	$status = array(
+		'update'   => 'core',
+		'redirect' => esc_url( self_admin_url( 'about.php?updated' ) ),
+	);
+
+	if ( $update->current === $update->version ) {
+		wp_send_json_success( $status );
+	}
+
 	include_once( ABSPATH . 'wp-admin/includes/class-wp-upgrader.php' );
 
 	if ( $reinstall ) {
@@ -596,11 +605,6 @@ function wp_ajax_update_core() {
 
 	$upgrader = new WP_Automatic_Updater();
 	$result   = $upgrader->update( 'core', $update );
-
-	$status = array(
-		'update'   => 'core',
-		'redirect' => esc_url( self_admin_url( 'about.php?updated' ) ),
-	);
 
 	if ( is_array( $result ) && ! empty( $result[0] ) ) {
 		wp_send_json_success( $status );
