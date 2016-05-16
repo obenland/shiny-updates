@@ -504,7 +504,7 @@ function wp_ajax_search_install_plugins() {
 }
 
 /**
- * AJAX handler for updating a plugin.
+ * AJAX handler for updating translations.
  *
  * @since 4.6.0
  *
@@ -523,7 +523,7 @@ function wp_ajax_update_translations() {
 	$url     = 'update-core.php?action=do-translation-upgrade';
 	$nonce   = 'upgrade-translations';
 	$title   = __( 'Update Translations' );
-	$context = WP_LANG_DIR;
+	$context = WP_CONTENT_DIR;
 
 	$skin     = new Automatic_Upgrader_Skin( compact( 'url', 'nonce', 'title', 'context' ) );
 	$upgrader = new Language_Pack_Upgrader( $skin );
@@ -558,5 +558,62 @@ function wp_ajax_update_translations() {
 
 	// An unhandled error occurred.
 	$status['error'] = __( 'Translations update failed.' );
+	wp_send_json_error( $status );
+}
+
+
+/**
+ * AJAX handler for updating core.
+ *
+ * @since 4.6.0
+ *
+ * @see Core_Upgrader
+ */
+function wp_ajax_update_core() {
+	check_ajax_referer( 'updates' );
+
+	if ( ! current_user_can( 'update_core' ) ) {
+		$status['error'] = __( 'You do not have sufficient permissions to update this site.' );
+		wp_send_json_error( $status );
+	}
+
+	$reinstall = isset( $_POST['reinstall'] ) ? (bool) $_POST['reinstall'] : false;
+
+	$version = isset( $_POST['version'] ) ? $_POST['version'] : false;
+	$locale  = isset( $_POST['locale'] ) ? $_POST['locale'] : 'en_US';
+
+	$update = find_core_update( $version, $locale );
+
+	if ( ! $update ) {
+		return;
+	}
+
+	include_once( ABSPATH . 'wp-admin/includes/class-wp-upgrader.php' );
+
+	if ( $reinstall ) {
+		$update->response = 'reinstall';
+	}
+
+	$upgrader = new WP_Automatic_Updater();
+	$result   = $upgrader->update( 'core', $update );
+
+	$status = array(
+		'update'   => 'core',
+		'redirect' => esc_url( self_admin_url( 'about.php?updated' ) ),
+	);
+
+	if ( is_array( $result ) && ! empty( $result[0] ) ) {
+		wp_send_json_success( $status );
+	} else if ( is_wp_error( $result ) ) {
+		$status['error'] = $result->get_error_message();
+		wp_send_json_error( $status );
+	} else if ( false === $result ) {
+		// These aren't actual errors
+		$status['error'] = __( 'Installation Failed' );
+		wp_send_json_error( $status );
+	}
+
+	// An unhandled error occurred.
+	$status['error'] = __( 'Installation failed.' );
 	wp_send_json_error( $status );
 }

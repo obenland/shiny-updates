@@ -157,7 +157,10 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 		$data       = '';
 		$attributes = array( 'data-type' => $item['type'] );
 
-		if ( 'theme' === $item['type'] ) {
+		if ( 'core' === $item['type'] ) {
+			$attributes['data-version'] = esc_attr( $item['data'][0]->current );
+			$attributes['data-locale'] = esc_attr( $item['data'][0]->locale );
+		} else if ( 'theme' === $item['type'] ) {
 			$attributes['data-slug'] = $item['slug'];
 		} else if ( 'plugin' === $item['type'] ) {
 			$attributes['data-slug']   = $item['slug'];
@@ -377,7 +380,10 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 		?>
 		<form method="post" action="<?php echo esc_url( $form_action ); ?>" name="upgrade-all">
 			<?php wp_nonce_field( $nonce_action ); ?>
-			<?php if ( 'core' !== $item['type'] ) : ?>
+			<?php if ( 'core' === $item['type'] ) : ?>
+				<input name="version" value="<?php echo esc_attr( $item['data'][0]->current ); ?>" type="hidden"/>
+				<input name="locale" value="<?php echo esc_attr( $item['data'][0]->locale ); ?>" type="hidden"/>
+			<?php else: ?>
 				<input type="hidden" name="checked[]" id="<?php echo $checkbox_id; ?>" value="<?php echo esc_attr( $slug ); ?>"/>
 			<?php endif; ?>
 			<?php

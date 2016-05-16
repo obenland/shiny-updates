@@ -66,6 +66,9 @@ class Shiny_Updates {
 
 		// Translation updates.
 		add_action( 'wp_ajax_update-translations', 'wp_ajax_update_translations', -1 );
+
+		// Core updates.
+		add_action( 'wp_ajax_update-core', 'wp_ajax_update_core', -1 );
 	}
 
 	/**

@@ -937,7 +937,7 @@
 	};
 
 	/**
-	 * On a plugin update error, update the UI appropriately.
+	 * On a translations update error, update the UI appropriately.
 	 *
 	 * @since 4.X.0
 	 *
@@ -960,6 +960,85 @@
 		wp.a11y.speak( errorMessage, 'assertive' );
 
 		$document.trigger( 'wp-translations-update-error', response );
+	};
+
+	/**
+	 * Send an Ajax request to the server to update core itself.
+	 *
+	 * @since 4.X.0
+	 */
+	wp.updates.updateCore = function() {
+		var $updateRow, $message, message;
+
+		$updateRow = $( 'tr[data-type="core"]' );
+		$message   = $updateRow.find( '.update-link' ).addClass( 'updating-message' );
+		message    = wp.updates.l10n.updatingMsg;
+
+		if ( !wp.updates.updateLock ) {
+			$message.attr( 'aria-label', message );
+
+			if ( $message.html() !== wp.updates.l10n.updating ) {
+				$message.data( 'originaltext', $message.html() );
+			}
+
+			$message.text( wp.updates.l10n.updating );
+
+			$document.trigger( 'wp-core-updating' );
+		}
+
+		wp.updates.ajax( 'update-core', {
+			version: $updateRow.data( 'version' ),
+			locale:  $updateRow.data( 'locale' )
+		} )
+			.done( wp.updates.updateCoreSuccess )
+			.fail( wp.updates.updateCoreError );
+	};
+
+	/**
+	 * On a successful core update, update the UI appropriately and redirect to the about page.
+	 *
+	 * @since 4.X.0
+	 *
+	 * @param {object} response Response from the server.
+	 */
+	wp.updates.updateCoreSuccess = function( response ) {
+		var $updateMessage = $( 'tr[data-type="core"]' ).find( '.update-link' ).removeClass( 'updating-message' ).addClass( 'button-disabled updated-message' );
+
+		$updateMessage.attr( 'aria-label', wp.updates.l10n.updated ).text( wp.updates.l10n.updated );
+
+		wp.a11y.speak( wp.updates.l10n.updatedMsg, 'polite' );
+
+		wp.updates.decrementCount( 'translations' );
+
+		$document.trigger( 'wp-core-update-success', response );
+
+		window.location = response.redirect;
+	};
+
+	/**
+	 * On a core update error, update the UI appropriately.
+	 *
+	 * @since 4.X.0
+	 *
+	 * @param {object} response Response from the server.
+	 */
+	wp.updates.updateCoreError = function( response ) {
+		if ( response.errorCode && 'unable_to_connect_to_filesystem' === response.errorCode && wp.updates.shouldRequestFilesystemCredentials ) {
+			wp.updates.credentialError( response, 'update-translations' );
+			return;
+		}
+
+		var errorMessage = wp.updates.l10n.updateFailed.replace( '%s', response.error );
+
+		var $message = $( 'tr[data-type="core"]' ).find( '.update-link' ).text( wp.updates.l10n.updateFailedShort ).removeClass( 'updating-message' );
+
+		setTimeout( function () {
+			$message.text( wp.updates.l10n.update );
+		}, 500 );
+
+		wp.a11y.speak( errorMessage, 'assertive' );
+
+		$document.trigger( 'wp-core-update-error', response );
 	};
 
 	/**
@@ -1559,6 +1638,9 @@
 					break;
 				case 'translation':
 					wp.updates.updateTranslations();
+					break;
+				case 'core':
+					wp.updates.updateCore();
 					break;
 			}
 		} );
