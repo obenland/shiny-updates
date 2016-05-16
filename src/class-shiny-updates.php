@@ -302,7 +302,7 @@ class Shiny_Updates {
 			</div>
 
 			<# if ( data.installed ) { #>
-				<div class="theme-installed"><?php _ex( 'Already Installed', 'theme' ); ?></div>
+				<div class="notice notice-success notice-alt"><p><?php _ex( 'Installed', 'theme' ); ?></p></div>
 			<# } #>
 		</script>
 

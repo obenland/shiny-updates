@@ -14,7 +14,11 @@ function wp_ajax_install_theme() {
 	check_ajax_referer( 'updates' );
 
 	if ( empty( $_POST['slug'] ) ) {
-		wp_send_json_error( array( 'errorCode' => 'no_theme_specified' ) );
+		wp_send_json_error( array(
+			'slug'      => '',
+			'errorCode' => 'no_theme_specified',
+			'error'     => __( 'No theme specified.' ),
+		) );
 	}
 
 	$status = array(
@@ -79,7 +83,11 @@ function wp_ajax_update_theme() {
 	check_ajax_referer( 'updates' );
 
 	if ( empty( $_POST['slug'] ) ) {
-		wp_send_json_error( array( 'errorCode' => 'no_theme_specified' ) );
+		wp_send_json_error( array(
+			'slug'      => '',
+			'errorCode' => 'no_theme_specified',
+			'error'     => __( 'No theme specified.' ),
+		) );
 	}
 
 	$stylesheet = sanitize_key( $_POST['slug'] );
@@ -119,6 +127,7 @@ function wp_ajax_update_theme() {
 
 		$theme = wp_get_theme( $stylesheet );
 		if ( $theme->get( 'Version' ) ) {
+			$status['theme']      = wp_prepare_themes_for_js( array( $theme ) );
 			$status['newVersion'] = sprintf( __( 'Version %s' ), $theme->get( 'Version' ) );
 		}
 
@@ -156,7 +165,11 @@ function wp_ajax_delete_theme() {
 	check_ajax_referer( 'updates' );
 
 	if ( empty( $_POST['slug'] ) ) {
-		wp_send_json_error( array( 'errorCode' => 'no_theme_specified' ) );
+		wp_send_json_error( array(
+			'slug'      => '',
+			'errorCode' => 'no_theme_specified',
+			'error'     => __( 'No theme specified.' ),
+		) );
 	}
 
 	$stylesheet = sanitize_key( $_POST['slug'] );
