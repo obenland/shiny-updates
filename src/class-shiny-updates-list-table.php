@@ -163,8 +163,8 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 		} else if ( 'theme' === $item['type'] ) {
 			$attributes['data-slug'] = $item['slug'];
 		} else if ( 'plugin' === $item['type'] ) {
-			$attributes['data-slug']   = $item['slug'];
-			$attributes['data-plugin'] = $item['data']->update->slug;
+			$attributes['data-slug']   = $item['data']->update->slug;
+			$attributes['data-plugin'] = $item['slug'];
 		}
 
 		foreach ( $attributes as $attribute => $value ) {
