@@ -636,7 +636,7 @@ window.wp = window.wp || {};
 
 			// Focus on Customize button after updating.
 			if ( isModalOpen ) {
-				$( '.load-customize:visible' ).focus()
+				$( '.load-customize:visible' ).focus();
 			} else {
 				$theme.find( '.load-customize' ).focus();
 			}
