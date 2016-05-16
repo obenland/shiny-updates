@@ -1,6 +1,8 @@
 <?php
 /**
  * This file holds the shiny updates list table class.
+ *
+ * @package Shiny_Updates
  */
 
 /**
@@ -316,14 +318,14 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	public function column_title_translation( $item ) {
 		?>
 		<p>
-		<span class="dashicons dashicons-translation"></span>
-		<strong><?php _e( 'Translations' ); ?></strong>
+			<span class="dashicons dashicons-translation"></span>
+			<strong><?php _e( 'Translations' ); ?></strong>
+		</p>
 		<?php if ( ! $item['data'] ) : ?>
 			<p> <?php _e( 'Your translations are all up to date.' ); ?></p>
 		<?php else : ?>
 			<p><?php _e( 'New translations are available.' ); ?></p>
 		<?php endif; ?>
-		</p>
 		<?php
 	}
 
@@ -383,7 +385,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 			<?php if ( 'core' === $item['type'] ) : ?>
 				<input name="version" value="<?php echo esc_attr( $item['data'][0]->current ); ?>" type="hidden"/>
 				<input name="locale" value="<?php echo esc_attr( $item['data'][0]->locale ); ?>" type="hidden"/>
-			<?php else: ?>
+			<?php else : ?>
 				<input type="hidden" name="checked[]" id="<?php echo $checkbox_id; ?>" value="<?php echo esc_attr( $slug ); ?>"/>
 			<?php endif; ?>
 			<?php
@@ -417,7 +419,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 		elseif ( 'en_US' == $update->locale && $update->packages->partial && $wp_version == $update->partial_version && ( $updates = get_core_updates() ) && 1 == count( $updates ) ) {
 			$version_string = $update->current;
 		} else {
-			$version_string = sprintf( "%s&ndash;<code>%s</code>", $update->current, $update->locale );
+			$version_string = sprintf( '%s&ndash;<code>%s</code>', $update->current, $update->locale );
 		}
 
 		$current = false;
