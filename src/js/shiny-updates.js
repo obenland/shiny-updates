@@ -411,9 +411,10 @@ window.wp = window.wp || {};
 	wp.updates.installPluginSuccess = function( response ) {
 		var $message = $( '.plugin-card-' + response.slug ).find( '.install-now' );
 
-		$message.removeClass( 'updating-message' ).addClass( 'installed updated-message button-disabled' );
-		$message.text( wp.updates.l10n.installed );
-		wp.a11y.speak( wp.updates.l10n.installedMsg, 'polite' );
+		// Transform the 'Install' button into an 'Activate' button.
+		$message.removeClass( 'updating-message' ).addClass( 'activate-now updated-message' );
+		$message.text( wp.updates.l10n.activate );
+		wp.a11y.speak( wp.updates.l10n.installed, 'polite' );
 
 		$document.trigger( 'wp-plugin-install-success', response );
 	};
@@ -1137,6 +1138,21 @@ window.wp = window.wp || {};
 			// Return the user to the input box of the plugin's table row after closing the modal.
 			wp.updates.$elToReturnFocusToFromCredentialsModal = $pluginRow.find( '.check-column input' );
 			wp.updates.updatePlugin( $pluginRow.data( 'plugin' ), $pluginRow.data( 'slug' ) );
+		} );
+
+		/**
+		 * Click handler for plugin activation in plugin install view.
+		 *
+		 * @since 4.2.0
+		 *
+		 * @param {Event} event Event interface.
+		 */
+		$( '.plugin-card' ).on( 'click', '.activate-now', function( event ) {
+			var $button = $( event.target );
+			event.preventDefault();
+
+			window.location.href = _wpUpdatesSettings.activates( $button.data( 'plugin' ) );
+
 		} );
 
 		/**
