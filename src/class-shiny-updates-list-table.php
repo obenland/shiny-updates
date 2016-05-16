@@ -419,32 +419,35 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 			$current = true;
 		}
 
-		$form_action = 'update-core.php?action=do-core-upgrade';
 		if ( 'development' == $update->response ) {
-			$message = __( 'You are using a development version of WordPress. You can update to the latest nightly build automatically:' );
+			echo '<p>';
+			_e( 'You are using a development version of WordPress. You can update to the latest nightly build automatically.' );
+			echo '</p>';
 		} else {
 			if ( $current ) {
-				$message     = sprintf( __( 'If you need to re-install version %s, you can do so here:' ), $version_string );
-				$form_action = 'update-core.php?action=do-core-reinstall';
+				echo '<p>';
+				printf( __( 'If you need to re-install version %s, you can do so here.' ), $version_string );
+				echo '</p>';
+
+				echo '<form method="post" action="update-core.php?action=do-core-reinstall" name="upgrade" class="upgrade">';
+				wp_nonce_field( 'upgrade-core' );
+				echo '<p>';
+				echo '<input name="version" value="' . esc_attr( $update->current ) . '" type="hidden"/>';
+				echo '<input name="locale" value="' . esc_attr( $update->locale ) . '" type="hidden"/>';
+
+				printf(
+					'<button type="submit" name="upgrade" id="upgrade" class="button">%s</button>',
+					esc_attr__( 'Re-install Now' )
+				);
+
+				echo '</p>';
+
+				echo '</form>';
 			} else {
-				$message = sprintf( __( 'You can update to <a href="https://codex.wordpress.org/Version_%1$s">WordPress %2$s</a> automatically:' ), $update->current, $version_string );
+				echo '<p>';
+				printf( __( 'You can update to <a href="https://codex.wordpress.org/Version_%1$s">WordPress %2$s</a> automatically.' ), $update->current, $version_string );
+				echo '</p>';
 			}
-
 		}
-
-		echo '<p>';
-		echo $message;
-
-		echo '</p>';
-
-		echo '<form method="post" action="' . $form_action . '" name="upgrade" class="upgrade">';
-		wp_nonce_field( 'upgrade-core' );
-		echo '<p>';
-		echo '<input name="version" value="' . esc_attr( $update->current ) . '" type="hidden"/>';
-		echo '<input name="locale" value="' . esc_attr( $update->locale ) . '" type="hidden"/>';
-
-		echo '</p>';
-
-		echo '</form>';
 	}
 }
