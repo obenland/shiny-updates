@@ -99,6 +99,12 @@ class Shiny_Updates {
 			}
 
 		}
+
+		// For plugins that can be installed, add an activation link.
+		if ( 'install' === $status['status'] ) {
+			$action_links[] = '<a href="' . wp_nonce_url( 'plugins.php?action=activate&amp;plugin=' . esc_attr( $status['file'] ), 'activate-plugin_' . esc_attr( $status['file'] ) ) . '" class="hidden activate-link">' . __( 'Activate' ) . '</a>';
+		}
+
 		return $action_links;
 	}
 

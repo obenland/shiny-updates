@@ -412,7 +412,7 @@ window.wp = window.wp || {};
 		var $message = $( '.plugin-card-' + response.slug ).find( '.install-now' );
 
 		// Transform the 'Install' button into an 'Activate' button.
-		$message.removeClass( 'updating-message' ).addClass( 'activate-now updated-message' );
+		$message.removeClass( 'updating-message' ).addClass( 'activate-now button-primary updated-message' );
 		$message.text( wp.updates.l10n.activate );
 		wp.a11y.speak( wp.updates.l10n.installed, 'polite' );
 
@@ -1151,7 +1151,7 @@ window.wp = window.wp || {};
 			var $button = $( event.target );
 			event.preventDefault();
 
-			window.location.href = _wpUpdatesSettings.activates( $button.data( 'plugin' ) );
+			$button.parents( '.plugin-action-buttons' ).find( '.hidden.activate-link' ).click();
 
 		} );
 
