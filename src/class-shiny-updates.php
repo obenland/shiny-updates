@@ -152,11 +152,19 @@ class Shiny_Updates {
 			return;
 		}
 
+		if ( ! isset( $GLOBALS['plugins'] ) ) {
+			$plugins = array(
+				'all' => get_plugins(),
+			);
+			$GLOBALS['plugins'] = $plugins;
+		}
 		$plugins = $totals = array();
-		if ( isset( $GLOBALS['plugins'] ) ) {
-			foreach ( $GLOBALS['plugins'] as $key => $list ) {
-				$plugins[ $key ] = array_keys( (array) $list );
+		foreach ( $GLOBALS['plugins'] as $key => $list ) {
+			$plugins[ $key ] = array_keys( (array) $list );
+			foreach( $plugins[ $key ] as $plugin ) {
+				$activates[ $plugin ] = wp_nonce_url( 'plugins.php?action=activate&plugin=' . esc_attr( $key ), 'activate-plugin_' . esc_attr( $key ) );
 			}
+
 		}
 
 		if ( isset( $GLOBALS['totals'] ) ) {
@@ -170,6 +178,7 @@ class Shiny_Updates {
 		wp_localize_script( 'shiny-updates', '_wpUpdatesSettings', array(
 			'ajax_nonce' => wp_create_nonce( 'updates' ),
 			'plugins'    => $plugins,
+			'activates'  => $activates,
 			'totals'     => $totals,
 			'l10n'       => array(
 				'searchResults'             => __( 'Search results for &#8220;%s&#8221;' ),
@@ -213,6 +222,8 @@ class Shiny_Updates {
 				'deleting'                  => __( 'Deleting...' ),
 				'deleteFailed'              => __( 'Deletion failed: %s' ),
 				'deleted'                   => __( 'Deleted!' ),
+				'activate'                  => __( 'Activate' ),
+
 			),
 		) );
 
