@@ -101,7 +101,7 @@ window.wp = window.wp || {};
 			$( document ).on( 'wp-theme-update-success', function( event, response ) {
 				_this.model.off( 'change', _this.render, _this );
 				if ( _this.model.get( 'id' ) === response.slug ) {
-					_this.model.set( { hasUpdate: false } );
+					_this.model.set( response.theme[1] );
 				}
 				_this.model.on( 'change', _this.render, _this );
 			} );
@@ -129,8 +129,9 @@ window.wp = window.wp || {};
 
 			$( document ).on( 'wp-theme-update-success', function( event, response ) {
 				if ( _this.model.get( 'id' ) === response.slug ) {
-					_this.model.set( { hasUpdate: false } );
+					_this.model.set( response.theme[1] );
 				}
+				_this.render();
 			} );
 
 			wp.updates.updateTheme( $( event.target ).data( 'slug' ) );

@@ -613,11 +613,15 @@ window.wp = window.wp || {};
 	 *
 	 * @param {object} response
 	 * @param {string} response.slug       Slug of the theme to be updated.
+	 * @param {object} response.theme      Updated theme.
 	 * @param {string} response.oldVersion Old version of the theme.
 	 * @param {string} response.newVersion New version of the theme.
 	 */
 	wp.updates.updateThemeSuccess = function( response ) {
-		var $notice, newText, $theme = $( '[data-slug="' + response.slug + '"]' );
+		var isModalOpen     = $( 'body.modal-open' ).length,
+			$theme          = $( '[data-slug="' + response.slug + '"]' ),
+			$updatedMessage = wp.updates.adminNotice( { className: 'update-message updated-message notice-success notice-alt', message: wp.updates.l10n.updated } ),
+			$notice, newText;
 
 		if ( 'themes-network' === pagenow ) {
 			$notice = $theme.find( '.update-message' );
@@ -631,16 +635,25 @@ window.wp = window.wp || {};
 				$notice = $theme.find( '.update-message' );
 			}
 
-			$( '.theme-version' ).text( response.newVersion );
-			$( 'body.modal-open' ).length ? $( '.load-customize:visible' ).focus() : $theme.find( '.load-customize' ).focus();
+			// Focus on Customize button after updating.
+			if ( isModalOpen ) {
+				$( '.load-customize:visible' ).focus();
+			} else {
+				$theme.find( '.load-customize' ).focus();
+			}
 		}
 
-		$notice.replaceWith( wp.updates.adminNotice( { className: 'update-message updated-message notice-success notice-alt', message: wp.updates.l10n.updated } ) );
+		$notice.replaceWith( $updatedMessage );
 		wp.a11y.speak( wp.updates.l10n.updatedMsg, 'polite' );
 
 		wp.updates.decrementCount( 'theme' );
 
 		$document.trigger( 'wp-theme-update-success', response );
+
+		// Show updated message after modal re-rendered.
+		if ( isModalOpen ) {
+			$( '.theme-info .theme-author' ).after( $updatedMessage );
+		}
 	};
 
 	/**
@@ -690,6 +703,7 @@ window.wp = window.wp || {};
 		var $message = $( '.theme-install[data-slug="' + slug + '"]' );
 
 		$message.addClass( 'updating-message' );
+		$message.parents( '.theme' ).addClass( 'focus' );
 		if ( $message.html() !== wp.updates.l10n.installing ) {
 			$message.data( 'originaltext', $message.html() );
 		}
@@ -717,7 +731,7 @@ window.wp = window.wp || {};
 		var $card    = $( '.wp-full-overlay-header, #' + response.slug ),
 			$message = $card.find( '.theme-install' );
 
-		$card.addClass( 'is-installed' ); // Hides the button, should show banner.
+		$card.removeClass( 'focus' ).addClass( 'is-installed' ); // Hides the button, should show banner.
 		$message.removeClass( 'updating-message' ).addClass( 'updated-message disabled' );
 		$message.text( wp.updates.l10n.installed );
 		wp.a11y.speak( wp.updates.l10n.installedMsg, 'polite' );
@@ -749,7 +763,7 @@ window.wp = window.wp || {};
 			$button = $( '.theme-install[data-slug="' + response.slug + '"]' );
 			$card   = $( '.install-theme-info' ).prepend( $message );
 		} else {
-			$card   = $( '[data-slug="' + response.slug + '"]' ).addClass( 'theme-install-failed' ).append( $message );
+			$card   = $( '[data-slug="' + response.slug + '"]' ).removeClass( 'focus' ).addClass( 'theme-install-failed' ).append( $message );
 			$button = $card.find( '.theme-install' );
 		}
 
