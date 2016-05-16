@@ -42,9 +42,19 @@ jQuery( function( $ ) {
 	// FTP creds... exist?
 	// Admin notice?
 
-	QUnit.module( 'wp.updates.plugins' );
-
 	// QUnit.test( 'Update lock is set when plugins are updating', function( assert ) {});
+	QUnit.module( 'wp.updates.plugins', {
+		beforeEach: function() {
+			window.pagenow = 'plugins';
+		},
+		afterEach: function() {
+			// Clean up after updates
+			delete window.pagenow;
+			wp.updates.updateLock = false;
+			wp.updates.updateQueue = [];
+		},
+	} );
+
 
 	QUnit.test( 'Plugins are queued when the lock is set', function( assert ) {
 		var value = [
@@ -57,15 +67,10 @@ jQuery( function( $ ) {
 			}
 		];
 
-		window.pagenow = 'plugins';
 		wp.updates.updateLock = true;
 		wp.updates.updatePlugin( 'test/test.php', 'test' );
 
 		assert.deepEqual( wp.updates.updateQueue, value );
-
-		delete window.pagenow;
-		wp.updates.updateLock = false;
-		wp.updates.updateQueue = [];
 	});
 
 	// QUnit.test( 'If plugins are installing (lock is set), the beforeUnload function should fire', function( assert ) {} );
