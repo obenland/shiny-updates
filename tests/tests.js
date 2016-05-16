@@ -42,7 +42,6 @@ jQuery( function( $ ) {
 	// FTP creds... exist?
 	// Admin notice?
 
-	// QUnit.test( 'Update lock is set when plugins are updating', function( assert ) {});
 	QUnit.module( 'wp.updates.plugins', {
 		beforeEach: function() {
 			window.pagenow = 'plugins';
@@ -55,6 +54,10 @@ jQuery( function( $ ) {
 		},
 	} );
 
+	QUnit.test( 'Update lock is set when plugins are updating', function( assert ) {
+		wp.updates.updatePlugin( 'test/test.php', 'test' );
+		assert.strictEqual( wp.updates.updateLock, true );
+	});
 
 	QUnit.test( 'Plugins are queued when the lock is set', function( assert ) {
 		var value = [
