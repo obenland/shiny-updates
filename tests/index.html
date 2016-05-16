@@ -24,6 +24,40 @@
 	<script src="fixtures/shiny-updates.js"></script>
 </div>
 
+<!-- Required HTML for tests -->
+<div style="display:none;">
+	<li id="wp-admin-bar-updates">
+		<a class="ab-item" href="wp-admin/update-core.php" title="2 Plugin Updates">
+			<span class="ab-icon"></span>
+			<span class="ab-label">2</span>
+			<span class="screen-reader-text">2 Plugin Updates</span>
+		</a>
+	</li>
+	<li class="wp-has-submenu wp-not-current-submenu menu-top menu-icon-plugins" id="menu-plugins">
+		<a href="plugins.php" class="wp-has-submenu wp-not-current-submenu menu-top menu-icon-plugins" aria-haspopup="true">
+			<div class="wp-menu-arrow"><div></div></div>
+			<div class="wp-menu-image dashicons-before dashicons-admin-plugins"><br></div>
+			<div class="wp-menu-name">Plugins
+				<span class="update-plugins count-2">
+					<span class="plugin-count">2</span>
+				</span>
+			</div>
+		</a>
+		<ul class="wp-submenu wp-submenu-wrap">
+			<li class="wp-submenu-head" aria-hidden="true">Plugins
+				<span class="update-plugins count-2">
+					<span class="plugin-count">2</span>
+				</span>
+			</li>
+			<li class="wp-first-item">
+				<a href="plugins.php" class="wp-first-item">Installed Plugins</a></li><li><a href="plugin-install.php">Add New</a>
+			</li><li>
+				<a href="plugin-editor.php">Editor</a>
+			</li>
+		</ul>
+	</li>
+</div>
+
 <!-- Tested files -->
 <script src="../src/js/shiny-updates.js"></script>
 
