@@ -199,6 +199,10 @@ tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-error.notic
 	display: none;
 }
 
+.update-core-php .notice.notice-warning + p {
+	display: block;
+}
+
 .wp-list-table.updates .manage-column.column-type {
 	width: 10%;
 }
