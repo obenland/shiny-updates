@@ -381,7 +381,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 			<input type="hidden" name="checked[]" id="<?php echo $checkbox_id; ?>" value="<?php echo esc_attr( $slug ); ?>"/>
 			<?php
 			printf(
-				'<button type="submit" name="%1$s" id="$1s" class="button update-link" %2$s>%3$s</button>',
+				'<button type="submit" name="%1$s" id="$1$s" class="button update-link" %2$s>%3$s</button>',
 				$checkbox_id,
 				$data,
 				esc_attr__( 'Update' )
