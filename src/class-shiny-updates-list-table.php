@@ -388,8 +388,8 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 			<?php endif; ?>
 			<?php
 			printf(
-				'<button type="submit" name="%1$s" id="$1$s" class="button update-link" %2$s>%3$s</button>',
-				$checkbox_id,
+				'<button type="submit" name="%1$s" id="%1$s" class="button update-link" %2$s>%3$s</button>',
+				'core' === $item['type'] ? 'upgrade' : $checkbox_id,
 				$data,
 				esc_attr__( 'Update' )
 			);
