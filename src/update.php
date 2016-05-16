@@ -97,7 +97,7 @@ function su_plugin_update_row( $file, $plugin_data ) {
 
 		if ( ! current_user_can( 'update_plugins' ) ) {
 			/* translators: 1: plugin name, 2: details URL, 3: escaped plugin name, 4: version number */
-			printf( __( 'There is a new version of %1$s available. <a href="%2$s" class="thickbox" aria-label="View %3$s version %4$s details">View version %4$s details</a>.' ),
+			printf( __( 'There is a new version of %1$s available. <a href="%2$s" class="thickbox open-plugin-details-modal" aria-label="View %3$s version %4$s details">View version %4$s details</a>.' ),
 				$plugin_name,
 				esc_url( $details_url ),
 				esc_attr( $plugin_name ),
@@ -105,7 +105,7 @@ function su_plugin_update_row( $file, $plugin_data ) {
 			);
 		} elseif ( empty( $r->package ) ) {
 			/* translators: 1: plugin name, 2: details URL, 3: escaped plugin name, 4: version number */
-			printf( __( 'There is a new version of %1$s available. <a href="%2$s" class="thickbox" aria-label="View %3$s version %4$s details">View version %4$s details</a>. <em>Automatic update is unavailable for this plugin.</em>' ),
+			printf( __( 'There is a new version of %1$s available. <a href="%2$s" class="thickbox open-plugin-details-modal" aria-label="View %3$s version %4$s details">View version %4$s details</a>. <em>Automatic update is unavailable for this plugin.</em>' ),
 				$plugin_name,
 				esc_url( $details_url ),
 				esc_attr( $plugin_name ),
@@ -113,7 +113,7 @@ function su_plugin_update_row( $file, $plugin_data ) {
 			);
 		} else {
 			/* translators: 1: plugin name, 2: details URL, 3: escaped plugin name, 4: version number, 5: update URL */
-			printf( __( 'There is a new version of %1$s available. <a href="%2$s" class="thickbox" aria-label="View %3$s version %4$s details">View version %4$s details</a> or <a href="%5$s" class="update-link" aria-label="update %3$s now">update now</a>.' ),
+			printf( __( 'There is a new version of %1$s available. <a href="%2$s" class="thickbox open-plugin-details-modal" aria-label="View %3$s version %4$s details">View version %4$s details</a> or <a href="%5$s" class="update-link" aria-label="update %3$s now">update now</a>.' ),
 				$plugin_name,
 				esc_url( $details_url ),
 				esc_attr( $plugin_name ),
@@ -192,7 +192,7 @@ function su_theme_update_row( $theme_key, $theme ) {
 	echo '<tr class="plugin-update-tr' . $active . '" id="' . esc_attr( $theme->get_stylesheet() . '-update' ) . '" data-slug="' . esc_attr( $theme->get_stylesheet() ) . '"><td colspan="' . $wp_list_table->get_column_count() . '" class="plugin-update colspanchange"><div class="update-message notice inline notice-warning notice-alt"><p>';
 	if ( ! current_user_can( 'update_themes' ) ) {
 		/* translators: 1: theme name, 2: details URL, 3: escaped theme name, 4: version number */
-		printf( __( 'There is a new version of %1$s available. <a href="%2$s" class="thickbox" aria-label="View %3$s version %4$s details">View version %4$s details</a>.' ),
+		printf( __( 'There is a new version of %1$s available. <a href="%2$s" class="thickbox open-plugin-details-modal" aria-label="View %3$s version %4$s details">View version %4$s details</a>.' ),
 			$theme['Name'],
 			esc_url( $details_url ),
 			esc_attr( $theme['Name'] ),
@@ -200,7 +200,7 @@ function su_theme_update_row( $theme_key, $theme ) {
 		);
 	} elseif ( empty( $r['package'] ) ) {
 		/* translators: 1: theme name, 2: details URL, 3: escaped theme name, 4: version number */
-		printf( __( 'There is a new version of %1$s available. <a href="%2$s" class="thickbox" aria-label="View %3$s version %4$s details">View version %4$s details</a>. <em>Automatic update is unavailable for this theme.</em>' ),
+		printf( __( 'There is a new version of %1$s available. <a href="%2$s" class="thickbox open-plugin-details-modal" aria-label="View %3$s version %4$s details">View version %4$s details</a>. <em>Automatic update is unavailable for this theme.</em>' ),
 			$theme['Name'],
 			esc_url( $details_url ),
 			esc_attr( $theme['Name'] ),
@@ -208,7 +208,7 @@ function su_theme_update_row( $theme_key, $theme ) {
 		);
 	} else {
 		/* translators: 1: theme name, 2: details URL, 3: escaped theme name, 4: version number, 5: update URL */
-		printf( __( 'There is a new version of %1$s available. <a href="%2$s" class="thickbox" aria-label="View %3$s version %4$s details">View version %4$s details</a> or <a href="%5$s" class="update-link" aria-label="update %3$s now">update now</a>.' ),
+		printf( __( 'There is a new version of %1$s available. <a href="%2$s" class="thickbox open-plugin-details-modal" aria-label="View %3$s version %4$s details">View version %4$s details</a> or <a href="%5$s" class="update-link" aria-label="update %3$s now">update now</a>.' ),
 			$theme['Name'],
 			esc_url( $details_url ),
 			esc_attr( $theme['Name'] ),
