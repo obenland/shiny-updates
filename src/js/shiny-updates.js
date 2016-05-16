@@ -1164,7 +1164,7 @@
 	};
 
 	$( function() {
-		var $theList         = $( '#the-list' ),
+		var $theList         = $( '.wp-list-table:not(.updates)' ),
 			$bulkActionForm  = $( '#bulk-action-form' ),
 			$filesystemModal = $( '#request-filesystem-credentials-dialog' );
 
@@ -1552,10 +1552,10 @@
 
 			switch ( updateType ) {
 				case 'plugin':
-					// wp.updates.updatePlugin( $itemRow.data( 'plugin' ), $itemRow.data( 'slug' ) );
+					wp.updates.updatePlugin( $itemRow.data( 'plugin' ), $itemRow.data( 'slug' ) );
 					break;
 				case 'theme':
-					// wp.updates.updateTheme( $itemRow.data( 'slug' ) );
+					wp.updates.updateTheme( $itemRow.data( 'slug' ) );
 					break;
 				case 'translation':
 					wp.updates.updateTranslations();
