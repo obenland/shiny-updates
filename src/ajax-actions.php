@@ -592,8 +592,8 @@ function wp_ajax_update_core() {
 
 	$reinstall = isset( $_POST['reinstall'] ) ? (bool) $_POST['reinstall'] : false;
 
-	$version = isset( $_POST['version'] ) ? $_POST['version'] : false;
-	$locale  = isset( $_POST['locale'] ) ? $_POST['locale'] : 'en_US';
+	$version = isset( $_POST['version'] ) ? wp_unslash( $_POST['version'] ) : false;
+	$locale  = isset( $_POST['locale'] ) ? wp_unslash( $_POST['locale'] ) : 'en_US';
 
 	$update = find_core_update( $version, $locale );
 
