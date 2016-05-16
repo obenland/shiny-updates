@@ -253,7 +253,7 @@ function su_update_table() {
 		<?php
 		require_once( 'class-shiny-updates-list-table.php' );
 
-		// Todo: Use _get_list_table()
+		// Todo: Use _get_list_table().
 		$updates_table = new Shiny_Updates_List_Table();
 		$updates_table->prepare_items();
 		$updates_table->display();
