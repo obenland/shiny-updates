@@ -1102,6 +1102,103 @@
 	};
 
 	/**
+	 * Send an Ajax request to the server to install all available updates.
+	 *
+	 * @since 4.X.0
+	 * @return {$.promise} A jQuery promise that represents the request,
+	 *                     decorated with an abort() method.
+	 */
+	wp.updates.updateAll = function() {
+		var $message   = $( '.update-link[data-type="all"]' ).addClass( 'updating-message' ),
+		    message    = wp.updates.l10n.updatingMsg;
+
+		if ( ! wp.updates.updateLock ) {
+			$message.attr( 'aria-label', message );
+
+			if ( $message.html() !== wp.updates.l10n.updating ) {
+				$message.data( 'originaltext', $message.html() );
+			}
+
+			$message.text( wp.updates.l10n.updating );
+
+			$document.trigger( 'wp-core-updating' );
+		}
+
+		$.when(
+			$( $( 'tr[data-type="theme"]' ) ).each( function( i, row ) {
+				console.log( 'Update theme...' );
+				wp.updates.updateTheme( $( row ).data( 'slug' ) )
+					.done( wp.updates.updateThemeSuccess )
+					.fail( wp.updates.updateThemeError );
+			} ).promise(),
+			$( $( 'tr[data-type="plugin"]' ) ).each( function( i, row ) {
+				console.log( 'Update plugin...' );
+				wp.updates.updatePlugin( $( row ).data( 'plugin' ), $( row ).data( 'slug' ) )
+					.done( wp.updates.updateSuccess )
+					.fail( wp.updates.updateError );
+			} ).promise(),
+			$( $( 'tr[data-type="translation"]' ) ).each( function() {
+				console.log( 'Update translation...' );
+				wp.updates.updateTranslations()
+					.done( wp.updates.updateTranslationsSuccess )
+					.fail( wp.updates.updateTranslationsError );
+			} ).promise(),
+			$( $( 'tr[data-type="core"]' ) ).each( function() {
+				console.log( 'Update core...' );
+				wp.updates.updateCore()
+					.done( wp.updates.updateCoreSuccess )
+					.fail( wp.updates.updateCoreError );
+			} ).promise()
+		)
+			.done( wp.updates.updateAllSuccess )
+			.fail( wp.updates.updateAllError );
+	};
+
+	/**
+	 * On a successful update, update the UI appropriately and redirect to the about page if necessary.
+	 *
+	 * @since 4.X.0
+	 *
+	 * @param {object} response Response from the server.
+	 */
+	wp.updates.updateAllSuccess = function( response ) {
+		var $updateMessage = $( 'tr[data-type="core"]' ).find( '.update-link' ).removeClass( 'updating-message' ).addClass( 'button-disabled updated-message' );
+
+		$updateMessage.attr( 'aria-label', wp.updates.l10n.updated ).text( wp.updates.l10n.updated );
+
+		wp.a11y.speak( wp.updates.l10n.updatedMsg, 'polite' );
+
+		$document.trigger( 'wp-core-update-success', response );
+
+		window.location = response.redirect;
+	};
+
+	/**
+	 * On an update error, update the UI appropriately.
+	 *
+	 * @since 4.X.0
+	 *
+	 * @param {object} response Response from the server.
+	 */
+	wp.updates.updateAllError = function( response ) {
+		var $message = $( 'tr[data-type="core"]' ).find( '.update-link' ).removeClass( 'updating-message' ).addClass( 'button-disabled updated-message' ),
+		    errorMessage   = wp.updates.l10n.updateFailed.replace( '%s', response.error );
+
+		if ( response.errorCode && 'unable_to_connect_to_filesystem' === response.errorCode && wp.updates.shouldRequestFilesystemCredentials ) {
+			wp.updates.credentialError( response, 'update-core' );
+			return;
+		}
+
+		setTimeout( function() {
+			$message.text( wp.updates.l10n.update );
+		}, 500 );
+
+		wp.a11y.speak( errorMessage, 'assertive' );
+
+		$document.trigger( 'wp-core-update-error', response );
+	};
+
+	/**
 	 * If an install/update job has been placed in the queue, queueChecker pulls it out and runs it.
 	 *
 	 * @since 4.2.0
@@ -1737,7 +1834,7 @@
 			// Return the user back to where he left off after closing the modal.
 			wp.updates.$elToReturnFocusToFromCredentialsModal = $( event.target );
 
-			switch ( $itemRow.data( 'type' ) ) {
+			switch ( $( this ).data( 'type' ) || $itemRow.data( 'type' ) ) {
 				case 'plugin':
 					wp.updates.updatePlugin( {
 						plugin:  $itemRow.data( 'plugin' ),
@@ -1768,6 +1865,12 @@
 						locale:  $itemRow.data( 'locale' ),
 						success: wp.updates.updateCoreSuccess,
 						error:   wp.updates.updateCoreError
+					} );
+					break;
+				case 'all':
+					wp.updates.updateAll( {
+						success: wp.updates.updateAllSuccess,
+						error:   wp.updates.updateAllError
 					} );
 					break;
 			}
