@@ -137,7 +137,8 @@
 	 *
 	 * @param {string} action The type of Ajax request ('update-plugin', 'install-theme', etc).
 	 * @param {object} data   Data that needs to be passed to the ajax callback.
-	 * @return {Deferred} Deferred object to register callbacks.
+	 * @return {$.promise}    A jQuery promise that represents the request,
+	 *                        decorated with an abort() method.
 	 */
 	wp.updates.ajax = function( action, data ) {
 		if ( wp.updates.updateLock ) {
@@ -249,6 +250,8 @@
 	 *
 	 * @param {string} plugin Plugin basename
 	 * @param {string} slug   Plugin slug
+	 * @return {$.promise}    A jQuery promise that represents the request,
+	 *                        decorated with an abort() method.
 	 */
 	wp.updates.updatePlugin = function( plugin, slug ) {
 		var $updateRow, $card, $message, message;
@@ -281,9 +284,7 @@
 			$document.trigger( 'wp-plugin-updating' );
 		}
 
-		wp.updates.ajax( 'update-plugin', { plugin: plugin, slug: slug } )
-			.done( wp.updates.updateSuccess )
-			.fail( wp.updates.updateError );
+		return wp.updates.ajax( 'update-plugin', { plugin: plugin, slug: slug } );
 	};
 
 	/**
@@ -393,6 +394,8 @@
 	 * @since 4.X.0
 	 *
 	 * @param {string} slug Plugin identifier in the WordPress.org Plugin repository.
+	 * @return {$.promise}  A jQuery promise that represents the request,
+	 *                      decorated with an abort() method.
 	 */
 	wp.updates.installPlugin = function( slug ) {
 		var $card    = $( '.plugin-card-' + slug ),
@@ -405,9 +408,7 @@
 		// Remove previous error messages, if any.
 		$card.removeClass( 'plugin-card-install-failed' ).find( '.notice.notice-error' ).remove();
 
-		wp.updates.ajax( 'install-plugin', { slug: slug } )
-			.done( wp.updates.installPluginSuccess )
-			.fail( wp.updates.installPluginError );
+		return wp.updates.ajax( 'install-plugin', { slug: slug } );
 	};
 
 	/**
@@ -482,13 +483,13 @@
 	 *
 	 * @param {string} plugin Plugin basename
 	 * @param {string} slug   Plugin slug
+	 * @return {$.promise}    A jQuery promise that represents the request,
+	 *                        decorated with an abort() method.
 	 */
 	wp.updates.deletePlugin = function( plugin, slug ) {
 		wp.a11y.speak( wp.updates.l10n.deleting, 'polite' );
 
-		wp.updates.ajax( 'delete-plugin', { plugin: plugin, slug: slug } )
-			.done( wp.updates.deletePluginSuccess )
-			.fail( wp.updates.deletePluginError );
+		return wp.updates.ajax( 'delete-plugin', { plugin: plugin, slug: slug } );
 	};
 
 	/**
@@ -589,6 +590,8 @@
 	 * @since 4.X.0
 	 *
 	 * @param {string} slug Theme stylesheet.
+	 * @return {$.promise}  A jQuery promise that represents the request,
+	 *                      decorated with an abort() method.
 	 */
 	wp.updates.updateTheme = function( slug ) {
 		var $notice, message;
@@ -612,9 +615,7 @@
 		$notice.replaceWith( wp.updates.adminNotice( { className: 'update-message updating-message notice-warning notice-alt', message: wp.updates.l10n.updating } ) );
 		wp.a11y.speak( wp.updates.l10n.updatingMsg, 'polite' );
 
-		wp.updates.ajax( 'update-theme', { 'slug': slug } )
-			.done( wp.updates.updateThemeSuccess )
-			.fail( wp.updates.updateThemeError );
+		return wp.updates.ajax( 'update-theme', { 'slug': slug } );
 	};
 
 	/**
@@ -721,6 +722,8 @@
 	 * @since 4.X.0
 	 *
 	 * @param {string} slug Theme stylesheet.
+	 * @return {$.promise}  A jQuery promise that represents the request,
+	 *                      decorated with an abort() method.
 	 */
 	wp.updates.installTheme = function( slug ) {
 		var $message = $( '.theme-install[data-slug="' + slug + '"]' );
@@ -737,9 +740,7 @@
 		// Remove previous error messages, if any.
 		$( '.install-theme-info, [data-slug="' + slug + '"]' ).removeClass( 'theme-install-failed' ).find( '.notice.notice-error' ).remove();
 
-		wp.updates.ajax( 'install-theme', { 'slug': slug } )
-			.done( wp.updates.installThemeSuccess )
-			.fail( wp.updates.installThemeError );
+		return wp.updates.ajax( 'install-theme', { 'slug': slug } );
 	};
 
 	/**
@@ -805,6 +806,8 @@
 	 * @since 4.X.0
 	 *
 	 * @param {string} slug Theme stylesheet.
+	 * @return {$.promise}  A jQuery promise that represents the request,
+	 *                      decorated with an abort() method.
 	 */
 	wp.updates.deleteTheme = function( slug ) {
 		var $button = $( '.theme-actions .delete-theme' );
@@ -819,9 +822,7 @@
 		// Remove previous error messages, if any.
 		$( '.theme-info .update-message' ).remove();
 
-		wp.updates.ajax( 'delete-theme', { slug: slug } )
-			.done( wp.updates.deleteThemeSuccess )
-			.fail( wp.updates.deleteThemeError );
+		return wp.updates.ajax( 'delete-theme', { slug: slug } );
 	};
 
 	/**
@@ -906,6 +907,9 @@
 	 * Send an Ajax request to the server to update translations.
 	 *
 	 * @since 4.X.0
+	 *
+	 * @return {$.promise} A jQuery promise that represents the request,
+	 *                     decorated with an abort() method.
 	 */
 	wp.updates.updateTranslations = function() {
 		var $updateRow, $message, message;
@@ -926,9 +930,7 @@
 			$document.trigger( 'wp-translations-updating' );
 		}
 
-		wp.updates.ajax( 'update-translations', {} )
-			.done( wp.updates.updateTranslationsSuccess )
-			.fail( wp.updates.updateTranslationsError );
+		return wp.updates.ajax( 'update-translations', {} );
 	};
 
 	/**
@@ -979,6 +981,8 @@
 	 * Send an Ajax request to the server to update core itself.
 	 *
 	 * @since 4.X.0
+	 * @return {$.promise} A jQuery promise that represents the request,
+	 *                     decorated with an abort() method.
 	 */
 	wp.updates.updateCore = function() {
 		var $updateRow, $message, message;
@@ -999,12 +1003,10 @@
 			$document.trigger( 'wp-core-updating' );
 		}
 
-		wp.updates.ajax( 'update-core', {
+		return wp.updates.ajax( 'update-core', {
 			version: $updateRow.data( 'version' ),
 			locale:  $updateRow.data( 'locale' )
-		} )
-			.done( wp.updates.updateCoreSuccess )
-			.fail( wp.updates.updateCoreError );
+		} );
 	};
 
 	/**
@@ -1069,27 +1071,39 @@
 		// Handle a queue job.
 		switch ( job.type ) {
 			case 'install-plugin':
-				wp.updates.installPlugin( job.data.slug );
+				wp.updates.installPlugin( job.data.slug )
+					.done( wp.updates.installPluginSuccess )
+					.fail( wp.updates.installPluginError );
 				break;
 
 			case 'update-plugin':
-				wp.updates.updatePlugin( job.data.plugin, job.data.slug );
+				wp.updates.updatePlugin( job.data.plugin, job.data.slug )
+					.done( wp.updates.updateSuccess )
+					.fail( wp.updates.updateError );
 				break;
 
 			case 'delete-plugin':
-				wp.updates.deletePlugin( job.data.plugin, job.data.slug );
+				wp.updates.deletePlugin( job.data.plugin, job.data.slug )
+					.done( wp.updates.deletePluginSuccess )
+					.fail( wp.updates.deletePluginError );
 				break;
 
 			case 'install-theme':
-				wp.updates.installTheme( job.data.slug );
+				wp.updates.installTheme( job.data.slug )
+					.done( wp.updates.installThemeSuccess )
+					.fail( wp.updates.installThemeError );
 				break;
 
 			case 'update-theme':
-				wp.updates.updateTheme( job.data.slug );
+				wp.updates.updateTheme( job.data.slug )
+					.done( wp.updates.updateThemeSuccess )
+					.fail( wp.updates.updateThemeError );
 				break;
 
 			case 'delete-theme':
-				wp.updates.deleteTheme( job.data.slug );
+				wp.updates.deleteTheme( job.data.slug )
+					.done( wp.updates.deleteThemeSuccess )
+					.fail( wp.updates.deleteThemeError );
 				break;
 
 			default:
@@ -1323,7 +1337,9 @@
 
 			// Return the user to the input box of the plugin's table row after closing the modal.
 			wp.updates.$elToReturnFocusToFromCredentialsModal = $pluginRow.find( '.check-column input' );
-			wp.updates.updatePlugin( $pluginRow.data( 'plugin' ), $pluginRow.data( 'slug' ) );
+			wp.updates.updatePlugin( $pluginRow.data( 'plugin' ), $pluginRow.data( 'slug' ) )
+				.done( wp.updates.updateSuccess )
+				.fail( wp.updates.updateError );
 		} );
 
 		/**
@@ -1341,7 +1357,9 @@
 				wp.updates.requestFilesystemCredentials( event );
 			}
 
-			wp.updates.updatePlugin( $button.data( 'plugin' ), $button.data( 'slug' ) );
+			wp.updates.updatePlugin( $button.data( 'plugin' ), $button.data( 'slug' ) )
+				.done( wp.updates.updateSuccess )
+				.fail( wp.updates.updateError );
 		} );
 
 		/**
@@ -1371,7 +1389,9 @@
 				} );
 			}
 
-			wp.updates.installPlugin( $button.data( 'slug' ) );
+			wp.updates.installPlugin( $button.data( 'slug' ) )
+				.done( wp.updates.installPluginSuccess )
+				.fail( wp.updates.installPluginError );
 		} );
 
 		/**
@@ -1393,7 +1413,9 @@
 				wp.updates.requestFilesystemCredentials( event );
 			}
 
-			wp.updates.deletePlugin( $pluginRow.data( 'plugin' ), $pluginRow.data( 'slug' ) );
+			wp.updates.deletePlugin( $pluginRow.data( 'plugin' ), $pluginRow.data( 'slug' ) )
+				.done( wp.updates.deletePluginSuccess )
+				.fail( wp.updates.deletePluginError );
 		} );
 
 		/**
@@ -1413,7 +1435,9 @@
 
 			// Return the user to the input box of the theme's table row after closing the modal.
 			wp.updates.$elToReturnFocusToFromCredentialsModal = $themeRow.find( '.check-column input' );
-			wp.updates.updateTheme( $themeRow.data( 'slug' ) );
+			wp.updates.updateTheme( $themeRow.data( 'slug' ) )
+				.done( wp.updates.updateThemeSuccess )
+				.fail( wp.updates.updateThemeError );
 		} );
 
 		/**
@@ -1433,7 +1457,9 @@
 
 			// Return the user to the input box of the theme's table row after closing the modal.
 			wp.updates.$elToReturnFocusToFromCredentialsModal = $link.find( '.check-column input' );
-			wp.updates.updateTheme( $link.data( 'slug' ) );
+			wp.updates.updateTheme( $link.data( 'slug' ) )
+				.done( wp.updates.updateThemeSuccess )
+				.fail( wp.updates.updateThemeError );
 		} );
 
 		/**
@@ -1455,7 +1481,9 @@
 				wp.updates.requestFilesystemCredentials( event );
 			}
 
-			wp.updates.deleteTheme( $link.data( 'slug' ) );
+			wp.updates.deleteTheme( $link.data( 'slug' ) )
+				.done( wp.updates.deleteThemeSuccess )
+				.fail( wp.updates.deleteThemeError );
 		} );
 
 		/**
@@ -1468,7 +1496,7 @@
 		$bulkActionForm.on( 'click', '[type="submit"]', function( event ) {
 			var action        = $( event.target ).siblings( 'select' ).val(),
 				itemsSelected = $bulkActionForm.find( 'input[name="checked[]"]:checked' ),
-				pluginAction, success = 0, error = 0, errorMessages = [];
+				pluginAction, pluginActionDone, pluginActionFail, success = 0, error = 0, errorMessages = [];
 
 			if ( 'plugins' !== pagenow && 'plugins-network' !== pagenow ) {
 				return;
@@ -1487,11 +1515,15 @@
 
 			switch ( action ) {
 				case 'update-selected':
-					pluginAction = wp.updates.updatePlugin;
+					pluginAction     = wp.updates.updatePlugin;
+					pluginActionDone = wp.updates.updateSuccess;
+					pluginActionFail = wp.updates.updateError;
 					break;
 
 				case 'delete-selected':
-					pluginAction = wp.updates.deletePlugin;
+					pluginAction     = wp.updates.deletePlugin;
+					pluginActionDone = wp.updates.deletePluginSuccess;
+					pluginActionFail = wp.updates.deletePluginError;
 					break;
 
 				default:
@@ -1520,7 +1552,9 @@
 					return;
 				}
 
-				pluginAction( $pluginRow.data( 'plugin' ), $pluginRow.data( 'slug' ) );
+				pluginAction( $pluginRow.data( 'plugin' ), $pluginRow.data( 'slug' ) )
+					.done( pluginActionDone )
+					.fail( pluginActionFail );
 			} );
 
 			$document.on( 'wp-plugin-update-success', function() {
@@ -1563,7 +1597,7 @@
 		$bulkActionForm.on( 'click', '[type="submit"]', function( event ) {
 			var action        = $( event.target ).siblings( 'select' ).val(),
 				itemsSelected = $bulkActionForm.find( 'input[name="checked[]"]:checked' ),
-				themeAction;
+				themeAction, themeActionDone, themeActionFail;
 
 			if ( 'themes-network' !== pagenow ) {
 				return;
@@ -1583,10 +1617,14 @@
 			switch ( action ) {
 				case 'update-selected':
 					themeAction = wp.updates.updateTheme;
+					themeActionDone = wp.updates.updateThemeSuccess;
+					themeActionFail = wp.updates.updateThemeError;
 					break;
 
 				case 'delete-selected':
 					themeAction = wp.updates.deleteTheme;
+					themeActionDone = wp.updates.deleteThemeSuccess;
+					themeActionFail = wp.updates.deleteThemeError;
 					break;
 
 				default:
@@ -1615,7 +1653,9 @@
 					return;
 				}
 
-				themeAction( $themeRow.data( 'slug' ) );
+				themeAction( $themeRow.data( 'slug' ) )
+					.done( themeActionDone )
+					.fail( themeActionFail );
 			} );
 		} );
 
@@ -1641,16 +1681,22 @@
 
 			switch ( updateType ) {
 				case 'plugin':
-					wp.updates.updatePlugin( $itemRow.data( 'plugin' ), $itemRow.data( 'slug' ) );
+					wp.updates.updatePlugin( $itemRow.data( 'plugin' ), $itemRow.data( 'slug' ) )
+						.done( wp.updates.updateSuccess )
+						.fail( wp.updates.updateError );
 					break;
 				case 'theme':
 					wp.updates.updateTheme( $itemRow.data( 'slug' ) );
 					break;
 				case 'translation':
-					wp.updates.updateTranslations();
+					wp.updates.updateTranslations()
+						.done( wp.updates.updateTranslationsSuccess )
+						.fail( wp.updates.updateTranslationsError );
 					break;
 				case 'core':
-					wp.updates.updateCore();
+					wp.updates.updateCore()
+						.done( wp.updates.updateCoreSuccess )
+						.fail( wp.updates.updateCoreError );
 					break;
 			}
 		} );
