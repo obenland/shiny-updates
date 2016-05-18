@@ -27,6 +27,7 @@ jQuery( function( $ ) {
 		screenReaderItemCount = $( '#wp-admin-bar-updates' ).find( '.screen-reader-text' ).text();
 		adminItemCount = $( '#wp-admin-bar-updates' ).find( '.ab-label' ).text();
 		assert.equal( menuItemCount, 1 );
+		// Should the screenReader count change? Is that announced to the user?
 		assert.equal( screenReaderItemCount, '1 Plugin Update' );
 		assert.equal( adminItemCount, 1 );
 	});
@@ -76,7 +77,11 @@ jQuery( function( $ ) {
 		assert.deepEqual( wp.updates.updateQueue, value );
 	});
 
-	// QUnit.test( 'If plugins are installing (lock is set), the beforeUnload function should fire', function( assert ) {} );
+	QUnit.test( 'If plugins are installing (lock is set), the beforeUnload function should fire', function( assert ) {
+		wp.updates.updatePlugin( 'test/test.php', 'test' );
+		assert.equal( wp.updates.beforeunload(), window._wpUpdatesSettings.l10n.beforeunload );
+	} );
+
 	// QUnit.test( 'Starting a plugin update should call the update API (?)', function( assert ) {} );
 	// QUnit.test( 'Installing a plugin should call the API', function( assert ) {} );
 	// QUnit.test( 'Deleting a plugin should call the API', function( assert ) {} );
