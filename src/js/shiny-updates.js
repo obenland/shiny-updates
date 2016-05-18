@@ -1140,33 +1140,42 @@
 
 			$message.text( wp.updates.l10n.updating );
 
-			$document.trigger( 'wp-core-updating' );
+			$document.trigger( 'wp-all-updating' );
 		}
 
 		$.when(
 			$( $( 'tr[data-type="theme"]' ) ).each( function( i, row ) {
 				console.log( 'Update theme...' );
-				wp.updates.updateTheme( $( row ).data( 'slug' ) )
-					.done( wp.updates.updateThemeSuccess )
-					.fail( wp.updates.updateThemeError );
+				wp.updates.updateTheme( {
+					slug:    $( row ).data( 'slug' ),
+					success: wp.updates.updateThemeSuccess,
+					error:   wp.updates.updateThemeError
+				} );
 			} ).promise(),
 			$( $( 'tr[data-type="plugin"]' ) ).each( function( i, row ) {
 				console.log( 'Update plugin...' );
-				wp.updates.updatePlugin( $( row ).data( 'plugin' ), $( row ).data( 'slug' ) )
-					.done( wp.updates.updateSuccess )
-					.fail( wp.updates.updateError );
+				wp.updates.updatePlugin( {
+					plugin:  $( row ).data( 'plugin' ),
+					slug:    $( row ).data( 'slug' ),
+					success: wp.updates.updateSuccess,
+					error:   wp.updates.updateError
+				} );
 			} ).promise(),
 			$( $( 'tr[data-type="translation"]' ) ).each( function() {
 				console.log( 'Update translation...' );
-				wp.updates.updateTranslations()
-					.done( wp.updates.updateTranslationsSuccess )
-					.fail( wp.updates.updateTranslationsError );
+				wp.updates.updateTranslations( {
+					success: wp.updates.updateTranslationsSuccess,
+					error:   wp.updates.updateTranslationsError
+				} );
 			} ).promise(),
-			$( $( 'tr[data-type="core"]' ) ).each( function() {
+			$( $( 'tr[data-type="core"]' ) ).each( function(i, row) {
 				console.log( 'Update core...' );
-				wp.updates.updateCore()
-					.done( wp.updates.updateCoreSuccess )
-					.fail( wp.updates.updateCoreError );
+				wp.updates.updateCore( {
+					version: $( row ).data( 'version' ),
+					locale:  $( row ).data( 'locale' ),
+					success: wp.updates.updateCoreSuccess,
+					error:   wp.updates.updateCoreError
+				} );
 			} ).promise()
 		)
 			.done( wp.updates.updateAllSuccess )
@@ -1181,15 +1190,13 @@
 	 * @param {object} response Response from the server.
 	 */
 	wp.updates.updateAllSuccess = function( response ) {
-		var $updateMessage = $( 'tr[data-type="core"]' ).find( '.update-link' ).removeClass( 'updating-message' ).addClass( 'button-disabled updated-message' );
+		var $updateMessage = $( 'tr[data-type="all"]' ).find( '.update-link' ).removeClass( 'updating-message' ).addClass( 'button-disabled updated-message' );
 
 		$updateMessage.attr( 'aria-label', wp.updates.l10n.updated ).text( wp.updates.l10n.updated );
 
 		wp.a11y.speak( wp.updates.l10n.updatedMsg, 'polite' );
 
-		$document.trigger( 'wp-core-update-success', response );
-
-		window.location = response.redirect;
+		$document.trigger( 'wp-all-update-success', response );
 	};
 
 	/**
@@ -1200,11 +1207,11 @@
 	 * @param {object} response Response from the server.
 	 */
 	wp.updates.updateAllError = function( response ) {
-		var $message = $( 'tr[data-type="core"]' ).find( '.update-link' ).removeClass( 'updating-message' ).addClass( 'button-disabled updated-message' ),
-		    errorMessage   = wp.updates.l10n.updateFailed.replace( '%s', response.error );
+		var $message     = $( 'tr[data-type="all"]' ).find( '.update-link' ).removeClass( 'updating-message' ).addClass( 'button-disabled updated-message' ),
+		    errorMessage = wp.updates.l10n.updateFailed.replace( '%s', response.error );
 
 		if ( response.errorCode && 'unable_to_connect_to_filesystem' === response.errorCode && wp.updates.shouldRequestFilesystemCredentials ) {
-			wp.updates.credentialError( response, 'update-core' );
+			wp.updates.credentialError( response, 'update-all' );
 			return;
 		}
 
@@ -1214,7 +1221,7 @@
 
 		wp.a11y.speak( errorMessage, 'assertive' );
 
-		$document.trigger( 'wp-core-update-error', response );
+		$document.trigger( 'wp-all-update-error', response );
 	};
 
 	/**
