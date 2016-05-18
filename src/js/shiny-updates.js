@@ -283,10 +283,6 @@
 
 			// Remove previous error messages, if any.
 			$card.removeClass( 'plugin-card-update-failed' ).find( '.notice.notice-error' ).remove();
-		} else if ( 'update-core' === pagenow ) {
-			$updateRow = $( 'tr[data-plugin="' + args.plugin + '"]' );
-			$message   = $updateRow.find( '.update-link' ).addClass( 'updating-message' );
-			message    = wp.updates.l10n.updatingLabel.replace( '%s', $message.data( 'name' ) );
 		}
 
 		if ( ! wp.updates.updateLock ) {
@@ -330,8 +326,6 @@
 
 		} else if ( 'plugin-install' === pagenow ) {
 			$updateMessage = $( '.plugin-card-' + response.slug ).find( '.update-now' ).removeClass( 'updating-message' ).addClass( 'button-disabled updated-message' );
-		} else if ( 'update-core' === pagenow ) {
-			$updateMessage = $( 'tr[data-plugin="' + response.plugin + '"]' ).find( '.update-link' ).removeClass( 'updating-message' ).addClass( 'button-disabled updated-message' );
 		}
 
 		$updateMessage
@@ -396,12 +390,6 @@
 						.text( wp.updates.l10n.updateNow );
 				}, 200 );
 			} );
-		} else if ( 'update-core' === pagenow ) {
-			$message = $( 'tr[data-plugin="' + response.plugin ).find( '.update-link' ).text( wp.updates.l10n.updateFailedShort ).removeClass( 'updating-message' );
-
-			setTimeout( function() {
-				$message.text( wp.updates.l10n.update );
-			}, 500 );
 		}
 
 		wp.a11y.speak( errorMessage, 'assertive' );
@@ -636,8 +624,6 @@
 
 		if ( 'themes-network' === pagenow ) {
 			$notice = $( '[data-slug="' + args.slug + '"]' ).find( '.update-message' );
-		} else if ( 'update-core' === pagenow ) {
-			$notice = $( '[data-slug="' + args.slug + '"]' ).find( '.update-link' );
 		} else {
 			$notice = $( '#update-theme' ).closest( '.notice' );
 			if ( ! $notice.length ) {
@@ -686,12 +672,6 @@
 			// Update the version number in the row.
 			newText = $theme.find( '.theme-version-author-uri' ).html().replace( response.oldVersion, response.newVersion );
 			$theme.find( '.theme-version-author-uri' ).html( newText );
-		} else if ( 'update-core' === pagenow ) {
-			$notice = $( 'tr[data-slug="' + response.slug + '"]' ).find( '.update-link' ).removeClass( 'updating-message' ).addClass( 'button-disabled updated-message' );
-
-			$notice
-				.attr( 'aria-label', wp.updates.l10n.updatedLabel.replace( '%s', response.theme.name ) )
-				.text( wp.updates.l10n.updated );
 		} else {
 			$notice = $( '.theme-info .notice' );
 			if ( ! $notice.length ) {
@@ -742,12 +722,6 @@
 
 		if ( 'themes-network' === pagenow ) {
 			$notice = $theme.find( '.update-message ' );
-		} else if ( 'update-core' === pagenow ) {
-			$notice = $( 'tr[data-slug="' + response.slug ).find( '.update-link' ).text( wp.updates.l10n.updateFailedShort ).removeClass( 'updating-message' );
-
-			setTimeout( function() {
-				$notice.text( wp.updates.l10n.update );
-			}, 500 );
 		} else {
 			$notice = $( '.theme-info .notice' );
 			if ( ! $notice.length ) {
@@ -969,95 +943,45 @@
 	};
 
 	/**
-	 * Send an Ajax request to the server to update translations.
+	 * Send an Ajax request to the server to update a single item in the updates list table
 	 *
 	 * @since 4.X.0
 	 *
-	 * @param {object}                    args         Arguments.
-	 * @param {updateTranslationsSuccess} args.success Success callback.
-	 * @param {updateTranslationsError}   args.error   Error callback.
+	 * @param {object}     args         Arguments.
+	 * @param {Function}   args.success Success callback.
+	 * @param {Function}   args.error   Error callback.
+	 * @param {jQuery}     args.row     The list table row
 	 * @return {$.promise} A jQuery promise that represents the request,
 	 *                     decorated with an abort() method.
 	 */
-	wp.updates.updateTranslations = function( args ) {
-		var $updateRow, $message, message;
+	wp.updates.updateItem = function( args ) {
+		var $itemRow = args.row,
+		    $message = $itemRow.find( '.update-link' ),
+		    type     = $message.data( 'type' ) || $itemRow.data( 'type' );
 
-		$updateRow = $( 'tr[data-type="translation"]' );
-		$message   = $updateRow.find( '.update-link' ).addClass( 'updating-message' );
-		message    = wp.updates.l10n.updatingMsg;
-
-		if ( ! wp.updates.updateLock ) {
-			$message.attr( 'aria-label', message );
-
-			if ( $message.html() !== wp.updates.l10n.updating ) {
-				$message.data( 'originaltext', $message.html() );
-			}
-
-			$message.text( wp.updates.l10n.updating );
-
-			$document.trigger( 'wp-translations-updating' );
-		}
-
-		return wp.updates.ajax( 'update-translations', args );
-	};
-
-	/**
-	 * On a successful translations update, update the UI with the result.
-	 *
-	 * @since 4.X.0
-	 *
-	 * @callback updateTranslationsSuccess
-	 * @param {object} response Response from the server.
-	 */
-	wp.updates.updateTranslationsSuccess = function( response ) {
-		var $updateMessage = $( 'tr[data-type="translation"]' ).find( '.update-link' ).removeClass( 'updating-message' ).addClass( 'button-disabled updated-message' );
-
-		$updateMessage.attr( 'aria-label', wp.updates.l10n.updated ).text( wp.updates.l10n.updated );
-
-		wp.a11y.speak( wp.updates.l10n.updatedMsg, 'polite' );
-
-		$document.trigger( 'wp-translations-update-success', response );
-	};
-
-	/**
-	 * On a translations update error, update the UI appropriately.
-	 *
-	 * @since 4.X.0
-	 *
-	 * @callback updateTranslationsError
-	 * @param {object} response Response from the server.
-	 */
-	wp.updates.updateTranslationsError = function( response ) {
-		var errorMessage = wp.updates.l10n.updateFailed.replace( '%s', response.error ),
-		    $message     = $( 'tr[data-type="translation"]' ).find( '.update-link' ).text( wp.updates.l10n.updateFailedShort ).removeClass( 'updating-message' );
-
-		if ( response.errorCode && 'unable_to_connect_to_filesystem' === response.errorCode && wp.updates.shouldRequestFilesystemCredentials ) {
-			wp.updates.credentialError( response, 'update-translations' );
+		// The item has already been updated, do not proceed.
+		if ( $message.hasClass('updated-message' ) ) {
 			return;
 		}
 
-		setTimeout( function() {
-			$message.text( wp.updates.l10n.update );
-		}, 500 );
+		$message.addClass( 'updating-message' );
 
-		wp.a11y.speak( errorMessage, 'assertive' );
+		// Do not send this data.
+		delete args.row;
 
-		$document.trigger( 'wp-translations-update-error', response );
-	};
-
-	/**
-	 * Send an Ajax request to the server to update core itself.
-	 *
-	 * @since 4.X.0
-	 *
-	 * @param {object}            args         Arguments.
-	 * @param {updateCoreSuccess} args.success Success callback.
-	 * @param {updateCoreError}   args.error   Error callback.
-	 * @return {$.promise} A jQuery promise that represents the request,
-	 *                     decorated with an abort() method.
-	 */
-	wp.updates.updateCore = function( args ) {
-		var $message = $( '.update-link', 'tr[data-type="core"]' ).addClass( 'updating-message' );
+		switch ( type ) {
+			case 'plugin':
+				args.plugin = $itemRow.data( 'plugin' );
+				args.slug   = $itemRow.data( 'slug' );
+				break;
+			case 'theme':
+				args.slug = $itemRow.data( 'slug' );
+				break;
+			case 'core':
+				args.version = $itemRow.data( 'version' );
+				args.locale  = $itemRow.data( 'locale' );
+				break;
+		}
 
 		if ( ! wp.updates.updateLock ) {
 			$message.attr( 'aria-label', wp.updates.l10n.updatingMsg );
@@ -1068,10 +992,10 @@
 
 			$message.text( wp.updates.l10n.updating );
 
-			$document.trigger( 'wp-core-updating' );
+			$document.trigger( 'wp-' + type + '-updating' );
 		}
 
-		return wp.updates.ajax( 'update-core', args );
+		return wp.updates.ajax( 'update-' + type, args );
 	};
 
 	/**
@@ -1081,17 +1005,17 @@
 	 *
 	 * @callback updateCoreSuccess
 	 * @param {object} response Response from the server.
+	 * @param {jQuery} row      The list table row
 	 */
-	wp.updates.updateCoreSuccess = function( response ) {
-		var $updateMessage = $( 'tr[data-type="core"]' ).find( '.update-link' ).removeClass( 'updating-message' ).addClass( 'button-disabled updated-message' );
+	wp.updates.updateItemSuccess = function( response, row ) {
+		var $message = row.find( '.update-link' ).removeClass( 'updating-message' ).addClass( 'button-disabled updated-message' ),
+		    type     = $message.data( 'type' ) || row.data( 'type' );
 
-		$updateMessage.attr( 'aria-label', wp.updates.l10n.updated ).text( wp.updates.l10n.updated );
+		$message.attr( 'aria-label', wp.updates.l10n.updated ).text( wp.updates.l10n.updated );
 
 		wp.a11y.speak( wp.updates.l10n.updatedMsg, 'polite' );
 
-		$document.trigger( 'wp-core-update-success', response );
-
-		window.location = response.redirect;
+		$document.trigger( 'wp-'+ type + '-update-success', response );
 	};
 
 	/**
@@ -1102,9 +1026,9 @@
 	 * @callback updateCoreError
 	 * @param {object} response Response from the server.
 	 */
-	wp.updates.updateCoreError = function( response ) {
-		var errorMessage = wp.updates.l10n.updateFailed.replace( '%s', response.error ),
-		    $message     = $( 'tr[data-type="core"]' ).find( '.update-link' ).text( wp.updates.l10n.updateFailedShort ).removeClass( 'updating-message' );
+	wp.updates.updateItemError = function( response, row ) {
+		var $message     = row.find( '.update-link' ).text( wp.updates.l10n.updateFailedShort ).removeClass( 'updating-message' ),
+		    errorMessage = wp.updates.l10n.updateFailed.replace( '%s', response.error );
 
 		if ( response.errorCode && 'unable_to_connect_to_filesystem' === response.errorCode && wp.updates.shouldRequestFilesystemCredentials ) {
 			wp.updates.credentialError( response, 'update-core' );
@@ -1117,7 +1041,7 @@
 
 		wp.a11y.speak( errorMessage, 'assertive' );
 
-		$document.trigger( 'wp-core-update-error', response );
+		$document.trigger( 'wp-' + type + '-update-error', response );
 	};
 
 	/**
@@ -1144,37 +1068,16 @@
 		}
 
 		$.when(
-			$( $( 'tr[data-type="theme"]' ) ).each( function( i, row ) {
-				console.log( 'Update theme...' );
-				wp.updates.updateTheme( {
-					slug:    $( row ).data( 'slug' ),
-					success: wp.updates.updateThemeSuccess,
-					error:   wp.updates.updateThemeError
-				} );
-			} ).promise(),
-			$( $( 'tr[data-type="plugin"]' ) ).each( function( i, row ) {
-				console.log( 'Update plugin...' );
-				wp.updates.updatePlugin( {
-					plugin:  $( row ).data( 'plugin' ),
-					slug:    $( row ).data( 'slug' ),
-					success: wp.updates.updateSuccess,
-					error:   wp.updates.updateError
-				} );
-			} ).promise(),
-			$( $( 'tr[data-type="translation"]' ) ).each( function() {
-				console.log( 'Update translation...' );
-				wp.updates.updateTranslations( {
-					success: wp.updates.updateTranslationsSuccess,
-					error:   wp.updates.updateTranslationsError
-				} );
-			} ).promise(),
-			$( $( 'tr[data-type="core"]' ) ).each( function(i, row) {
-				console.log( 'Update core...' );
-				wp.updates.updateCore( {
-					version: $( row ).data( 'version' ),
-					locale:  $( row ).data( 'locale' ),
-					success: wp.updates.updateCoreSuccess,
-					error:   wp.updates.updateCoreError
+			$( $( '.wp-list-table.updates tr[data-type]' ) ).reverse().each( function() {
+				console.log( 'Update item...' );
+				wp.updates.updateItem( {
+					row:     $( this ),
+					success: function( response ) {
+						return wp.updates.updateItemSuccess( response, $itemRow )
+					},
+					error:   function( response ) {
+						return wp.updates.updateItemError( response, $itemRow )
+					}
 				} );
 			} ).promise()
 		)
@@ -1852,7 +1755,16 @@
 		 * @param {Event} event Event interface.
 		 */
 		$document.on( 'click', '.wp-list-table.updates .update-link', function( event ) {
-			var $itemRow = $( event.target ).parents( 'tr' );
+			var $itemRow = $( event.target ).parents( 'tr' ),
+			    args     = {
+				    row:     $itemRow,
+				    success: function( response ) {
+					    return wp.updates.updateItemSuccess( response, $itemRow )
+				    },
+				    error:   function( response ) {
+					    return wp.updates.updateItemError( response, $itemRow )
+				    }
+			    };
 
 			event.preventDefault();
 
@@ -1863,46 +1775,7 @@
 			// Return the user back to where he left off after closing the modal.
 			wp.updates.$elToReturnFocusToFromCredentialsModal = $( event.target );
 
-			switch ( $( this ).data( 'type' ) || $itemRow.data( 'type' ) ) {
-				case 'plugin':
-					wp.updates.updatePlugin( {
-						plugin:  $itemRow.data( 'plugin' ),
-						slug:    $itemRow.data( 'slug' ),
-						success: wp.updates.updateSuccess,
-						error:   wp.updates.updateError
-					} );
-					break;
-
-				case 'theme':
-					wp.updates.updateTheme( {
-						slug:    $itemRow.data( 'slug' ),
-						success: wp.updates.updateThemeSuccess,
-						error:   wp.updates.updateThemeError
-					} );
-					break;
-
-				case 'translation':
-					wp.updates.updateTranslations( {
-						success: wp.updates.updateTranslationsSuccess,
-						error:   wp.updates.updateTranslationsError
-					} );
-					break;
-
-				case 'core':
-					wp.updates.updateCore( {
-						version: $itemRow.data( 'version' ),
-						locale:  $itemRow.data( 'locale' ),
-						success: wp.updates.updateCoreSuccess,
-						error:   wp.updates.updateCoreError
-					} );
-					break;
-				case 'all':
-					wp.updates.updateAll( {
-						success: wp.updates.updateAllSuccess,
-						error:   wp.updates.updateAllError
-					} );
-					break;
-			}
+			wp.updates.updateItem( args );
 		} );
 
 		/**
