@@ -960,7 +960,7 @@
 		    type     = $message.data( 'type' ) || $itemRow.data( 'type' );
 
 		// The item has already been updated, do not proceed.
-		if ( $message.hasClass('updated-message' ) ) {
+		if ( $message.hasClass( 'updated-message' ) ) {
 			return;
 		}
 
@@ -1015,7 +1015,7 @@
 
 		wp.a11y.speak( wp.updates.l10n.updatedMsg, 'polite' );
 
-		$document.trigger( 'wp-'+ type + '-update-success', response );
+		$document.trigger( 'wp-' + type + '-update-success', response );
 	};
 
 	/**
@@ -1028,6 +1028,7 @@
 	 */
 	wp.updates.updateItemError = function( response, row ) {
 		var $message     = row.find( '.update-link' ).text( wp.updates.l10n.updateFailedShort ).removeClass( 'updating-message' ),
+		    type         = $message.data( 'type' ) || row.data( 'type' ),
 		    errorMessage = wp.updates.l10n.updateFailed.replace( '%s', response.error );
 
 		if ( response.errorCode && 'unable_to_connect_to_filesystem' === response.errorCode && wp.updates.shouldRequestFilesystemCredentials ) {
@@ -1067,16 +1068,16 @@
 			$document.trigger( 'wp-all-updating' );
 		}
 
+		// Translations first, themes and plugins afterwards before updating core at last.
 		$.when(
 			$( $( '.wp-list-table.updates tr[data-type]' ) ).reverse().each( function() {
-				console.log( 'Update item...' );
 				wp.updates.updateItem( {
 					row:     $( this ),
 					success: function( response ) {
-						return wp.updates.updateItemSuccess( response, $itemRow )
+						return wp.updates.updateItemSuccess( response, $( this ) );
 					},
 					error:   function( response ) {
-						return wp.updates.updateItemError( response, $itemRow )
+						return wp.updates.updateItemError( response, $( this ) );
 					}
 				} );
 			} ).promise()
@@ -1759,10 +1760,10 @@
 			    args     = {
 				    row:     $itemRow,
 				    success: function( response ) {
-					    return wp.updates.updateItemSuccess( response, $itemRow )
+					    return wp.updates.updateItemSuccess( response, $itemRow );
 				    },
 				    error:   function( response ) {
-					    return wp.updates.updateItemError( response, $itemRow )
+					    return wp.updates.updateItemError( response, $itemRow );
 				    }
 			    };
 
