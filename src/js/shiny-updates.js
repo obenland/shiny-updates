@@ -1016,8 +1016,6 @@
 
 		wp.a11y.speak( wp.updates.l10n.updatedMsg, 'polite' );
 
-		wp.updates.decrementCount( 'translations' );
-
 		$document.trigger( 'wp-translations-update-success', response );
 	};
 
