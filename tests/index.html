@@ -25,6 +25,9 @@
 </div>
 
 <!-- Required HTML for tests -->
+<script id="tmpl-wp-updates-admin-notice" type="text/html">
+	<div <# if ( data.id ) { #>id="{{ data.id }}"<# } #> class="notice {{ data.className }}"><p>{{{ data.message }}}</p></div>
+</script>
 <div style="display:none;">
 	<li id="wp-admin-bar-updates">
 		<a class="ab-item" href="wp-admin/update-core.php" title="2 Plugin Updates">

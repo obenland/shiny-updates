@@ -88,7 +88,23 @@ jQuery( function( $ ) {
 	// QUnit.test( 'A successful update changes the message?', function( assert ) {} );
 	// QUnit.test( 'A failed update changes the message?', function( assert ) {} );
 
-	QUnit.module( 'wp.updates.themes' );
+	QUnit.module( 'wp.updates.themes', {
+		beforeEach: function() {
+			window.pagenow = 'themes';
+		},
+		afterEach: function() {
+			// Clean up after updates
+			delete window.pagenow;
+			wp.updates.updateLock = false;
+			wp.updates.updateQueue = [];
+		},
+	} );
+
+	QUnit.test( 'Update lock is set when themes are updating', function( assert ) {
+		wp.updates.updateTheme( 'twentyeleven' );
+		assert.strictEqual( wp.updates.updateLock, true );
+	});
+
 	// QUnit.test( 'If themes are installing (lock is set), the beforeUnload function should fire', function( assert ) {} );
 	// QUnit.test( 'Starting a theme update should call the update API (?)', function( assert ) {} );
 	// QUnit.test( 'Installing a theme should call the API', function( assert ) {} );
