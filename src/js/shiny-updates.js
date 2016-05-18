@@ -1621,7 +1621,7 @@
 		 * @param {Event} event Event interface.
 		 */
 		$document.on( 'click', '.themes-php.network-admin .update-link', function( event ) {
-			var $link = $( event.target ).parents( 'tr' );
+			var $themeRow = $( event.target ).parents( 'tr' );
 			event.preventDefault();
 
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
@@ -1629,9 +1629,9 @@
 			}
 
 			// Return the user to the input box of the theme's table row after closing the modal.
-			wp.updates.$elToReturnFocusToFromCredentialsModal = $link.find( '.check-column input' );
+			wp.updates.$elToReturnFocusToFromCredentialsModal = $themeRow.find( '.check-column input' );
 			wp.updates.updateTheme( {
-				slug:    $link.data( 'slug' ),
+				slug:    $themeRow.data( 'slug' ),
 				success: wp.updates.updateThemeSuccess,
 				error:   wp.updates.updateThemeError
 			} );
@@ -1645,10 +1645,10 @@
 		 * @param {Event} event Event interface.
 		 */
 		$document.on( 'click', '.themes-php.network-admin a.delete', function( event ) {
-			var $link = $( event.target ).parents( 'tr' );
+			var $themeRow = $( event.target ).parents( 'tr' );
 			event.preventDefault();
 
-			if ( ! window.confirm( wp.updates.l10n.aysDelete.replace( '%s', $link.find( '.plugin-title strong' ).text() ) ) ) {
+			if ( ! window.confirm( wp.updates.l10n.aysDelete.replace( '%s', $themeRow.find( '.plugin-title strong' ).text() ) ) ) {
 				return;
 			}
 
@@ -1657,7 +1657,7 @@
 			}
 
 			wp.updates.deleteTheme( {
-				slug:    $link.data( 'slug' ),
+				slug:    $themeRow.data( 'slug' ),
 				success: wp.updates.deleteThemeSuccess,
 				error:   wp.updates.deleteThemeError
 			} );
