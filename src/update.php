@@ -247,8 +247,11 @@ function su_theme_update_row( $theme_key, $theme ) {
  * Displays the shiny update table.
  *
  * Includes core, plugin and theme updates.
+ *
+ * @global string $wp_version The current WordPress version.
  */
 function su_update_table() {
+	global $wp_version;
 	?>
 	<div class="wordpress-updates-table">
 		<?php
@@ -259,6 +262,49 @@ function su_update_table() {
 		$updates_table->prepare_items();
 		$updates_table->display();
 		?>
+	</div>
+
+	<?php
+	$core_updates = (array) get_core_updates();
+
+	if ( ! isset( $core_updates[1] ) ) {
+		return;
+	}
+
+	$update = $core_updates[1];
+
+	if ( 'en_US' == $update->locale &&
+	     'en_US' == get_locale() ||
+	     (
+		     $update->packages->partial &&
+		     $wp_version === $update->partial_version &&
+		     1 === count( $core_updates )
+	     )
+	) {
+		$version_string = $update->current;
+	} else {
+		$version_string = sprintf( '%s&ndash;<code>%s</code>', $update->current, $update->locale );
+	}
+
+	if ( isset( $update->response ) && 'latest' !== $update->response ) {
+		return;
+	}
+	?>
+	<div class="wordpress-reinstall-card card">
+
+		<h2><?php _e( 'Need to re-install WordPress?' ); ?></h2>
+		<p>
+			<?php printf( __( 'If you need to re-install version %s, you can do so here.' ), $version_string ); ?>
+		</p>
+
+		<form method="post" action="update-core.php?action=do-core-reinstall" name="upgrade" class="upgrade">
+			<?php wp_nonce_field( 'upgrade-core' ); ?>
+			<input name="version" value="<?php echo esc_attr( $update->current ); ?>" type="hidden"/>
+			<input name="locale" value="<?php echo esc_attr( $update->locale ); ?>" type="hidden"/>
+			<p>
+				<button type="submit" name="upgrade" id="upgrade" class="button"><?php esc_attr_e( 'Re-install Now' ); ?></button>
+			</p>
+		</form>
 	</div>
 	<?php
 }

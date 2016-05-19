@@ -203,6 +203,10 @@ tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-error.notic
 	display: block;
 }
 
+.update-core-php .wordpress-updates-table {
+	margin-bottom: 50px;
+}
+
 .update-core-php .wordpress-updates-table .tablenav button {
 	margin-bottom: 2px;
 }
@@ -229,6 +233,10 @@ tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-error.notic
 
 .wp-list-table.updates .updates-table-screenshot {
 	padding: 5px 15px 10px 10px;
+}
+
+.wordpress-reinstall-card {
+	max-width: 100%;
 }
 
 @media aural {

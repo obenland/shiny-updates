@@ -72,7 +72,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 			$this->items[] = array(
 				'type' => 'core',
 				'slug' => 'core',
-				'data' => $core_updates,
+				'data' => $core_updates[0],
 			);
 		}
 
@@ -193,8 +193,8 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 		$attributes = array( 'data-type' => $item['type'] );
 
 		if ( 'core' === $item['type'] ) {
-			$attributes['data-version'] = esc_attr( $item['data'][0]->current );
-			$attributes['data-locale']  = esc_attr( $item['data'][0]->locale );
+			$attributes['data-version'] = esc_attr( $item['data']->current );
+			$attributes['data-locale']  = esc_attr( $item['data']->locale );
 		} else if ( 'theme' === $item['type'] ) {
 			$attributes['data-slug'] = $item['slug'];
 		} else if ( 'plugin' === $item['type'] ) {
@@ -324,16 +324,40 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	 * @since  4.X.0
 	 * @access public
 	 *
+	 * @global string $wp_version The current WordPress version.
+	 *
 	 * @param array $item The current item.
 	 */
 	public function column_title_core( $item ) {
+		global $wp_version;
 		?>
 		<p>
 			<img src="<?php echo esc_url( admin_url( 'images/wordpress-logo.svg' ) ); ?>" width="85" height="85" class="updates-table-screenshot" alt=""/>
 			<strong><?php _e( 'WordPress' ); ?></strong>
 			<?php
-			foreach ( (array) $item['data'] as $update ) {
-				$this->_list_core_update( $update );
+			$update = $item['data'];
+
+			if ( 'en_US' == $update->locale &&
+			     'en_US' == get_locale() ||
+			     (
+				     $update->packages->partial &&
+				     $wp_version === $update->partial_version &&
+				     1 === count( get_core_updates() )
+			     )
+			) {
+				$version_string = $update->current;
+			} else {
+				$version_string = sprintf( '%s&ndash;<code>%s</code>', $update->current, $update->locale );
+			}
+
+			if ( 'development' == $update->response ) {
+				echo '<p>';
+				_e( 'You are using a development version of WordPress. You can update to the latest nightly build automatically.' );
+				echo '</p>';
+			} else if ( isset( $update->response ) && 'latest' !== $update->response ) {
+				echo '<p>';
+				printf( __( 'You can update to <a href="https://codex.wordpress.org/Version_%1$s">WordPress %2$s</a> automatically.' ), $update->current, $version_string );
+				echo '</p>';
 			}
 			?>
 		</p>
@@ -442,65 +466,5 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 			?>
 		</form>
 		<?php
-	}
-
-	/**
-	 * Lists a single core update.
-	 *
-	 * @global string $wp_version The current WordPress version.
-	 *
-	 * @since  4.X.0
-	 * @access public
-	 *
-	 * @param object $update The current core update item.
-	 */
-	protected function _list_core_update( $update ) {
-		global $wp_version;
-
-		if ( 'en_US' == $update->locale && 'en_US' == get_locale() ) {
-			$version_string = $update->current;
-		} // If the only available update is a partial builds, it doesn't need a language-specific version string.
-		elseif ( 'en_US' == $update->locale && $update->packages->partial && $wp_version == $update->partial_version && ( $updates = get_core_updates() ) && 1 == count( $updates ) ) {
-			$version_string = $update->current;
-		} else {
-			$version_string = sprintf( '%s&ndash;<code>%s</code>', $update->current, $update->locale );
-		}
-
-		$current = false;
-
-		if ( ! isset( $update->response ) || 'latest' == $update->response ) {
-			$current = true;
-		}
-
-		if ( 'development' == $update->response ) {
-			echo '<p>';
-			_e( 'You are using a development version of WordPress. You can update to the latest nightly build automatically.' );
-			echo '</p>';
-		} else {
-			if ( $current ) {
-				echo '<p>';
-				printf( __( 'If you need to re-install version %s, you can do so here.' ), $version_string );
-				echo '</p>';
-
-				echo '<form method="post" action="update-core.php?action=do-core-reinstall" name="upgrade" class="upgrade">';
-				wp_nonce_field( 'upgrade-core' );
-				echo '<p>';
-				echo '<input name="version" value="' . esc_attr( $update->current ) . '" type="hidden"/>';
-				echo '<input name="locale" value="' . esc_attr( $update->locale ) . '" type="hidden"/>';
-
-				printf(
-					'<button type="submit" name="upgrade" id="upgrade" class="button">%s</button>',
-					esc_attr__( 'Re-install Now' )
-				);
-
-				echo '</p>';
-
-				echo '</form>';
-			} else {
-				echo '<p>';
-				printf( __( 'You can update to <a href="https://codex.wordpress.org/Version_%1$s">WordPress %2$s</a> automatically.' ), $update->current, $version_string );
-				echo '</p>';
-			}
-		}
 	}
 }
