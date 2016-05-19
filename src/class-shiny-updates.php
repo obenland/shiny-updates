@@ -166,20 +166,19 @@ class Shiny_Updates {
 			return;
 		}
 
+		$plugins = $totals = array();
+
 		if ( ! isset( $GLOBALS['plugins'] ) ) {
-			$plugins = array(
+			$GLOBALS['plugins'] = array(
 				'all' => get_plugins(),
 			);
-			$GLOBALS['plugins'] = $plugins;
 		}
 
-		$plugins = $totals = array();
 		foreach ( $GLOBALS['plugins'] as $key => $list ) {
 			$plugins[ $key ] = array_keys( (array) $list );
-			foreach( $plugins[ $key ] as $plugin ) {
+			foreach ( $plugins[ $key ] as $plugin ) {
 				$activates[ $plugin ] = wp_nonce_url( 'plugins.php?action=activate&plugin=' . esc_attr( $key ), 'activate-plugin_' . esc_attr( $key ) );
 			}
-
 		}
 
 		if ( isset( $GLOBALS['totals'] ) ) {
