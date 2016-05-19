@@ -1991,9 +1991,7 @@
 				type:   'update-plugin',
 				data:   {
 					plugin:  $( this ).data( 'plugin' ),
-					slug:    $( this ).data( 'slug' ),
-					success: wp.updates.updateSuccess,
-					error:   wp.updates.updateError
+					slug:    $( this ).data( 'slug' )
 				}
 			};
 
@@ -2023,9 +2021,7 @@
 				action: 'installPlugin',
 				type:   'install-plugin',
 				data:   {
-					slug:    $( this ).data( 'slug' ),
-					success: wp.updates.installPluginSuccess,
-					error:   wp.updates.installPluginError
+					slug:    $( this ).data( 'slug' )
 				}
 			};
 
@@ -2065,10 +2061,24 @@
 					break;
 
 				case 'updatePlugin':
+					/* jscs:disable requireCamelCaseOrUpperCaseIdentifiers */
+					window.tb_remove();
+					/* jscs:enable */
+
+					message.data.success = wp.updates.updateSuccess;
+					message.data.error   = wp.updates.updateError;
+
+					wp.updates.updateQueue.push( message );
+					wp.updates.queueChecker();
+					break;
+
 				case 'installPlugin':
 					/* jscs:disable requireCamelCaseOrUpperCaseIdentifiers */
 					window.tb_remove();
 					/* jscs:enable */
+
+					message.data.success = wp.updates.installPluginSuccess;
+					message.data.error   = wp.updates.installPluginError;
 
 					wp.updates.updateQueue.push( message );
 					wp.updates.queueChecker();
