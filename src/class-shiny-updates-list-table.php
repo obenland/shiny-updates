@@ -138,6 +138,33 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Generate the table navigation above or below the table
+	 *
+	 * @since 4.X.0
+	 * @access protected
+	 *
+	 * @param string $which The location of the bulk actions: 'top' or 'bottom'.
+	 */
+	protected function display_tablenav( $which ) {
+		?>
+		<div class="tablenav <?php echo esc_attr( $which ); ?>">
+			<?php if ( $this->has_available_updates ): ?>
+				<div class="alignleft actions">
+					<form method="post" action="update-core.php?action=do-all-upgrade" name="upgrade-all">
+						<?php wp_nonce_field( 'upgrade-core', '_wpnonce' ); ?>
+						<button class="button button-primary update-link" data-type="all" type="submit" value="" name="upgrade-all">
+							<?php esc_attr_e( 'Update All' ); ?>
+						</button>
+					</form>
+				</div>
+			<?php endif;
+			$this->pagination( $which );
+			?>
+		</div>
+		<?php
+	}
+
+	/**
 	 * Get a list of columns.
 	 *
 	 * @since  4.X.0
@@ -146,21 +173,10 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	 * @return array The list table columns.
 	 */
 	public function get_columns() {
-		ob_start();
-		?>
-		<form method="post" action="update-core.php?action=do-all-upgrade" name="upgrade-all">
-			<?php wp_nonce_field( 'upgrade-core', '_wpnonce' ); ?>
-			<button class="button button-primary update-link" data-type="all" type="submit" value="" name="upgrade-all" <?php echo ! $this->has_available_updates ? 'disabled' : ''; ?>>
-				<?php esc_attr_e( 'Update All' ); ?>
-			</button>
-		</form>
-		<?php
-		$action = ob_get_clean();
-
 		return array(
-			'title'  => __( 'Available Updates' ),
+			'title'  => __( 'Update' ),
 			'type'   => __( 'Type' ),
-			'action' => $action,
+			'action' => __( 'Action' ),
 		);
 	}
 
