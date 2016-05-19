@@ -46,11 +46,13 @@ jQuery( function( $ ) {
 	QUnit.module( 'wp.updates.plugins', {
 		beforeEach: function() {
 			window.pagenow = 'plugins';
+			sinon.spy( jQuery, 'ajax' );
 		},
 		afterEach: function() {
 			delete window.pagenow;
 			wp.updates.updateLock = false;
 			wp.updates.updateQueue = [];
+			jQuery.ajax.restore();
 		}
 	} );
 
@@ -90,20 +92,44 @@ jQuery( function( $ ) {
 		assert.equal( wp.updates.beforeunload(), window._wpUpdatesSettings.l10n.beforeunload );
 	} );
 
-	// QUnit.test( 'Starting a plugin update should call the update API (?)', function( assert ) {} );
-	// QUnit.test( 'Installing a plugin should call the API', function( assert ) {} );
-	// QUnit.test( 'Deleting a plugin should call the API', function( assert ) {} );
+	QUnit.test( 'Starting a plugin update should call the update API', function( assert ) {
+		wp.updates.updatePlugin( {
+			plugin: 'test/test.php',
+			slug: 'test'
+		} );
+		assert.ok( jQuery.ajax.calledOnce );
+		assert.equal( jQuery.ajax.getCall(0).args[0].url, '/wp-admin/admin-ajax.php' );
+		assert.equal( jQuery.ajax.getCall(0).args[0].data.action, 'update-plugin' );
+		assert.equal( jQuery.ajax.getCall(0).args[0].data.slug, 'test' );
+	} );
+	QUnit.test( 'Installing a plugin should call the API', function( assert ) {
+		wp.updates.installPlugin( { slug: 'jetpack' } );
+		assert.ok( jQuery.ajax.calledOnce );
+		assert.equal( jQuery.ajax.getCall(0).args[0].url, '/wp-admin/admin-ajax.php' );
+		assert.equal( jQuery.ajax.getCall(0).args[0].data.action, 'install-plugin' );
+		assert.equal( jQuery.ajax.getCall(0).args[0].data.slug, 'jetpack' );
+	} );
+	QUnit.test( 'Deleting a plugin should call the API', function( assert ) {
+		wp.updates.deletePlugin( { slug: 'jetpack' } );
+		assert.ok( jQuery.ajax.calledOnce );
+		assert.equal( jQuery.ajax.getCall(0).args[0].url, '/wp-admin/admin-ajax.php' );
+		assert.equal( jQuery.ajax.getCall(0).args[0].data.action, 'delete-plugin' );
+		assert.equal( jQuery.ajax.getCall(0).args[0].data.slug, 'jetpack' );
+	} );
+
 	// QUnit.test( 'A successful update changes the message?', function( assert ) {} );
 	// QUnit.test( 'A failed update changes the message?', function( assert ) {} );
 
 	QUnit.module( 'wp.updates.themes', {
 		beforeEach: function() {
 			window.pagenow = 'themes';
+			sinon.spy( jQuery, 'ajax' );
 		},
 		afterEach: function() {
 			delete window.pagenow;
 			wp.updates.updateLock = false;
 			wp.updates.updateQueue = [];
+			jQuery.ajax.restore();
 		}
 	} );
 
@@ -113,13 +139,34 @@ jQuery( function( $ ) {
 	});
 
 	QUnit.test( 'If themes are installing (lock is set), the beforeUnload function should fire', function( assert ) {
-		wp.updates.updateTheme( 'twentyeleven' );
+		wp.updates.updateTheme( { slug: 'twentyeleven' } );
 		assert.equal( wp.updates.beforeunload(), window._wpUpdatesSettings.l10n.beforeunload );
 	} );
 
-	// QUnit.test( 'Starting a theme update should call the update API (?)', function( assert ) {} );
-	// QUnit.test( 'Installing a theme should call the API', function( assert ) {} );
-	// QUnit.test( 'Deleting a theme should call the API', function( assert ) {} );
+	QUnit.test( 'Starting a theme update should call the update API', function( assert ) {
+		wp.updates.updateTheme( { slug: 'twentyeleven' } );
+		assert.ok( jQuery.ajax.calledOnce );
+		assert.equal( jQuery.ajax.getCall(0).args[0].url, '/wp-admin/admin-ajax.php' );
+		assert.equal( jQuery.ajax.getCall(0).args[0].data.action, 'update-theme' );
+		assert.equal( jQuery.ajax.getCall(0).args[0].data.slug, 'twentyeleven' );
+	} );
+
+	QUnit.test( 'Installing a theme should call the API', function( assert ) {
+		wp.updates.installTheme( { slug: 'twentyeleven' } );
+		assert.ok( jQuery.ajax.calledOnce );
+		assert.equal( jQuery.ajax.getCall(0).args[0].url, '/wp-admin/admin-ajax.php' );
+		assert.equal( jQuery.ajax.getCall(0).args[0].data.action, 'install-theme' );
+		assert.equal( jQuery.ajax.getCall(0).args[0].data.slug, 'twentyeleven' );
+	} );
+
+	QUnit.test( 'Deleting a theme should call the API', function( assert ) {
+		wp.updates.deleteTheme( { slug: 'twentyeleven' } );
+		assert.ok( jQuery.ajax.calledOnce );
+		assert.equal( jQuery.ajax.getCall(0).args[0].url, '/wp-admin/admin-ajax.php' );
+		assert.equal( jQuery.ajax.getCall(0).args[0].data.action, 'delete-theme' );
+		assert.equal( jQuery.ajax.getCall(0).args[0].data.slug, 'twentyeleven' );
+	} );
+
 	// QUnit.test( 'A successful update changes the message?', function( assert ) {} );
 	// QUnit.test( 'A failed update changes the message?', function( assert ) {} );
 });
