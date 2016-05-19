@@ -12,7 +12,6 @@ jQuery( function( $ ) {
 	});
 
 	QUnit.test( 'decrementCount correctly decreases the update number', function( assert ) {
-		// Check initial values
 		var menuItemCount  = $( '#menu-plugins' ).find( '.plugin-count' ).eq( 0 ).text();
 		var screenReaderItemCount = $( '#wp-admin-bar-updates' ).find( '.screen-reader-text' ).text();
 		var adminItemCount = $( '#wp-admin-bar-updates' ).find( '.ab-label' ).text();
@@ -27,6 +26,7 @@ jQuery( function( $ ) {
 		screenReaderItemCount = $( '#wp-admin-bar-updates' ).find( '.screen-reader-text' ).text();
 		adminItemCount = $( '#wp-admin-bar-updates' ).find( '.ab-label' ).text();
 		assert.equal( menuItemCount, 1 );
+
 		// Should the screenReader count change? Is that announced to the user?
 		assert.equal( screenReaderItemCount, '1 Plugin Update' );
 		assert.equal( adminItemCount, 1 );
@@ -48,11 +48,10 @@ jQuery( function( $ ) {
 			window.pagenow = 'plugins';
 		},
 		afterEach: function() {
-			// Clean up after updates
 			delete window.pagenow;
 			wp.updates.updateLock = false;
 			wp.updates.updateQueue = [];
-		},
+		}
 	} );
 
 	QUnit.test( 'Update lock is set when plugins are updating', function( assert ) {
@@ -93,11 +92,10 @@ jQuery( function( $ ) {
 			window.pagenow = 'themes';
 		},
 		afterEach: function() {
-			// Clean up after updates
 			delete window.pagenow;
 			wp.updates.updateLock = false;
 			wp.updates.updateQueue = [];
-		},
+		}
 	} );
 
 	QUnit.test( 'Update lock is set when themes are updating', function( assert ) {
