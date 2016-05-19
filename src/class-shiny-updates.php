@@ -79,31 +79,22 @@ class Shiny_Updates {
 	 * for plugins that are installed and inactive.
 	 */
 	function plugin_install_actions( $action_links, $plugin ) {
+		$status = install_plugin_install_status( $plugin );
+
+		if ( is_plugin_active( $status['file'] ) ) {
+			$action_links[0] = '<span class="button button-disabled">' . _x( 'Activated', 'plugin' ) . '</span>';
+		}
 
 		// Ensure user has capability to activate plugins.
 		if ( ! current_user_can( 'activate_plugins' ) ) {
 			return $action_links;
 		}
 
-		$status = install_plugin_install_status( $plugin );
-
 		// If the plugin is installed, potentially add an activation link.
-		if ( 'latest_installed' === $status['status'] || 'newer_installed' === $status['status'] ) {
-
-			$installed_plugins = get_plugins();
-
-			// Find the corrent plugin by slug, extracting its file.
-			// @todo Pass more plugin info to the filter so we don't have to find it again here?
-			foreach ( $installed_plugins as $plugin_file => $plugin_data ) {
-
-				if ( sanitize_title( $plugin_data['Name'] ) === $plugin['slug'] ) {
-					if ( ! is_plugin_active( $plugin_file ) ) {
-						$action_links[] = '<a href="' . wp_nonce_url( 'plugins.php?action=activate&amp;plugin=' . esc_attr( $plugin_file ), 'activate-plugin_' . esc_attr( $plugin_file ) ) . '" >' . __( 'Activate' ) . '</a>';
-					}
-					break;
-				}
+		if ( in_array( $status['status'], array( 'latest_installed', 'newer_installed' ) ) ) {
+			if ( ! is_plugin_active( $status['file'] ) ) {
+				$action_links[] = '<a href="' . wp_nonce_url( 'plugins.php?action=activate&amp;plugin=' . esc_attr( $status['file'] ), 'activate-plugin_' . esc_attr( $status['file'] ) ) . '" >' . __( 'Activate' ) . '</a>';
 			}
-
 		}
 
 		// For plugins that can be installed, add an activation link.
