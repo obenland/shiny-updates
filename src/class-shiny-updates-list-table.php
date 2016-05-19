@@ -138,6 +138,18 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Get a list of CSS classes for the table tag.
+	 *
+	 * @since 4.X.0
+	 * @access protected
+	 *
+	 * @return array List of CSS classes for the table tag.
+	 */
+	protected function get_table_classes() {
+		return array( 'widefat', 'striped', $this->_args['plural'] );
+	}
+
+	/**
 	 * Generate the table navigation above or below the table
 	 *
 	 * @since 4.X.0
