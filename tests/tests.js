@@ -112,7 +112,11 @@ jQuery( function( $ ) {
 		assert.strictEqual( wp.updates.updateLock, true );
 	});
 
-	// QUnit.test( 'If themes are installing (lock is set), the beforeUnload function should fire', function( assert ) {} );
+	QUnit.test( 'If themes are installing (lock is set), the beforeUnload function should fire', function( assert ) {
+		wp.updates.updateTheme( 'twentyeleven' );
+		assert.equal( wp.updates.beforeunload(), window._wpUpdatesSettings.l10n.beforeunload );
+	} );
+
 	// QUnit.test( 'Starting a theme update should call the update API (?)', function( assert ) {} );
 	// QUnit.test( 'Installing a theme should call the API', function( assert ) {} );
 	// QUnit.test( 'Deleting a theme should call the API', function( assert ) {} );
