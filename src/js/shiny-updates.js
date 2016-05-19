@@ -162,8 +162,10 @@
 			options.error = data.error;
 		}
 
+		// Do not send this data.
 		delete data.success;
 		delete data.error;
+		delete data.el;
 
 		options.data = _.extend( data, {
 			action:          action,
@@ -950,24 +952,21 @@
 	 * @param {object}     args         Arguments.
 	 * @param {Function}   args.success Success callback.
 	 * @param {Function}   args.error   Error callback.
-	 * @param {jQuery}     args.row     The list table row
+	 * @param {jQuery}     args.el     The list table row
 	 * @return {$.promise} A jQuery promise that represents the request,
 	 *                     decorated with an abort() method.
 	 */
 	wp.updates.updateItem = function( args ) {
-		var $itemRow = args.row,
+		var $itemRow = args.el,
 		    $message = $itemRow.find( '.update-link' ),
 		    type     = $message.data( 'type' ) || $itemRow.data( 'type' );
 
 		// The item has already been updated, do not proceed.
-		if ( $message.hasClass( 'updated-message' ) ) {
+		if ( 0 === $message.length || $message.hasClass( 'updated-message' ) ) {
 			return;
 		}
 
 		$message.addClass( 'updating-message' );
-
-		// Do not send this data.
-		delete args.row;
 
 		switch ( type ) {
 			case 'plugin':
@@ -1074,13 +1073,14 @@
 		// Translations first, themes and plugins afterwards before updating core at last.
 		$.when(
 			$( $( '.wp-list-table.updates tr[data-type]' ).get().reverse() ).each( function() {
+				var $el = $( this );
 				wp.updates.updateItem( {
-					row:     $( this ),
+					el:     $el,
 					success: function( response ) {
-						return wp.updates.updateItemSuccess( response, $( this ) );
+						return wp.updates.updateItemSuccess( response, $el );
 					},
 					error:   function( response ) {
-						return wp.updates.updateItemError( response, $( this ) );
+						return wp.updates.updateItemError( response, $el );
 					}
 				} );
 			} ).promise()
