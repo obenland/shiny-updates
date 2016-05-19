@@ -191,6 +191,48 @@ tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-error.notic
 	background-color: #e5f5fa;
 }
 
+.update-core-php .wrap > h2,
+.update-core-php .wrap > p,
+.update-core-php .wrap > .core-updates,
+.update-core-php .wrap > [name=upgrade-translations],
+.update-core-php .wrap > [name=upgrade-plugins],
+.update-core-php .wrap > [name=upgrade-themes] {
+	display: none;
+}
+
+.update-core-php .wrap > h1 + p,
+.update-core-php .notice.notice-warning + p {
+	display: block;
+}
+
+.update-core-php .wordpress-updates-table .tablenav button {
+	margin-bottom: 2px;
+}
+
+.wp-list-table.updates .manage-column.column-type {
+	width: 10%;
+}
+
+.wp-list-table.updates .manage-column.column-action {
+	width: 10%;
+}
+
+.wp-list-table.updates .manage-column.column-action form {
+	margin: 0;
+}
+
+.wp-list-table.updates .dashicons-translation {
+	width: 85px;
+	height: 85px;
+	font-size: 85px;
+	float: left;
+	margin: 0 10px 5px 0;
+}
+
+.wp-list-table.updates .updates-table-screenshot {
+	padding: 5px 15px 10px 10px;
+}
+
 @media aural {
 	.wrap .notice p:before,
 	.theme .notice:before,

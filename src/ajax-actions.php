@@ -304,7 +304,7 @@ function wpsu_ajax_update_plugin() {
 		wp_send_json_error( array( 'errorCode' => 'no_plugin_specified' ) );
 	}
 
-	$plugin      = filter_var( wp_unslash( $_POST['plugin'] ), FILTER_SANITIZE_STRING );
+	$plugin      = plugin_basename( sanitize_text_field( wp_unslash( $_POST['plugin'] ) ) );
 	$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin );
 
 	$status = array(
@@ -396,7 +396,7 @@ function wp_ajax_delete_plugin() {
 		wp_send_json_error( array( 'errorCode' => 'no_plugin_specified' ) );
 	}
 
-	$plugin      = filter_var( wp_unslash( $_POST['plugin'] ), FILTER_SANITIZE_STRING );
+	$plugin      = plugin_basename( sanitize_text_field( wp_unslash( $_POST['plugin'] ) ) );
 	$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin );
 
 	$status = array(
@@ -514,4 +514,123 @@ function wp_ajax_search_install_plugins() {
 	$status['items'] = ob_get_clean();
 
 	wp_send_json_success( $status );
+}
+
+/**
+ * AJAX handler for updating translations.
+ *
+ * @since 4.6.0
+ *
+ * @see Language_Pack_Upgrader
+ */
+function wp_ajax_update_translations() {
+	check_ajax_referer( 'updates' );
+
+	if ( ! current_user_can( 'update_core' ) && ! current_user_can( 'update_plugins' ) && ! current_user_can( 'update_themes' ) ) {
+		$status['error'] = __( 'You do not have sufficient permissions to update this site.' );
+		wp_send_json_error( $status );
+	}
+
+	include_once( ABSPATH . 'wp-admin/includes/class-wp-upgrader.php' );
+
+	$url     = 'update-core.php?action=do-translation-upgrade';
+	$nonce   = 'upgrade-translations';
+	$title   = __( 'Update Translations' );
+	$context = WP_CONTENT_DIR;
+
+	$skin     = new Automatic_Upgrader_Skin( compact( 'url', 'nonce', 'title', 'context' ) );
+	$upgrader = new Language_Pack_Upgrader( $skin );
+	$result   = $upgrader->bulk_upgrade();
+
+	$status = array(
+		'update' => 'translation',
+	);
+
+	if ( is_array( $result ) && is_wp_error( $skin->result ) ) {
+		$result = $skin->result;
+	}
+
+	if ( is_array( $result ) && ! empty( $result[0] ) ) {
+		wp_send_json_success( $status );
+	} else if ( is_wp_error( $result ) ) {
+		$status['error'] = $result->get_error_message();
+		wp_send_json_error( $status );
+	} else if ( false === $result ) {
+		global $wp_filesystem;
+
+		$status['errorCode'] = 'unable_to_connect_to_filesystem';
+		$status['error']     = __( 'Unable to connect to the filesystem. Please confirm your credentials.' );
+
+		// Pass through the error from WP_Filesystem if one was raised.
+		if ( is_wp_error( $wp_filesystem->errors ) && $wp_filesystem->errors->get_error_code() ) {
+			$status['error'] = $wp_filesystem->errors->get_error_message();
+		}
+
+		wp_send_json_error( $status );
+	}
+
+	// An unhandled error occurred.
+	$status['error'] = __( 'Translations update failed.' );
+	wp_send_json_error( $status );
+}
+
+
+/**
+ * AJAX handler for updating core.
+ *
+ * @since 4.6.0
+ *
+ * @see Core_Upgrader
+ */
+function wp_ajax_update_core() {
+	check_ajax_referer( 'updates' );
+
+	if ( ! current_user_can( 'update_core' ) ) {
+		$status['error'] = __( 'You do not have sufficient permissions to update this site.' );
+		wp_send_json_error( $status );
+	}
+
+	$reinstall = isset( $_POST['reinstall'] ) ? (bool) $_POST['reinstall'] : false;
+
+	$version = isset( $_POST['version'] ) ? sanitize_text_field( wp_unslash( $_POST['version'] ) ) : false;
+	$locale  = isset( $_POST['locale'] ) ? sanitize_text_field( wp_unslash( $_POST['locale'] ) ) : 'en_US';
+
+	$update = find_core_update( $version, $locale );
+
+	if ( ! $update ) {
+		return;
+	}
+
+	$status = array(
+		'update'   => 'core',
+		'redirect' => esc_url( self_admin_url( 'about.php?updated' ) ),
+	);
+
+	if ( $update->current === $update->version ) {
+		wp_send_json_success( $status );
+	}
+
+	include_once( ABSPATH . 'wp-admin/includes/class-wp-upgrader.php' );
+
+	if ( $reinstall ) {
+		$update->response = 'reinstall';
+	}
+
+	$upgrader = new WP_Automatic_Updater();
+	$result   = $upgrader->update( 'core', $update );
+
+	if ( is_array( $result ) && ! empty( $result[0] ) ) {
+		wp_send_json_success( $status );
+	} else if ( is_wp_error( $result ) ) {
+		$status['error'] = $result->get_error_message();
+		wp_send_json_error( $status );
+	} else if ( false === $result ) {
+		// These aren't actual errors.
+		$status['error'] = __( 'Installation Failed' );
+		wp_send_json_error( $status );
+	}
+
+	// An unhandled error occurred.
+	$status['error'] = __( 'Installation failed.' );
+	wp_send_json_error( $status );
 }
