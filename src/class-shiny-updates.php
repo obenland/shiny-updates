@@ -93,10 +93,18 @@ class Shiny_Updates {
 			<div id="{{ data.id }}" class="notice <# if ( data.errors ) { #>notice-error<# } else { #>notice-success<# } #>">
 				<p>
 					<# if ( data.successes ) { #>
-						<?php printf( __( '%s plugins successfully updated.' ), '{{ data.successes }}' ); ?>
+						<# if ( 1 === data.successes ) { #>
+							<?php printf( __( '%s plugin successfully updated.' ), '{{ data.successes }}' ); ?>
+						<# } else { #>
+							<?php printf( __( '%s plugins successfully updated.' ), '{{ data.successes }}' ); ?>
+						<# } #>
 					<# } #>
 					<# if ( data.errors ) { #>
-						<button class="button-link"><?php printf( __( '%s failures.' ), '{{ data.errors }}' ); ?></button>
+						<# if ( 1 === data.errors ) { #>
+							<button class="button-link"><?php printf( __( '%s failure.' ), '{{ data.errors }}' ); ?></button>
+						<# } else { #>
+							<button class="button-link"><?php printf( __( '%s failures.' ), '{{ data.errors }}' ); ?></button>
+						<# } #>
 					<# } #>
 				</p>
 				<# if ( data.errors ) { #>
