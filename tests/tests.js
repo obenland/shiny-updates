@@ -55,7 +55,10 @@ jQuery( function( $ ) {
 	} );
 
 	QUnit.test( 'Update lock is set when plugins are updating', function( assert ) {
-		wp.updates.updatePlugin( 'test/test.php', 'test' );
+		wp.updates.updatePlugin( {
+			plugin: 'test/test.php',
+			slug: 'test'
+		} );
 		assert.strictEqual( wp.updates.updateLock, true );
 	});
 
@@ -71,13 +74,19 @@ jQuery( function( $ ) {
 		];
 
 		wp.updates.updateLock = true;
-		wp.updates.updatePlugin( 'test/test.php', 'test' );
+		wp.updates.updatePlugin( {
+			plugin: 'test/test.php',
+			slug: 'test'
+		} );
 
 		assert.deepEqual( wp.updates.updateQueue, value );
 	});
 
 	QUnit.test( 'If plugins are installing (lock is set), the beforeUnload function should fire', function( assert ) {
-		wp.updates.updatePlugin( 'test/test.php', 'test' );
+		wp.updates.updatePlugin( {
+			plugin: 'test/test.php',
+			slug: 'test'
+		} );
 		assert.equal( wp.updates.beforeunload(), window._wpUpdatesSettings.l10n.beforeunload );
 	} );
 
