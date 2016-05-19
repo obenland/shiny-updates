@@ -1766,7 +1766,7 @@
 		$document.on( 'click', '.wp-list-table.updates .update-link', function( event ) {
 			var $itemRow = $( event.target ).parents( 'tr' ),
 			    args     = {
-				    row:     $itemRow,
+				    el:     $itemRow,
 				    success: function( response ) {
 					    return wp.updates.updateItemSuccess( response, $itemRow );
 				    },
