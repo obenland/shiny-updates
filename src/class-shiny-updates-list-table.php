@@ -146,19 +146,23 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	 * @param string $which The location of the bulk actions: 'top' or 'bottom'.
 	 */
 	protected function display_tablenav( $which ) {
+		$total_items = $this->_pagination_args['total_items'];
 		?>
 		<div class="tablenav <?php echo esc_attr( $which ); ?>">
-			<?php if ( $this->has_available_updates ) : ?>
-				<div class="alignleft actions">
+			<?php
+			if ( $this->has_available_updates ) : ?>
+				<div class="alignright actions">
 					<form method="post" action="update-core.php?action=do-all-upgrade" name="upgrade-all">
 						<?php wp_nonce_field( 'upgrade-core', '_wpnonce' ); ?>
 						<button class="button button-primary update-link" data-type="all" type="submit" value="" name="upgrade-all">
 							<?php esc_attr_e( 'Update All' ); ?>
 						</button>
+						<span class="displaying-num">
+							<?php printf( _n( '%s item', '%s items', $total_items ), number_format_i18n( $total_items ) ); ?>
+						</span>
 					</form>
 				</div>
 			<?php endif;
-			$this->pagination( $which );
 			?>
 		</div>
 		<?php

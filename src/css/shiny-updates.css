@@ -211,6 +211,11 @@ tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-error.notic
 	margin-bottom: 2px;
 }
 
+.update-core-php .wordpress-updates-table .tablenav .displaying-num {
+	display: inline-block;
+	margin-top: 5px;
+}
+
 .wp-list-table.updates .manage-column.column-type {
 	width: 10%;
 }
