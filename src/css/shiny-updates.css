@@ -220,6 +220,10 @@ tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-error.notic
 	margin-top: 5px;
 }
 
+.wp-list-table.updates .manage-column.column-title {
+	padding-left: 115px;
+}
+
 .wp-list-table.updates .manage-column.column-type {
 	width: 10%;
 }
