@@ -7,8 +7,7 @@
 	top: 0;
 }
 
-.plugin-update-tr .update-message:before,
-.plugin-card .activate-now:before,
+.plugin-update-tr .installed:before,
 .plugin-card .update-now:before {
 	color: #f56e28;
 	content: "\f463";
@@ -26,8 +25,13 @@
 	color: #fff;
 }
 
-.plugin-card .activated-message:before,
+.plugin-update-tr .updated-message:before,
 .plugin-card .updated-message:before {
+	content: "";
+}
+
+.plugin-card .activated-message:before,
+.plugin-card .installed:before {
 	color: #79ba49;
 	content: '\f147';
 }
@@ -41,27 +45,26 @@
 	right: 0;
 }
 
+.button.installed:before,
 .button.installing:before {
-	-webkit-animation: rotation 2s infinite linear;
-	animation: rotation 2s infinite linear;
-	color: #f56e28;
-	content: '\f463';
 	display: inline-block;
 	font: normal 20px/1 'dashicons';
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	margin: 0 8px 0 -2px;
+}
+
+.button.installing:before {
+	-webkit-animation: rotation 2s infinite linear;
+	animation: rotation 2s infinite linear;
+	color: #f56e28;
+	content: '\f463';
 	vertical-align: top;
 }
 
 .button.installed:before {
 	color: #79ba49;
 	content: '\f147';
-	display: inline-block;
-	font: normal 20px/1 'dashicons';
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-	margin: 0 8px 0 -2px;
 	vertical-align: text-top;
 }
 
@@ -139,6 +142,7 @@ tr.active.update + tr.plugin-update-tr .plugin-update {
 	margin: auto;
 }
 
+.updated-message,
 .notice .button-link {
 	color: #0073aa;
 	-webkit-transition-property: border, background, color;
