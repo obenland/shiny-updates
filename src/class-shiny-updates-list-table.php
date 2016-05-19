@@ -148,7 +148,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	protected function display_tablenav( $which ) {
 		?>
 		<div class="tablenav <?php echo esc_attr( $which ); ?>">
-			<?php if ( $this->has_available_updates ): ?>
+			<?php if ( $this->has_available_updates ) : ?>
 				<div class="alignleft actions">
 					<form method="post" action="update-core.php?action=do-all-upgrade" name="upgrade-all">
 						<?php wp_nonce_field( 'upgrade-core', '_wpnonce' ); ?>
