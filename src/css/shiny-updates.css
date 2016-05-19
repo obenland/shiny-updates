@@ -9,7 +9,7 @@
 
 .plugin-update-tr .update-message:before,
 .plugin-card .activate-now:before,
-.plugin-card .install-now:before {
+.plugin-card .update-now:before {
 	color: #f56e28;
 	content: "\f463";
 }
