@@ -138,6 +138,46 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Display the table
+	 *
+	 * @since 4.X.0
+	 * @access public
+	 */
+	public function display() {
+		$singular = $this->_args['singular'];
+
+		$this->display_tablenav( 'top' );
+
+		$this->screen->render_screen_reader_content( 'heading_list' );
+		?>
+		<table class="wp-list-table <?php echo implode( ' ', $this->get_table_classes() ); ?>">
+			<thead>
+			<tr>
+				<?php $this->print_column_headers(); ?>
+			</tr>
+			</thead>
+
+			<tbody id="the-list"<?php
+			if ( $singular ) {
+				echo " data-wp-lists='list:$singular'";
+			} ?>>
+			<?php $this->display_rows_or_placeholder(); ?>
+			</tbody>
+
+			<?php if ( 2 < $this->_pagination_args['total_items'] ) : ?>
+				<tfoot>
+				<tr>
+					<?php $this->print_column_headers( false ); ?>
+				</tr>
+				</tfoot>
+			<?php endif; ?>
+
+		</table>
+		<?php
+		$this->display_tablenav( 'bottom' );
+	}
+
+	/**
 	 * Get a list of CSS classes for the table tag.
 	 *
 	 * @since 4.X.0
