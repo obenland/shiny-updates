@@ -77,6 +77,10 @@ class Shiny_Updates {
 	/**
 	 * Filter the actions available on the new plugin screen, enabling activation
 	 * for plugins that are installed and inactive.
+	 *
+	 * @param array $action_links An array of plugin action hyperlinks. Defaults are links to Details and Install Now.
+	 * @param array $plugin       The plugin currently being listed.
+	 * @return array The modified action links.
 	 */
 	function plugin_install_actions( $action_links, $plugin ) {
 		$status = install_plugin_install_status( $plugin );
@@ -168,6 +172,7 @@ class Shiny_Updates {
 			);
 			$GLOBALS['plugins'] = $plugins;
 		}
+
 		$plugins = $totals = array();
 		foreach ( $GLOBALS['plugins'] as $key => $list ) {
 			$plugins[ $key ] = array_keys( (array) $list );
