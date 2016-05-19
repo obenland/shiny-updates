@@ -207,6 +207,10 @@ tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-error.notic
 	margin-bottom: 50px;
 }
 
+.update-core-php .wordpress-updates-table .tablenav {
+	margin: 6px 0 8px;
+}
+
 .update-core-php .wordpress-updates-table .tablenav button {
 	margin-bottom: 2px;
 }
