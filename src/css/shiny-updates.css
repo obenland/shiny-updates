@@ -224,6 +224,14 @@ tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-error.notic
 	margin-top: 5px;
 }
 
+.wp-list-table.updates {
+	border-collapse: collapse;
+}
+
+.wp-list-table.updates tr {
+	border-bottom: 1px solid #e5e5e5;
+}
+
 .wp-list-table.updates .manage-column.column-title {
 	padding-left: 115px;
 }
