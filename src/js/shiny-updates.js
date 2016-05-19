@@ -439,9 +439,10 @@
 		var $message = $( '.plugin-card-' + response.slug ).find( '.install-now' );
 
 		// Transform the 'Install' button into an 'Activate' button.
-		$message.removeClass( 'updating-message' ).addClass( 'activate-now button-primary updated-message' );
-		$message.text( wp.updates.l10n.activate );
-		wp.a11y.speak( wp.updates.l10n.installed, 'polite' );
+		$message.removeClass( 'updating-message install-now' ).addClass( 'activate-now button-primary updated-message' )
+			.text( wp.updates.l10n.activate );
+
+		wp.a11y.speak( wp.updates.l10n.installedMsg, 'polite' );
 
 		$document.trigger( 'wp-plugin-install-success', response );
 	};
