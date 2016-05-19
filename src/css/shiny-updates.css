@@ -215,8 +215,9 @@ tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-error.notic
 	padding: 2px 0;
 }
 
-.update-core-php .wordpress-updates-table .tablenav button {
+.update-core-php .wordpress-updates-table .tablenav .button {
 	margin-bottom: 2px;
+	margin-right: 12px;
 }
 
 .update-core-php .wordpress-updates-table .tablenav .displaying-num {
@@ -234,6 +235,7 @@ tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-error.notic
 
 .wp-list-table.updates .manage-column.column-title {
 	padding-left: 115px;
+	width: 80%;
 }
 
 .wp-list-table.updates .column-action {
