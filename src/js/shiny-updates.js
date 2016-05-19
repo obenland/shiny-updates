@@ -1146,6 +1146,11 @@
 
 		job = wp.updates.updateQueue.shift();
 
+		if ( 'update-core' === pagenow ) {
+			wp.updates.updateItem( job.data );
+			return;
+		}
+
 		// Handle a queue job.
 		switch ( job.type ) {
 			case 'install-plugin':
