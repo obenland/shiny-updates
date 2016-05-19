@@ -142,15 +142,18 @@ tr.active.update + tr.plugin-update-tr .plugin-update {
 	margin: auto;
 }
 
-.updated-message,
+.button.updated-message,
 .notice .button-link {
-	color: #0073aa;
 	-webkit-transition-property: border, background, color;
 	transition-property: border, background, color;
 	-webkit-transition-duration: .05s;
 	transition-duration: .05s;
 	-webkit-transition-timing-function: ease-in-out;
 	transition-timing-function: ease-in-out;
+}
+
+.notice .button-link {
+	color: #0073aa;
 }
 
 .notice .button-link:hover,

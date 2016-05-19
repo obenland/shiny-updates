@@ -438,11 +438,16 @@
 	wp.updates.installPluginSuccess = function( response ) {
 		var $message = $( '.plugin-card-' + response.slug ).find( '.install-now' );
 
-		// Transform the 'Install' button into an 'Activate' button.
-		$message.removeClass( 'updating-message install-now' ).addClass( 'activate-now button-primary updated-message' )
-			.text( wp.updates.l10n.activate );
+		$message.removeClass( 'updating-message install-now' ).addClass( 'updated-message installed button-disabled' )
+			.text( wp.updates.l10n.installed );
 
 		wp.a11y.speak( wp.updates.l10n.installedMsg, 'polite' );
+
+		setTimeout( function() {
+			// Transform the 'Install' button into an 'Activate' button.
+			$message.removeClass( 'installed button-disabled' ).addClass( 'activate-now button-primary updated-message' )
+				.text( wp.updates.l10n.activate );
+		}, 2000 );
 
 		$document.trigger( 'wp-plugin-install-success', response );
 	};
