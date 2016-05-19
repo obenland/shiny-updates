@@ -240,8 +240,10 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 		/* @var WP_Theme $theme */
 		$theme = $item['data'];
 		?>
+		<div class="updates-table-screenshot">
+			<img src="<?php echo esc_url( $theme->get_screenshot() ); ?>" width="85" height="64" alt=""/>
+		</div>
 		<p>
-			<img src="<?php echo esc_url( $theme->get_screenshot() ); ?>" width="85" height="64" class="updates-table-screenshot" alt=""/>
 			<strong><?php echo $theme->display( 'Name' ); ?></strong>
 			<?php
 			/* translators: 1: theme version, 2: new version */
@@ -304,6 +306,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 			sprintf( __( 'View version %s details.' ), $plugin->update->new_version )
 		);
 		?>
+		<div class="updates-table-screenshot"></div>
 		<p>
 			<strong><?php echo $plugin->Name; ?></strong>
 			<?php
@@ -331,8 +334,10 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	public function column_title_core( $item ) {
 		global $wp_version;
 		?>
+		<div class="updates-table-screenshot">
+			<img src="<?php echo esc_url( admin_url( 'images/wordpress-logo.svg' ) ); ?>" width="85" height="85" alt=""/>
+		</div>
 		<p>
-			<img src="<?php echo esc_url( admin_url( 'images/wordpress-logo.svg' ) ); ?>" width="85" height="85" class="updates-table-screenshot" alt=""/>
 			<strong><?php _e( 'WordPress' ); ?></strong>
 			<?php
 			$update = $item['data'];
@@ -351,13 +356,9 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 			}
 
 			if ( 'development' == $update->response ) {
-				echo '<p>';
 				_e( 'You are using a development version of WordPress. You can update to the latest nightly build automatically.' );
-				echo '</p>';
 			} else if ( isset( $update->response ) && 'latest' !== $update->response ) {
-				echo '<p>';
 				printf( __( 'You can update to <a href="https://codex.wordpress.org/Version_%1$s">WordPress %2$s</a> automatically.' ), $update->current, $version_string );
-				echo '</p>';
 			}
 			?>
 		</p>
@@ -372,11 +373,13 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	 */
 	public function column_title_translations() {
 		?>
-		<p>
+		<div class="updates-table-screenshot">
 			<span class="dashicons dashicons-translation"></span>
+		</div>
+		<p>
 			<strong><?php _e( 'Translations' ); ?></strong>
+			<?php _e( 'New translations are available.' ); ?>
 		</p>
-		<p><?php _e( 'New translations are available.' ); ?></p>
 		<?php
 	}
 
