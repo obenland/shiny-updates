@@ -38,17 +38,11 @@ function su_enqueue_scripts( $hook ) {
 	}
 
 	$plugins = $totals = array();
+
 	if ( ! isset( $GLOBALS['plugins'] ) ) {
 		$GLOBALS['plugins'] = array(
 			'all' => get_plugins(),
 		);
-	}
-
-	foreach ( $GLOBALS['plugins'] as $key => $list ) {
-		$plugins[ $key ] = array_keys( (array) $list );
-		foreach ( $plugins[ $key ] as $plugin ) {
-			$activates[ $plugin ] = wp_nonce_url( 'plugins.php?action=activate&plugin=' . esc_attr( $key ), 'activate-plugin_' . esc_attr( $key ) );
-		}
 	}
 
 	wp_enqueue_style( 'shiny-updates', plugin_dir_url( __FILE__ ) . 'css/shiny-updates.css' );
@@ -59,7 +53,6 @@ function su_enqueue_scripts( $hook ) {
 	wp_localize_script( 'shiny-updates', '_wpUpdatesSettings', array(
 		'ajax_nonce' => wp_create_nonce( 'updates' ),
 		'plugins'    => $plugins,
-		'activates'  => $activates,
 		'totals'     => $totals,
 		'l10n'       => array(
 			'searchResults'      => __( 'Search results for &#8220;%s&#8221;' ),
