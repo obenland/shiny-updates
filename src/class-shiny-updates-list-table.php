@@ -72,7 +72,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 			$this->items[] = array(
 				'type' => 'core',
 				'slug' => 'core',
-				'data' => $core_updates,
+				'data' => $core_updates[0],
 			);
 		}
 
@@ -138,6 +138,46 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Display the table
+	 *
+	 * @since 4.X.0
+	 * @access public
+	 */
+	public function display() {
+		$singular = $this->_args['singular'];
+
+		$this->display_tablenav( 'top' );
+
+		$this->screen->render_screen_reader_content( 'heading_list' );
+		?>
+		<table class="wp-list-table <?php echo implode( ' ', $this->get_table_classes() ); ?>">
+			<thead>
+			<tr>
+				<?php $this->print_column_headers(); ?>
+			</tr>
+			</thead>
+
+			<tbody id="the-list"<?php
+			if ( $singular ) {
+				echo " data-wp-lists='list:$singular'";
+			} ?>>
+			<?php $this->display_rows_or_placeholder(); ?>
+			</tbody>
+
+			<?php if ( 2 < $this->_pagination_args['total_items'] ) : ?>
+				<tfoot>
+				<tr>
+					<?php $this->print_column_headers( false ); ?>
+				</tr>
+				</tfoot>
+			<?php endif; ?>
+
+		</table>
+		<?php
+		$this->display_tablenav( 'bottom' );
+	}
+
+	/**
 	 * Generate the table navigation above or below the table
 	 *
 	 * @since 4.X.0
@@ -146,19 +186,23 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	 * @param string $which The location of the bulk actions: 'top' or 'bottom'.
 	 */
 	protected function display_tablenav( $which ) {
+		$total_items = $this->_pagination_args['total_items'];
 		?>
 		<div class="tablenav <?php echo esc_attr( $which ); ?>">
-			<?php if ( $this->has_available_updates ) : ?>
-				<div class="alignleft actions">
+			<?php
+			if ( $this->has_available_updates ) : ?>
+				<div class="alignright actions">
 					<form method="post" action="update-core.php?action=do-all-upgrade" name="upgrade-all">
 						<?php wp_nonce_field( 'upgrade-core', '_wpnonce' ); ?>
+						<span class="displaying-num">
+							<?php printf( _n( '%s item', '%s items', $total_items ), number_format_i18n( $total_items ) ); ?>
+						</span>
 						<button class="button button-primary update-link" data-type="all" type="submit" value="" name="upgrade-all">
 							<?php esc_attr_e( 'Update All' ); ?>
 						</button>
 					</form>
 				</div>
 			<?php endif;
-			$this->pagination( $which );
 			?>
 		</div>
 		<?php
@@ -193,8 +237,8 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 		$attributes = array( 'data-type' => $item['type'] );
 
 		if ( 'core' === $item['type'] ) {
-			$attributes['data-version'] = esc_attr( $item['data'][0]->current );
-			$attributes['data-locale']  = esc_attr( $item['data'][0]->locale );
+			$attributes['data-version'] = esc_attr( $item['data']->current );
+			$attributes['data-locale']  = esc_attr( $item['data']->locale );
 		} else if ( 'theme' === $item['type'] ) {
 			$attributes['data-slug'] = $item['slug'];
 		} else if ( 'plugin' === $item['type'] ) {
@@ -240,8 +284,10 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 		/* @var WP_Theme $theme */
 		$theme = $item['data'];
 		?>
+		<div class="updates-table-screenshot">
+			<img src="<?php echo esc_url( $theme->get_screenshot() ); ?>" width="85" height="64" alt=""/>
+		</div>
 		<p>
-			<img src="<?php echo esc_url( $theme->get_screenshot() ); ?>" width="85" height="64" class="updates-table-screenshot" alt=""/>
 			<strong><?php echo $theme->display( 'Name' ); ?></strong>
 			<?php
 			/* translators: 1: theme version, 2: new version */
@@ -304,6 +350,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 			sprintf( __( 'View version %s details.' ), $plugin->update->new_version )
 		);
 		?>
+		<div class="updates-table-screenshot"></div>
 		<p>
 			<strong><?php echo $plugin->Name; ?></strong>
 			<?php
@@ -324,16 +371,38 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	 * @since  4.X.0
 	 * @access public
 	 *
+	 * @global string $wp_version The current WordPress version.
+	 *
 	 * @param array $item The current item.
 	 */
 	public function column_title_core( $item ) {
+		global $wp_version;
 		?>
+		<div class="updates-table-screenshot">
+			<img src="<?php echo esc_url( admin_url( 'images/wordpress-logo.svg' ) ); ?>" width="85" height="85" alt=""/>
+		</div>
 		<p>
-			<img src="<?php echo esc_url( admin_url( 'images/wordpress-logo.svg' ) ); ?>" width="85" height="85" class="updates-table-screenshot" alt=""/>
 			<strong><?php _e( 'WordPress' ); ?></strong>
 			<?php
-			foreach ( (array) $item['data'] as $update ) {
-				$this->_list_core_update( $update );
+			$update = $item['data'];
+
+			if ( 'en_US' == $update->locale &&
+			     'en_US' == get_locale() ||
+			     (
+				     $update->packages->partial &&
+				     $wp_version === $update->partial_version &&
+				     1 === count( get_core_updates() )
+			     )
+			) {
+				$version_string = $update->current;
+			} else {
+				$version_string = sprintf( '%s&ndash;<code>%s</code>', $update->current, $update->locale );
+			}
+
+			if ( 'development' == $update->response ) {
+				_e( 'You are using a development version of WordPress. You can update to the latest nightly build automatically.' );
+			} else if ( isset( $update->response ) && 'latest' !== $update->response ) {
+				printf( __( 'You can update to <a href="https://codex.wordpress.org/Version_%1$s">WordPress %2$s</a> automatically.' ), $update->current, $version_string );
 			}
 			?>
 		</p>
@@ -348,11 +417,13 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	 */
 	public function column_title_translations() {
 		?>
-		<p>
+		<div class="updates-table-screenshot">
 			<span class="dashicons dashicons-translation"></span>
+		</div>
+		<p>
 			<strong><?php _e( 'Translations' ); ?></strong>
+			<?php _e( 'New translations are available.' ); ?>
 		</p>
-		<p><?php _e( 'New translations are available.' ); ?></p>
 		<?php
 	}
 
@@ -418,17 +489,12 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 		foreach ( $this->_get_data_attributes( $item ) as $attribute => $value ) {
 			$data .= $attribute . '="' . esc_attr( $value ) . '" ';
 		}
-
-		// No update available, hide button.
-		if ( 'core' === $item['type'] && ! $this->core_update_version ) {
-			return;
-		}
 		?>
 		<form method="post" action="<?php echo esc_url( $form_action ); ?>" name="upgrade-all">
 			<?php wp_nonce_field( $nonce_action ); ?>
 			<?php if ( 'core' === $item['type'] ) : ?>
-				<input name="version" value="<?php echo esc_attr( $item['data'][0]->current ); ?>" type="hidden"/>
-				<input name="locale" value="<?php echo esc_attr( $item['data'][0]->locale ); ?>" type="hidden"/>
+				<input name="version" value="<?php echo esc_attr( $item['data']->current ); ?>" type="hidden"/>
+				<input name="locale" value="<?php echo esc_attr( $item['data']->locale ); ?>" type="hidden"/>
 			<?php else : ?>
 				<input type="hidden" name="checked[]" id="<?php echo $checkbox_id; ?>" value="<?php echo esc_attr( $slug ); ?>"/>
 			<?php endif; ?>
@@ -442,65 +508,5 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 			?>
 		</form>
 		<?php
-	}
-
-	/**
-	 * Lists a single core update.
-	 *
-	 * @global string $wp_version The current WordPress version.
-	 *
-	 * @since  4.X.0
-	 * @access public
-	 *
-	 * @param object $update The current core update item.
-	 */
-	protected function _list_core_update( $update ) {
-		global $wp_version;
-
-		if ( 'en_US' == $update->locale && 'en_US' == get_locale() ) {
-			$version_string = $update->current;
-		} // If the only available update is a partial builds, it doesn't need a language-specific version string.
-		elseif ( 'en_US' == $update->locale && $update->packages->partial && $wp_version == $update->partial_version && ( $updates = get_core_updates() ) && 1 == count( $updates ) ) {
-			$version_string = $update->current;
-		} else {
-			$version_string = sprintf( '%s&ndash;<code>%s</code>', $update->current, $update->locale );
-		}
-
-		$current = false;
-
-		if ( ! isset( $update->response ) || 'latest' == $update->response ) {
-			$current = true;
-		}
-
-		if ( 'development' == $update->response ) {
-			echo '<p>';
-			_e( 'You are using a development version of WordPress. You can update to the latest nightly build automatically.' );
-			echo '</p>';
-		} else {
-			if ( $current ) {
-				echo '<p>';
-				printf( __( 'If you need to re-install version %s, you can do so here.' ), $version_string );
-				echo '</p>';
-
-				echo '<form method="post" action="update-core.php?action=do-core-reinstall" name="upgrade" class="upgrade">';
-				wp_nonce_field( 'upgrade-core' );
-				echo '<p>';
-				echo '<input name="version" value="' . esc_attr( $update->current ) . '" type="hidden"/>';
-				echo '<input name="locale" value="' . esc_attr( $update->locale ) . '" type="hidden"/>';
-
-				printf(
-					'<button type="submit" name="upgrade" id="upgrade" class="button">%s</button>',
-					esc_attr__( 'Re-install Now' )
-				);
-
-				echo '</p>';
-
-				echo '</form>';
-			} else {
-				echo '<p>';
-				printf( __( 'You can update to <a href="https://codex.wordpress.org/Version_%1$s">WordPress %2$s</a> automatically.' ), $update->current, $version_string );
-				echo '</p>';
-			}
-		}
 	}
 }

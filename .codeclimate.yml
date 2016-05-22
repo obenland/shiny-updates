@@ -29,6 +29,8 @@ engines:
         enabled: false
       Controversial/Superglobals:
         enabled: false
+      CleanCode/ElseExpression:
+        enabled: false
 ratings:
   paths:
   - "**.css"

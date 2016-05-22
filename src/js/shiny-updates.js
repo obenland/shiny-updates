@@ -1,4 +1,4 @@
-(function( $, wp ) {
+(function( $, wp, pagenow, updatesSettings ) {
 	var $document = $( document );
 
 	wp = wp || {};
@@ -17,7 +17,7 @@
 	 *
 	 * @type {string}
 	 */
-	wp.updates.ajaxNonce = window._wpUpdatesSettings.ajax_nonce;
+	wp.updates.ajaxNonce = updatesSettings.ajax_nonce;
 
 	/**
 	 * Localized strings.
@@ -26,7 +26,7 @@
 	 *
 	 * @type {object}
 	 */
-	wp.updates.l10n = window._wpUpdatesSettings.l10n;
+	wp.updates.l10n = updatesSettings.l10n;
 
 	/**
 	 * Whether filesystem credentials need to be requested from the user.
@@ -536,7 +536,7 @@
 			var $form       = $( '#bulk-action-form' ),
 			    $views      = $( '.subsubsub' ),
 			    columnCount = $form.find( 'thead th:not(.hidden), thead td' ).length,
-			    plugins     = window._wpUpdatesSettings.plugins;
+			    plugins     = updatesSettings.plugins;
 
 			$( this ).remove();
 
@@ -885,7 +885,7 @@
 			// Removes the theme and updates rows.
 			$themeRow.css( { backgroundColor: '#faafaa' } ).fadeOut( 350, function() {
 				var $views = $( '.subsubsub' ),
-				    totals = window._wpUpdatesSettings.totals;
+				    totals = updatesSettings.totals;
 
 				$themeRow.remove();
 
@@ -1009,7 +1009,7 @@
 	 *
 	 * @since 4.X.0
 	 *
-	 * @callback updateCoreSuccess
+	 * @callback updateItemSuccess
 	 * @param {object} response Response from the server.
 	 * @param {jQuery} row      The list table row
 	 */
@@ -1022,6 +1022,10 @@
 		wp.a11y.speak( wp.updates.l10n.updatedMsg, 'polite' );
 
 		$document.trigger( 'wp-' + type + '-update-success', response );
+
+		if ( 'core' === type && response.redirect ) {
+			window.location = response.redirect;
+		}
 	};
 
 	/**
@@ -1029,7 +1033,7 @@
 	 *
 	 * @since 4.X.0
 	 *
-	 * @callback updateCoreError
+	 * @callback updateItemError
 	 * @param {object} response Response from the server.
 	 */
 	wp.updates.updateItemError = function( response, row ) {
@@ -1788,13 +1792,45 @@
 		$document.on( 'click', '.wp-list-table.updates .update-link', function( event ) {
 			var $itemRow = $( event.target ).parents( 'tr' ),
 			    args     = {
-				    row:     $itemRow,
+				    el:     $itemRow,
 				    success: function( response ) {
 					    return wp.updates.updateItemSuccess( response, $itemRow );
 				    },
 				    error:   function( response ) {
 					    return wp.updates.updateItemError( response, $itemRow );
 				    }
+			    };
+
+			event.preventDefault();
+
+			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
+				wp.updates.requestFilesystemCredentials( event );
+			}
+
+			// Return the user back to where he left off after closing the modal.
+			wp.updates.$elToReturnFocusToFromCredentialsModal = $( event.target );
+
+			wp.updates.updateItem( args );
+		} );
+
+		/**
+		 * Click handler for the re-install core button.
+		 *
+		 * @since 4.X.0
+		 *
+		 * @param {Event} event Event interface.
+		 */
+		$document.on( 'click', '.wordpress-reinstall-card .upgrade', function( event ) {
+			var $el  = $( event.target ).parents( '.wordpress-reinstall-card' ),
+			    args = {
+				    el:        $el,
+				    success:   function( response ) {
+					    return wp.updates.updateItemSuccess( response, $el );
+				    },
+				    error:     function( response ) {
+					    return wp.updates.updateItemError( response, $el );
+				    },
+				    reinstall: true
 			    };
 
 			event.preventDefault();
@@ -1981,9 +2017,7 @@
 				type:   'update-plugin',
 				data:   {
 					plugin:  $( this ).data( 'plugin' ),
-					slug:    $( this ).data( 'slug' ),
-					success: wp.updates.updateSuccess,
-					error:   wp.updates.updateError
+					slug:    $( this ).data( 'slug' )
 				}
 			};
 
@@ -2013,9 +2047,7 @@
 				action: 'installPlugin',
 				type:   'install-plugin',
 				data:   {
-					slug:    $( this ).data( 'slug' ),
-					success: wp.updates.installPluginSuccess,
-					error:   wp.updates.installPluginError
+					slug:    $( this ).data( 'slug' )
 				}
 			};
 
@@ -2055,10 +2087,24 @@
 					break;
 
 				case 'updatePlugin':
+					/* jscs:disable requireCamelCaseOrUpperCaseIdentifiers */
+					window.tb_remove();
+					/* jscs:enable */
+
+					message.data.success = wp.updates.updateSuccess;
+					message.data.error   = wp.updates.updateError;
+
+					wp.updates.updateQueue.push( message );
+					wp.updates.queueChecker();
+					break;
+
 				case 'installPlugin':
 					/* jscs:disable requireCamelCaseOrUpperCaseIdentifiers */
 					window.tb_remove();
 					/* jscs:enable */
+
+					message.data.success = wp.updates.installPluginSuccess;
+					message.data.error   = wp.updates.installPluginError;
 
 					wp.updates.updateQueue.push( message );
 					wp.updates.queueChecker();
@@ -2073,4 +2119,4 @@
 		 */
 		$( window ).on( 'beforeunload', wp.updates.beforeunload );
 	} );
-})( jQuery, window.wp );
+})( jQuery, window.wp, window.pagenow, window._wpUpdatesSettings );

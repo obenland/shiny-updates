@@ -2,6 +2,8 @@
 /**
  * Ajax callbacks for Shiny Updates.
  *
+ * @todo Merge: Add to wp-admin/includes/ajax-actions.php
+ *
  * @package Shiny_Updates
  */
 
@@ -23,7 +25,7 @@ function wp_ajax_install_theme() {
 
 	$status = array(
 		'install' => 'theme',
-		'slug'    => sanitize_key( $_POST['slug'] ),
+		'slug'    => sanitize_key( wp_unslash( $_POST['slug'] ) ),
 	);
 
 	if ( ! current_user_can( 'install_themes' ) ) {
@@ -90,7 +92,7 @@ function wp_ajax_update_theme() {
 		) );
 	}
 
-	$stylesheet = sanitize_key( $_POST['slug'] );
+	$stylesheet = sanitize_key( wp_unslash( $_POST['slug'] ) );
 	$status     = array(
 		'update'     => 'theme',
 		'slug'       => $stylesheet,
@@ -137,7 +139,7 @@ function wp_ajax_update_theme() {
 		$status['error'] = $result->get_error_message();
 		wp_send_json_error( $status );
 
-	} else if ( is_bool( $result ) && ! $result ) {
+	} else if ( false === $result ) {
 		global $wp_filesystem;
 
 		$status['errorCode'] = 'unable_to_connect_to_filesystem';
@@ -172,7 +174,7 @@ function wp_ajax_delete_theme() {
 		) );
 	}
 
-	$stylesheet = sanitize_key( $_POST['slug'] );
+	$stylesheet = sanitize_key( wp_unslash( $_POST['slug'] ) );
 	$status     = array(
 		'delete' => 'theme',
 		'slug'   => $stylesheet,
@@ -199,7 +201,7 @@ function wp_ajax_delete_theme() {
 		$status['error']     = __( 'Unable to connect to the filesystem. Please confirm your credentials.' );
 
 		// Pass through the error from WP_Filesystem if one was raised.
-		if ( is_wp_error( $wp_filesystem->errors ) && $wp_filesystem->errors->get_error_code() ) {
+		if ( $wp_filesystem instanceof WP_Filesystem_Base && is_wp_error( $wp_filesystem->errors ) && $wp_filesystem->errors->get_error_code() ) {
 			$status['error'] = $wp_filesystem->errors->get_error_message();
 		}
 
@@ -237,7 +239,7 @@ function wp_ajax_install_plugin() {
 
 	$status = array(
 		'install' => 'plugin',
-		'slug'    => sanitize_key( $_POST['slug'] ),
+		'slug'    => sanitize_key( wp_unslash( $_POST['slug'] ) ),
 	);
 
 	if ( ! current_user_can( 'install_plugins' ) ) {
@@ -249,7 +251,7 @@ function wp_ajax_install_plugin() {
 	include_once( ABSPATH . 'wp-admin/includes/plugin-install.php' );
 
 	$api = plugins_api( 'plugin_information', array(
-		'slug'   => sanitize_key( $_POST['slug'] ),
+		'slug'   => sanitize_key( wp_unslash( $_POST['slug'] ) ),
 		'fields' => array(
 			'sections' => false,
 		),
@@ -280,7 +282,7 @@ function wp_ajax_install_plugin() {
 		$status['error']     = __( 'Unable to connect to the filesystem. Please confirm your credentials.' );
 
 		// Pass through the error from WP_Filesystem if one was raised.
-		if ( is_wp_error( $wp_filesystem->errors ) && $wp_filesystem->errors->get_error_code() ) {
+		if ( $wp_filesystem instanceof WP_Filesystem_Base && is_wp_error( $wp_filesystem->errors ) && $wp_filesystem->errors->get_error_code() ) {
 			$status['error'] = $wp_filesystem->errors->get_error_message();
 		}
 
@@ -292,6 +294,8 @@ function wp_ajax_install_plugin() {
 
 /**
  * AJAX handler for updating a plugin.
+ *
+ * @todo Merge: Replace wp_ajax_update_plugin()
  *
  * @since 4.2.0
  *
@@ -310,7 +314,7 @@ function wpsu_ajax_update_plugin() {
 	$status = array(
 		'update'     => 'plugin',
 		'plugin'     => $plugin,
-		'slug'       => sanitize_key( $_POST['slug'] ),
+		'slug'       => sanitize_key( wp_unslash( $_POST['slug'] ) ),
 		'pluginName' => $plugin_data['Name'],
 		'oldVersion' => '',
 		'newVersion' => '',
@@ -365,14 +369,14 @@ function wpsu_ajax_update_plugin() {
 		$status['error'] = $result->get_error_message();
 		wp_send_json_error( $status );
 
-	} else if ( is_bool( $result ) && ! $result ) {
+	} else if ( false === $result ) {
 		global $wp_filesystem;
 
 		$status['errorCode'] = 'unable_to_connect_to_filesystem';
 		$status['error'] = __( 'Unable to connect to the filesystem. Please confirm your credentials.' );
 
 		// Pass through the error from WP_Filesystem if one was raised.
-		if ( is_wp_error( $wp_filesystem->errors ) && $wp_filesystem->errors->get_error_code() ) {
+		if ( $wp_filesystem instanceof WP_Filesystem_Base && is_wp_error( $wp_filesystem->errors ) && $wp_filesystem->errors->get_error_code() ) {
 			$status['error'] = $wp_filesystem->errors->get_error_message();
 		}
 
@@ -401,7 +405,7 @@ function wp_ajax_delete_plugin() {
 
 	$status = array(
 		'delete'     => 'plugin',
-		'slug'       => sanitize_key( $_POST['slug'] ),
+		'slug'       => sanitize_key( wp_unslash( $_POST['slug'] ) ),
 		'plugin'     => $plugin,
 		'pluginName' => $plugin_data['Name'],
 	);
@@ -411,7 +415,7 @@ function wp_ajax_delete_plugin() {
 		wp_send_json_error( $status );
 	}
 
-	if ( ! is_plugin_inactive( $plugin ) ) {
+	if ( is_plugin_active( $plugin ) ) {
 		$status['error'] = __( 'You cannot delete a plugin while it is active on the main site.' );
 		wp_send_json_error( $status );
 	}
@@ -427,7 +431,7 @@ function wp_ajax_delete_plugin() {
 		$status['error']     = __( 'Unable to connect to the filesystem. Please confirm your credentials.' );
 
 		// Pass through the error from WP_Filesystem if one was raised.
-		if ( is_wp_error( $wp_filesystem->errors ) && $wp_filesystem->errors->get_error_code() ) {
+		if ( $wp_filesystem instanceof WP_Filesystem_Base && is_wp_error( $wp_filesystem->errors ) && $wp_filesystem->errors->get_error_code() ) {
 			$status['error'] = $wp_filesystem->errors->get_error_message();
 		}
 
@@ -562,7 +566,7 @@ function wp_ajax_update_translations() {
 		$status['error']     = __( 'Unable to connect to the filesystem. Please confirm your credentials.' );
 
 		// Pass through the error from WP_Filesystem if one was raised.
-		if ( is_wp_error( $wp_filesystem->errors ) && $wp_filesystem->errors->get_error_code() ) {
+		if ( $wp_filesystem instanceof WP_Filesystem_Base && is_wp_error( $wp_filesystem->errors ) && $wp_filesystem->errors->get_error_code() ) {
 			$status['error'] = $wp_filesystem->errors->get_error_message();
 		}
 
@@ -606,28 +610,32 @@ function wp_ajax_update_core() {
 		'redirect' => esc_url( self_admin_url( 'about.php?updated' ) ),
 	);
 
-	if ( $update->current === $update->version ) {
-		wp_send_json_success( $status );
-	}
-
 	include_once( ABSPATH . 'wp-admin/includes/class-wp-upgrader.php' );
 
 	if ( $reinstall ) {
 		$update->response = 'reinstall';
 	}
 
-	$upgrader = new WP_Automatic_Updater();
-	$result   = $upgrader->update( 'core', $update );
+	$url     = 'update-core.php?action=do-core-upgrade';
+	$nonce   = 'upgrade-translations';
+	$title   = __( 'Update Core' );
+	$context = ABSPATH;
 
-	if ( is_array( $result ) && ! empty( $result[0] ) ) {
-		wp_send_json_success( $status );
-	} else if ( is_wp_error( $result ) ) {
+	$skin     = new Automatic_Upgrader_Skin( compact( 'url', 'nonce', 'title', 'context' ) );
+	$upgrader = new Core_Upgrader( $skin );
+	$result   = $upgrader->upgrade( $update, array(
+		'allow_relaxed_file_ownership' => ! $reinstall && isset( $update->new_files ) && ! $update->new_files,
+	) );
+
+	if ( is_wp_error( $result ) ) {
 		$status['error'] = $result->get_error_message();
 		wp_send_json_error( $status );
 	} else if ( false === $result ) {
 		// These aren't actual errors.
 		$status['error'] = __( 'Installation Failed' );
 		wp_send_json_error( $status );
+	} else {
+		wp_send_json_success( $status );
 	}
 
 	// An unhandled error occurred.

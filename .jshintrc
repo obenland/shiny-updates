@@ -21,7 +21,6 @@
     "Backbone": false,
     "jQuery": false,
     "JSON": false,
-    "pagenow": false,
     "wp": false
   }
 }

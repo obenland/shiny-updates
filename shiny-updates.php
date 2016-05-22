@@ -11,8 +11,16 @@
  * @package Shiny_Updates
  */
 
-include_once 'src/class-shiny-updates.php';
-include_once 'src/ajax-actions.php';
-include_once 'src/update.php';
+/**
+ * Init our plugin.
+ *
+ * @codeCoverageIgnore
+ */
+function su_init() {
+	require_once( dirname( __FILE__ ) . '/src/functions.php' );
+	require_once( dirname( __FILE__ ) . '/src/ajax-actions.php' );
+	require_once( dirname( __FILE__ ) . '/src/update.php' );
+	require_once( dirname( __FILE__ ) . '/src/default-filters.php' );
+}
 
-add_action( 'init', array( 'Shiny_Updates', 'init' ) );
+add_action( 'plugins_loaded', 'su_init' );
