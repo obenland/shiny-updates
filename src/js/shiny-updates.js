@@ -1,4 +1,4 @@
-(function( $, wp, pagenow ) {
+(function( $, wp, pagenow, updatesSettings ) {
 	var $document = $( document );
 
 	wp = wp || {};
@@ -17,7 +17,7 @@
 	 *
 	 * @type {string}
 	 */
-	wp.updates.ajaxNonce = window._wpUpdatesSettings.ajax_nonce;
+	wp.updates.ajaxNonce = updatesSettings.ajax_nonce;
 
 	/**
 	 * Localized strings.
@@ -26,7 +26,7 @@
 	 *
 	 * @type {object}
 	 */
-	wp.updates.l10n = window._wpUpdatesSettings.l10n;
+	wp.updates.l10n = updatesSettings.l10n;
 
 	/**
 	 * Whether filesystem credentials need to be requested from the user.
@@ -529,7 +529,7 @@
 			var $form       = $( '#bulk-action-form' ),
 			    $views      = $( '.subsubsub' ),
 			    columnCount = $form.find( 'thead th:not(.hidden), thead td' ).length,
-			    plugins     = window._wpUpdatesSettings.plugins;
+			    plugins     = updatesSettings.plugins;
 
 			$( this ).remove();
 
@@ -878,7 +878,7 @@
 			// Removes the theme and updates rows.
 			$themeRow.css( { backgroundColor: '#faafaa' } ).fadeOut( 350, function() {
 				var $views = $( '.subsubsub' ),
-				    totals = window._wpUpdatesSettings.totals;
+				    totals = updatesSettings.totals;
 
 				$themeRow.remove();
 
@@ -2093,4 +2093,4 @@
 		 */
 		$( window ).on( 'beforeunload', wp.updates.beforeunload );
 	} );
-})( jQuery, window.wp, window.pagenow );
+})( jQuery, window.wp, window.pagenow, window._wpUpdatesSettings );
