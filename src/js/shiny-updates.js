@@ -447,7 +447,7 @@
 			// Transform the 'Install' button into an 'Activate' button.
 			$message.removeClass( 'installed button-disabled' ).addClass( 'activate-now button-primary updated-message' )
 				.text( wp.updates.l10n.activate );
-		}, 2000 );
+		}, 1000 );
 
 		$document.trigger( 'wp-plugin-install-success', response );
 	};
