@@ -1,4 +1,4 @@
-(function( $, wp ) {
+(function( $, wp, pagenow ) {
 	var $document = $( document );
 
 	wp = wp || {};
@@ -2093,4 +2093,4 @@
 		 */
 		$( window ).on( 'beforeunload', wp.updates.beforeunload );
 	} );
-})( jQuery, window.wp );
+})( jQuery, window.wp, window.pagenow );
