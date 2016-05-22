@@ -213,6 +213,7 @@ tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-error.notic
 
 .update-core-php .wordpress-updates-table .tablenav .actions {
 	padding: 2px 0;
+	display: block;
 }
 
 .update-core-php .wordpress-updates-table .tablenav .button {
@@ -222,7 +223,8 @@ tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-error.notic
 
 .update-core-php .wordpress-updates-table .tablenav .displaying-num {
 	display: inline-block;
-	margin-top: 5px;
+	margin: 5px 7px 0 0;
+	position: static;
 }
 
 .wp-list-table.updates {
@@ -238,8 +240,10 @@ tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-error.notic
 	width: 80%;
 }
 
-.wp-list-table.updates .column-action {
-	text-align: right;
+@media screen and (min-width: 782px) {
+	.wp-list-table.updates .column-action {
+		text-align: right;
+	}
 }
 
 .wp-list-table.updates .manage-column.column-action form {
@@ -260,7 +264,7 @@ tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-error.notic
 }
 
 .wp-list-table.updates .updates-table-screenshot + p {
-	float: left;
+	margin-left: 105px;
 }
 
 .wordpress-reinstall-card {
