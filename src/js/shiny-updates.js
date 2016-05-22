@@ -443,13 +443,16 @@
 
 		wp.a11y.speak( wp.updates.l10n.installedMsg, 'polite' );
 
-		setTimeout( function() {
-			// Transform the 'Install' button into an 'Activate' button.
-			$message.removeClass( 'installed button-disabled' ).addClass( 'activate-now button-primary updated-message' )
-				.text( wp.updates.l10n.activate );
-		}, 1000 );
-
 		$document.trigger( 'wp-plugin-install-success', response );
+
+		if ( response.activateUrl ) {
+			setTimeout( function() {
+				// Transform the 'Install' button into an 'Activate' button.
+				$message.removeClass( 'installed button-disabled' ).addClass( 'activate-now button-primary updated-message' )
+					.attr( 'href', response.activateUrl )
+					.text( wp.updates.l10n.activate );
+			}, 1000 );
+		}
 	};
 
 	/**
