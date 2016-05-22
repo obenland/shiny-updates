@@ -14,6 +14,7 @@
  * @since 4.X.0
  */
 
+// Enqueue JavaScript and CSS.
 add_action( 'admin_enqueue_scripts', 'su_enqueue_scripts' );
 
 // Add the update HTML for plugin updates progress.
@@ -54,3 +55,8 @@ add_action( 'wp_ajax_update-translations', 'wp_ajax_update_translations', -1 );
 
 // Core updates.
 add_action( 'wp_ajax_update-core', 'wp_ajax_update_core', -1 );
+add_action( 'core_upgrade_preamble', 'su_update_table' );
+add_action( 'update-core-custom_do-all-upgrade', 'su_update_all' );
+
+// Replace update row functions.
+add_action( 'admin_init', 'su_new_update_rows', 1 );

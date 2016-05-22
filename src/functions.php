@@ -7,6 +7,18 @@
  */
 
 /**
+ * Replace update row functions with our own.
+ *
+ * @todo Merge: Remove as it becomes unneeded.
+ */
+function su_new_update_rows() {
+	remove_action( 'admin_init', 'wp_plugin_update_rows' );
+	remove_action( 'admin_init', 'wp_theme_update_rows' );
+	add_action( 'admin_init', 'su_plugin_update_rows' );
+	add_action( 'admin_init', 'su_theme_update_rows' );
+}
+
+/**
  * Enqueue scripts.
  *
  * @todo Merge: Add to wp_default_scripts()
@@ -560,4 +572,134 @@ function su_install_plugin_information() {
 	iframe_footer();
 	exit;
 	// @codingStandardsIgnoreEnd
+}
+
+
+/**
+ * Displays the shiny update table.
+ *
+ * Includes core, plugin and theme updates.
+ *
+ * @todo Merge: Add directly to wp-admin/update-core.php
+ *
+ * @global string $wp_version The current WordPress version.
+ */
+function su_update_table() {
+	global $wp_version;
+	?>
+	<div class="wordpress-updates-table">
+		<?php
+		require_once( 'class-shiny-updates-list-table.php' );
+
+		// Todo: Use _get_list_table().
+		$updates_table = new Shiny_Updates_List_Table();
+		$updates_table->prepare_items();
+		$updates_table->display();
+		?>
+	</div>
+
+	<?php
+	$core_updates = (array) get_core_updates();
+
+	if ( ! isset( $core_updates[1] ) ) {
+		return;
+	}
+
+	$update = $core_updates[1];
+
+	if ( 'en_US' == $update->locale &&
+	     'en_US' == get_locale() ||
+	     (
+		     $update->packages->partial &&
+		     $wp_version === $update->partial_version &&
+		     1 === count( $core_updates )
+	     )
+	) {
+		$version_string = $update->current;
+	} else {
+		$version_string = sprintf( '%s&ndash;<code>%s</code>', $update->current, $update->locale );
+	}
+
+	if ( isset( $update->response ) && 'latest' !== $update->response ) {
+		return;
+	}
+	?>
+	<div class="wordpress-reinstall-card card" data-type="core" data-version="<?php echo esc_attr( $update->current ); ?>" data-locale="<?php echo esc_attr( $update->locale ); ?>">
+		<h2><?php _e( 'Need to re-install WordPress?' ); ?></h2>
+		<p>
+			<?php printf( __( 'If you need to re-install version %s, you can do so here.' ), $version_string ); ?>
+		</p>
+
+		<form method="post" action="update-core.php?action=do-core-reinstall" name="upgrade" class="upgrade">
+			<?php wp_nonce_field( 'upgrade-core' ); ?>
+			<input name="version" value="<?php echo esc_attr( $update->current ); ?>" type="hidden"/>
+			<input name="locale" value="<?php echo esc_attr( $update->locale ); ?>" type="hidden"/>
+			<p>
+				<button type="submit" name="upgrade" id="upgrade" class="button update-link"><?php esc_attr_e( 'Re-install Now' ); ?></button>
+			</p>
+		</form>
+	</div>
+	<?php
+}
+
+/**
+ * Install all available updates.
+ *
+ * Updates themes, plugins, core and translations.
+ *
+ * @todo Use only one iframe for all updates.
+ * @todo Merge: Add directly to wp-admin/update-core.php
+ */
+function su_update_all() {
+	if ( ! current_user_can( 'update_core' ) && ! current_user_can( 'update_plugins' ) && ! current_user_can( 'update_themes' ) ) {
+		wp_die( __( 'You do not have sufficient permissions to update this site.' ) );
+	}
+
+	check_admin_referer( 'upgrade-core' );
+
+	require_once( ABSPATH . 'wp-admin/admin-header.php' );
+
+	// Update themes.
+	$themes = array_keys( get_theme_updates() );
+
+	if ( ! empty( $themes ) ) {
+		$url = 'update.php?action=update-selected-themes&themes=' . urlencode( implode( ',', $themes ) );
+		$url = wp_nonce_url( $url, 'bulk-update-themes' );
+		?>
+		<div class="wrap">
+			<h1><?php _e( 'Update Themes' ); ?></h1>
+			<iframe src="<?php echo $url ?>" style="width: 100%; height: 100%; min-height: 750px;" frameborder="0" title="<?php esc_attr_e( 'Update progress' ); ?>"></iframe>
+		</div>
+		<?php
+	}
+
+	// Update plugins.
+	$plugins = array_keys( get_plugin_updates() );
+
+	if ( ! empty( $plugins ) ) {
+		$url = 'update.php?action=update-selected&plugins=' . urlencode( implode( ',', $plugins ) );
+		$url = wp_nonce_url( $url, 'bulk-update-plugins' );
+		?>
+		<div class="wrap">
+			<h1><?php _e( 'Update Plugins' ); ?></h1>
+			<iframe src="<?php echo $url ?>" style="width: 100%; height: 100%; min-height: 750px;" frameborder="0" title="<?php esc_attr_e( 'Update progress' ); ?>"></iframe>
+		</div>
+		<?php
+	}
+
+	include_once( ABSPATH . 'wp-admin/includes/class-wp-upgrader.php' );
+
+	// Update translations.
+	$url     = 'update-core.php?action=do-translation-upgrade';
+	$nonce   = 'upgrade-translations';
+	$title   = __( 'Update Translations' );
+	$context = WP_LANG_DIR;
+
+	$upgrader = new Language_Pack_Upgrader( new Language_Pack_Upgrader_Skin( compact( 'url', 'nonce', 'title', 'context' ) ) );
+	$upgrader->bulk_upgrade();
+
+	// Update core.
+	do_core_upgrade();
+
+	include( ABSPATH . 'wp-admin/admin-footer.php' );
 }
