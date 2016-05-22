@@ -319,6 +319,7 @@ function su_theme_data( $themes ) {
  * Redefine `install_plugin_information()` to add an id and data attribute to the install button.
  *
  * @todo Merge: Replace install_plugin_information()
+ * @SuppressWarnings(PHPMD)
  *
  * @since 2.7.0
  *
