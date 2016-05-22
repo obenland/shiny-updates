@@ -23,7 +23,7 @@ function wp_ajax_install_theme() {
 
 	$status = array(
 		'install' => 'theme',
-		'slug'    => sanitize_key( $_POST['slug'] ),
+		'slug'    => sanitize_key( wp_unslash( $_POST['slug'] ) ),
 	);
 
 	if ( ! current_user_can( 'install_themes' ) ) {
@@ -90,7 +90,7 @@ function wp_ajax_update_theme() {
 		) );
 	}
 
-	$stylesheet = sanitize_key( $_POST['slug'] );
+	$stylesheet = sanitize_key( wp_unslash( $_POST['slug'] ) );
 	$status     = array(
 		'update'     => 'theme',
 		'slug'       => $stylesheet,
@@ -172,7 +172,7 @@ function wp_ajax_delete_theme() {
 		) );
 	}
 
-	$stylesheet = sanitize_key( $_POST['slug'] );
+	$stylesheet = sanitize_key( wp_unslash( $_POST['slug'] ) );
 	$status     = array(
 		'delete' => 'theme',
 		'slug'   => $stylesheet,
@@ -237,7 +237,7 @@ function wp_ajax_install_plugin() {
 
 	$status = array(
 		'install' => 'plugin',
-		'slug'    => sanitize_key( $_POST['slug'] ),
+		'slug'    => sanitize_key( wp_unslash( $_POST['slug'] ) ),
 	);
 
 	if ( ! current_user_can( 'install_plugins' ) ) {
@@ -249,7 +249,7 @@ function wp_ajax_install_plugin() {
 	include_once( ABSPATH . 'wp-admin/includes/plugin-install.php' );
 
 	$api = plugins_api( 'plugin_information', array(
-		'slug'   => sanitize_key( $_POST['slug'] ),
+		'slug'   => sanitize_key( wp_unslash( $_POST['slug'] ) ),
 		'fields' => array(
 			'sections' => false,
 		),
