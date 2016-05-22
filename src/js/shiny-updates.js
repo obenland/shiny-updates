@@ -1428,21 +1428,6 @@
 		} );
 
 		/**
-		 * Click handler for plugin activation in plugin install view.
-		 *
-		 * @since 4.2.0
-		 *
-		 * @param {Event} event Event interface.
-		 */
-		$( '.plugin-card' ).on( 'click', '.activate-now', function( event ) {
-			var $button = $( event.target );
-			event.preventDefault();
-
-			$button.parents( '.plugin-action-buttons' ).find( '.hidden.activate-link' ).click();
-
-		} );
-
-		/**
 		 * Click handler for plugin updates in plugin install view.
 		 *
 		 * @since 4.2.0
