@@ -80,7 +80,7 @@ function su_enqueue_scripts( $hook ) {
 			'updatedMsg'         => __( 'Update completed successfully.' ),
 			/* translators: JavaScript accessible string */
 			'updateCancel'       => __( 'Update canceled.' ),
-			'beforeunload'       => __( 'Plugin updates may not complete if you navigate away from this page.' ),
+			'beforeunload'       => __( 'Updates may not complete if you navigate away from this page.' ),
 			'installNow'         => __( 'Install Now' ),
 			'installing'         => __( 'Installing...' ),
 			'installed'          => __( 'Installed!' ),

@@ -13,7 +13,7 @@ window.shinyUpdates = {
 	'updatingMsg': 'Updating... please wait.',
 	'updatedMsg': 'Update completed successfully.',
 	'updateCancel': 'Update canceled.',
-	'beforeunload': 'Plugin updates may not complete if you navigate away from this page.',
+	'beforeunload': 'Updates may not complete if you navigate away from this page.',
 	'installNow': 'Install Now',
 	'installing': 'Installing...',
 	'installed': 'Installed!',
