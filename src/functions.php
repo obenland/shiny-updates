@@ -714,7 +714,7 @@ function su_update_all() {
  * Filter the actions available on the new plugin screen, enabling activation
  * for plugins that are installed and inactive.
  *
- * @todo Merge:
+ * @todo Merge: Add to WP_Plugin_Install_List_Table::display_rows()
  *
  * @param array $action_links An array of plugin action hyperlinks. Defaults are links to Details and Install Now.
  * @param array $plugin       The plugin currently being listed.
