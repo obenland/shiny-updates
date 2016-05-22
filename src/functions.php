@@ -724,7 +724,7 @@ function su_plugin_install_actions( $action_links, $plugin ) {
 	$status = install_plugin_install_status( $plugin );
 
 	if ( is_plugin_active( $status['file'] ) ) {
-		$action_links[0] = '<span class="button button-disabled">' . _x( 'Activated', 'plugin' ) . '</span>';
+		$action_links[0] = '<span class="button button-disabled">' . _x( 'Active', 'plugin' ) . '</span>';
 	}
 
 	// Ensure user has capability to activate plugins.
