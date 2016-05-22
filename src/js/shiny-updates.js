@@ -239,8 +239,11 @@
 				break;
 		}
 
-		itemCount = $itemCount.eq( 0 ).text();
-		itemCount = parseInt( itemCount, 10 ) - 1;
+		if ( $itemCount ) {
+			itemCount = $itemCount.eq( 0 ).text();
+			itemCount = parseInt( itemCount, 10 ) - 1;
+		}
+
 		if ( itemCount < 0 || isNaN( itemCount ) ) {
 			return;
 		}
@@ -1013,6 +1016,8 @@
 		$message.attr( 'aria-label', wp.updates.l10n.updated ).text( wp.updates.l10n.updated );
 
 		wp.a11y.speak( wp.updates.l10n.updatedMsg, 'polite' );
+
+		wp.updates.decrementCount( type );
 
 		$document.trigger( 'wp-' + type + '-update-success', response );
 
