@@ -2,6 +2,8 @@
 /**
  * Ajax callbacks for Shiny Updates.
  *
+ * @todo Merge: Add to wp-admin/includes/ajax-actions.php
+ *
  * @package Shiny_Updates
  */
 
