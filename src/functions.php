@@ -7,14 +7,6 @@
  */
 
 /**
- * Replace updates ajax handler with this new version.
- */
-function su_update_plugin() {
-	remove_action( 'wp_ajax_update-plugin', 'wp_ajax_update_plugin', 1 );
-	add_action( 'wp_ajax_update-plugin', 'wpsu_ajax_update_plugin', 1 );
-}
-
-/**
  * Enqueue scripts.
  *
  * @todo Merge: Add to wp_default_scripts()

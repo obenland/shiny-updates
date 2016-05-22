@@ -24,7 +24,7 @@ add_action( 'wp_ajax_search-plugins', 'wp_ajax_search_plugins' );
 add_action( 'wp_ajax_search-install-plugins', 'wp_ajax_search_install_plugins' );
 
 // Plugin updates.
-add_action( 'wp_ajax_update-plugin', 'su_update_plugin', -1 );
+add_action( 'wp_ajax_update-plugin', 'wpsu_ajax_update_plugin', -1 );
 
 // Plugin deletions.
 add_action( 'wp_ajax_delete-plugin', 'wp_ajax_delete_plugin' );

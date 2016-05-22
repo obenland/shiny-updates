@@ -293,6 +293,8 @@ function wp_ajax_install_plugin() {
 /**
  * AJAX handler for updating a plugin.
  *
+ * @todo Merge: Replace wp_ajax_update_plugin()
+ *
  * @since 4.2.0
  *
  * @see Plugin_Upgrader
