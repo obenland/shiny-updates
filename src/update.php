@@ -190,7 +190,7 @@ function su_theme_update_row( $theme_key, $theme ) {
 	 * @param string $details_url URL for theme update information.
 	 * @param string $theme_key   Theme slug.
 	 */
-	 $details_url = apply_filters( 'su_modify_theme_details_url', $details_url, $theme_key ); 
+	$details_url = apply_filters( 'su_modify_theme_details_url', $details_url, $theme_key );
 
 	$wp_list_table = _get_list_table( 'WP_MS_Themes_List_Table' );
 
