@@ -722,8 +722,12 @@ function su_plugin_install_actions( $action_links, $plugin ) {
 	// If the plugin is installed, potentially add an activation link.
 	} else if ( current_user_can( 'activate_plugins' ) && in_array( $status['status'], array( 'latest_installed', 'newer_installed' ) ) ) {
 		$action_links[0] = sprintf(
-			'<a href="%s" class="button activate-now button-secondary" aria-label="%s">%s</a>',
-			wp_nonce_url( 'plugins.php?action=activate&amp;plugin=' . esc_attr( $status['file'] ), 'activate-plugin_' . esc_attr( $status['file'] ) ),
+			'<a href="%1$s" class="button activate-now button-secondary" aria-label="%2$s">%3$s</a>',
+			esc_url( add_query_arg( array(
+				'_wpnonce' => wp_create_nonce( 'activate-plugin_' . $status['file'] ),
+				'action'   => 'activate',
+				'plugin'   => $status['file'],
+			), admin_url( 'plugins.php' ) ) ),
 			/* translators: %s: plugin name */
 			esc_attr( sprintf( __( 'Activate %s' ), $plugin['name'] ) ),
 			__( 'Activate' )
