@@ -442,7 +442,7 @@
 	wp.updates.installPluginSuccess = function( response ) {
 		var $message = $( '.plugin-card-' + response.slug ).find( '.install-now' );
 
-		$message.removeClass( 'updating-message install-now' ).addClass( 'updated-message installed button-disabled' )
+		$message.removeClass( 'updating-message' ).addClass( 'updated-message installed button-disabled' )
 			.text( wp.updates.l10n.installed );
 
 		wp.a11y.speak( wp.updates.l10n.installedMsg, 'polite' );
@@ -452,7 +452,7 @@
 		if ( response.activateUrl ) {
 			setTimeout( function() {
 				// Transform the 'Install' button into an 'Activate' button.
-				$message.removeClass( 'installed button-disabled' ).addClass( 'activate-now button-primary updated-message' )
+				$message.removeClass( 'install-now installed button-disabled' ).addClass( 'activate-now button-primary updated-message' )
 					.attr( 'href', response.activateUrl )
 					.text( wp.updates.l10n.activate );
 			}, 1000 );
@@ -1448,6 +1448,10 @@
 			var $button = $( event.target );
 			event.preventDefault();
 
+			if ( $button.hasClass( 'updating-message' ) || $button.hasClass( 'button-disabled' ) ) {
+				return false;
+			}
+
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
 				wp.updates.requestFilesystemCredentials( event );
 			}
@@ -1471,8 +1475,8 @@
 			var $button = $( event.target );
 			event.preventDefault();
 
-			if ( $button.hasClass( 'button-disabled' ) ) {
-				return;
+			if ( $button.hasClass( 'updating-message' ) || $button.hasClass( 'button-disabled' ) ) {
+				return false;
 			}
 
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
