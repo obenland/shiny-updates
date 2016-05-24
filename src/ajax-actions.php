@@ -292,7 +292,7 @@ function wp_ajax_install_plugin() {
 	$install_status = install_plugin_install_status( $api );
 	$plugin_file    = urlencode( $install_status['file'] );
 
-	if ( current_user_can( 'activate_plugins' ) && ! is_plugin_active( $install_status['file'] ) ) {
+	if ( current_user_can( 'activate_plugins' ) && is_plugin_inactive( $install_status['file'] ) ) {
 		$status['activateUrl'] = str_replace( '&amp;', '&', wp_nonce_url( admin_url( 'plugins.php?action=activate&amp;plugin=' . $plugin_file ), 'activate-plugin_' . $install_status['file'] ) );
 	}
 

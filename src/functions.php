@@ -717,16 +717,10 @@ function su_plugin_install_actions( $action_links, $plugin ) {
 	$status = install_plugin_install_status( $plugin );
 
 	if ( is_plugin_active( $status['file'] ) ) {
-		$action_links[0] = '<span class="button button-disabled">' . _x( 'Active', 'plugin' ) . '</span>';
-	}
-
-	// Ensure user has capability to activate plugins.
-	if ( ! current_user_can( 'activate_plugins' ) ) {
-		return $action_links;
-	}
+		$action_links[0] = '<button type="button" class="button button-disabled" disabled="disabled">' . _x( 'Active', 'plugin' ) . '</button>';
 
 	// If the plugin is installed, potentially add an activation link.
-	if ( in_array( $status['status'], array( 'latest_installed', 'newer_installed' ) ) && ! is_plugin_active( $status['file'] ) ) {
+	} else if ( current_user_can( 'activate_plugins' ) && in_array( $status['status'], array( 'latest_installed', 'newer_installed' ) ) ) {
 		$action_links[0] = sprintf(
 			'<a href="%s" class="button activate-now button-secondary" aria-label="%s">%s</a>',
 			wp_nonce_url( 'plugins.php?action=activate&amp;plugin=' . esc_attr( $status['file'] ), 'activate-plugin_' . esc_attr( $status['file'] ) ),
