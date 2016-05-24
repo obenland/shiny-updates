@@ -719,7 +719,7 @@ function su_plugin_install_actions( $action_links, $plugin ) {
 	if ( is_plugin_active( $status['file'] ) ) {
 		$action_links[0] = '<button type="button" class="button button-disabled" disabled="disabled">' . _x( 'Active', 'plugin' ) . '</button>';
 
-	// If the plugin is installed, potentially add an activation link.
+		// If the plugin is installed, potentially add an activation link.
 	} else if ( current_user_can( 'activate_plugins' ) && in_array( $status['status'], array( 'latest_installed', 'newer_installed' ) ) ) {
 		$action_links[0] = sprintf(
 			'<a href="%1$s" class="button activate-now button-secondary" aria-label="%2$s">%3$s</a>',
