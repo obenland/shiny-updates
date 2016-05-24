@@ -98,23 +98,23 @@ jQuery( function( $ ) {
 			slug: 'test'
 		} );
 		assert.ok( jQuery.ajax.calledOnce );
-		assert.equal( jQuery.ajax.getCall(0).args[0].url, '/wp-admin/admin-ajax.php' );
-		assert.equal( jQuery.ajax.getCall(0).args[0].data.action, 'update-plugin' );
-		assert.equal( jQuery.ajax.getCall(0).args[0].data.slug, 'test' );
+		assert.equal( jQuery.ajax.getCall( 0 ).args[0].url, '/wp-admin/admin-ajax.php' );
+		assert.equal( jQuery.ajax.getCall( 0 ).args[0].data.action, 'update-plugin' );
+		assert.equal( jQuery.ajax.getCall( 0 ).args[0].data.slug, 'test' );
 	} );
 	QUnit.test( 'Installing a plugin should call the API', function( assert ) {
 		wp.updates.installPlugin( { slug: 'jetpack' } );
 		assert.ok( jQuery.ajax.calledOnce );
-		assert.equal( jQuery.ajax.getCall(0).args[0].url, '/wp-admin/admin-ajax.php' );
-		assert.equal( jQuery.ajax.getCall(0).args[0].data.action, 'install-plugin' );
-		assert.equal( jQuery.ajax.getCall(0).args[0].data.slug, 'jetpack' );
+		assert.equal( jQuery.ajax.getCall( 0 ).args[0].url, '/wp-admin/admin-ajax.php' );
+		assert.equal( jQuery.ajax.getCall( 0 ).args[0].data.action, 'install-plugin' );
+		assert.equal( jQuery.ajax.getCall( 0 ).args[0].data.slug, 'jetpack' );
 	} );
 	QUnit.test( 'Deleting a plugin should call the API', function( assert ) {
 		wp.updates.deletePlugin( { slug: 'jetpack' } );
 		assert.ok( jQuery.ajax.calledOnce );
-		assert.equal( jQuery.ajax.getCall(0).args[0].url, '/wp-admin/admin-ajax.php' );
-		assert.equal( jQuery.ajax.getCall(0).args[0].data.action, 'delete-plugin' );
-		assert.equal( jQuery.ajax.getCall(0).args[0].data.slug, 'jetpack' );
+		assert.equal( jQuery.ajax.getCall( 0 ).args[0].url, '/wp-admin/admin-ajax.php' );
+		assert.equal( jQuery.ajax.getCall( 0 ).args[0].data.action, 'delete-plugin' );
+		assert.equal( jQuery.ajax.getCall( 0 ).args[0].data.slug, 'jetpack' );
 	} );
 
 	// QUnit.test( 'A successful update changes the message?', function( assert ) {} );
@@ -146,25 +146,25 @@ jQuery( function( $ ) {
 	QUnit.test( 'Starting a theme update should call the update API', function( assert ) {
 		wp.updates.updateTheme( { slug: 'twentyeleven' } );
 		assert.ok( jQuery.ajax.calledOnce );
-		assert.equal( jQuery.ajax.getCall(0).args[0].url, '/wp-admin/admin-ajax.php' );
-		assert.equal( jQuery.ajax.getCall(0).args[0].data.action, 'update-theme' );
-		assert.equal( jQuery.ajax.getCall(0).args[0].data.slug, 'twentyeleven' );
+		assert.equal( jQuery.ajax.getCall( 0 ).args[0].url, '/wp-admin/admin-ajax.php' );
+		assert.equal( jQuery.ajax.getCall( 0 ).args[0].data.action, 'update-theme' );
+		assert.equal( jQuery.ajax.getCall( 0 ).args[0].data.slug, 'twentyeleven' );
 	} );
 
 	QUnit.test( 'Installing a theme should call the API', function( assert ) {
 		wp.updates.installTheme( { slug: 'twentyeleven' } );
 		assert.ok( jQuery.ajax.calledOnce );
-		assert.equal( jQuery.ajax.getCall(0).args[0].url, '/wp-admin/admin-ajax.php' );
-		assert.equal( jQuery.ajax.getCall(0).args[0].data.action, 'install-theme' );
-		assert.equal( jQuery.ajax.getCall(0).args[0].data.slug, 'twentyeleven' );
+		assert.equal( jQuery.ajax.getCall( 0 ).args[0].url, '/wp-admin/admin-ajax.php' );
+		assert.equal( jQuery.ajax.getCall( 0 ).args[0].data.action, 'install-theme' );
+		assert.equal( jQuery.ajax.getCall( 0 ).args[0].data.slug, 'twentyeleven' );
 	} );
 
 	QUnit.test( 'Deleting a theme should call the API', function( assert ) {
 		wp.updates.deleteTheme( { slug: 'twentyeleven' } );
 		assert.ok( jQuery.ajax.calledOnce );
-		assert.equal( jQuery.ajax.getCall(0).args[0].url, '/wp-admin/admin-ajax.php' );
-		assert.equal( jQuery.ajax.getCall(0).args[0].data.action, 'delete-theme' );
-		assert.equal( jQuery.ajax.getCall(0).args[0].data.slug, 'twentyeleven' );
+		assert.equal( jQuery.ajax.getCall( 0 ).args[0].url, '/wp-admin/admin-ajax.php' );
+		assert.equal( jQuery.ajax.getCall( 0 ).args[0].data.action, 'delete-theme' );
+		assert.equal( jQuery.ajax.getCall( 0 ).args[0].data.slug, 'twentyeleven' );
 	} );
 
 	// QUnit.test( 'A successful update changes the message?', function( assert ) {} );
