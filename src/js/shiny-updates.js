@@ -452,7 +452,7 @@
 		if ( response.activateUrl ) {
 			setTimeout( function() {
 				// Transform the 'Install' button into an 'Activate' button.
-				$message.removeClass( 'installed button-disabled' ).addClass( 'activate-now button-primary updated-message' )
+				$message.removeClass( 'installed button-disabled updated-message' ).addClass( 'activate-now button-primary' )
 					.attr( 'href', response.activateUrl )
 					.text( wp.updates.l10n.activate );
 			}, 1000 );
