@@ -40,8 +40,8 @@ function su_enqueue_scripts( $hook ) {
 	$plugins = $totals = array();
 
 	if ( isset( $GLOBALS['totals'] ) ) {
- 		$totals = $GLOBALS['totals'];
-    }
+		$totals = $GLOBALS['totals'];
+	}
 
 	if ( ! isset( $GLOBALS['plugins'] ) ) {
 		$GLOBALS['plugins'] = array(
@@ -50,8 +50,8 @@ function su_enqueue_scripts( $hook ) {
 	}
 
 	foreach ( $GLOBALS['plugins'] as $key => $list ) {
- 		$plugins[ $key ] = array_keys( (array) $list );
-    }
+		$plugins[ $key ] = array_keys( (array) $list );
+	}
 
 	wp_enqueue_style( 'shiny-updates', plugin_dir_url( __FILE__ ) . 'css/shiny-updates.css' );
 
