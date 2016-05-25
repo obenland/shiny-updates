@@ -282,7 +282,7 @@
 			$updateRow = $( 'tr[data-plugin="' + args.plugin + '"]' );
 			$message   = $updateRow.find( '.update-message' ).addClass( 'updating-message' ).find( 'p' );
 			message    = wp.updates.l10n.updatingLabel.replace( '%s', $updateRow.find( '.plugin-title strong' ).text() );
-		} else if ( 'plugin-install' === pagenow ) {
+		} else if ( 'plugin-install' === pagenow || 'plugin-install-network' === pagenow ) {
 			$card    = $( '.plugin-card-' + args.slug );
 			$message = $card.find( '.update-now' ).addClass( 'updating-message' );
 			message  = wp.updates.l10n.updatingLabel.replace( '%s', $message.data( 'name' ) );
@@ -330,7 +330,7 @@
 			newText = $pluginRow.find( '.plugin-version-author-uri' ).html().replace( response.oldVersion, response.newVersion );
 			$pluginRow.find( '.plugin-version-author-uri' ).html( newText );
 
-		} else if ( 'plugin-install' === pagenow ) {
+		} else if ( 'plugin-install' === pagenow || 'plugin-install-network' === pagenow ) {
 			$updateMessage = $( '.plugin-card-' + response.slug ).find( '.update-now' ).removeClass( 'updating-message' ).addClass( 'button-disabled updated-message' );
 		}
 
@@ -371,7 +371,7 @@
 			$message = $( 'tr[data-plugin="' + response.plugin + '"]' ).find( '.update-message' );
 			$message.removeClass( 'updating-message notice-warning' ).addClass( 'notice-error' ).find( 'p' ).html( errorMessage );
 
-		} else if ( 'plugin-install' === pagenow ) {
+		} else if ( 'plugin-install' === pagenow || 'plugin-install-network' === pagenow ) {
 			$card = $( '.plugin-card-' + response.slug )
 				.addClass( 'plugin-card-update-failed' )
 				.append( wp.updates.adminNotice( {
@@ -452,7 +452,7 @@
 		if ( response.activateUrl ) {
 			setTimeout( function() {
 				// Transform the 'Install' button into an 'Activate' button.
-				$message.removeClass( 'install-now installed button-disabled' ).addClass( 'activate-now button-primary updated-message' )
+				$message.removeClass( 'install-now installed button-disabled updated-message' ).addClass( 'activate-now button-primary' )
 					.attr( 'href', response.activateUrl )
 					.text( wp.updates.l10n.activate );
 			}, 1000 );
@@ -1852,7 +1852,7 @@
 
 			if ( 'plugins' === pagenow || 'plugins-network' === pagenow ) {
 				$message = $( 'tr[data-plugin="' + plugin + '"]' ).find( '.update-message' );
-			} else if ( 'plugin-install' === pagenow ) {
+			} else if ( 'plugin-install' === pagenow || 'plugin-install-network' === pagenow ) {
 				$message = $( '.update-now.updating-message' );
 			} else {
 				$message = $( '.updating-message' );

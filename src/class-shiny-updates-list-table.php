@@ -101,8 +101,8 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 		}
 
 		if ( ! isset( $core_updates[0]->response ) ||
-		     'latest' == $core_updates[0]->response ||
-		     'development' == $core_updates[0]->response ||
+		     'latest' === $core_updates[0]->response ||
+		     'development' === $core_updates[0]->response ||
 		     version_compare( $core_updates[0]->current, $this->cur_wp_version, '=' )
 		) {
 			$this->core_update_version = false;
@@ -398,8 +398,8 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 			<?php
 			$update = $item['data'];
 
-			if ( 'en_US' == $update->locale &&
-			     'en_US' == get_locale() ||
+			if ( 'en_US' === $update->locale &&
+			     'en_US' === get_locale() ||
 			     (
 				     $update->packages->partial &&
 				     $wp_version === $update->partial_version &&
@@ -411,7 +411,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 				$version_string = sprintf( '%s&ndash;<code>%s</code>', $update->current, $update->locale );
 			}
 
-			if ( 'development' == $update->response ) {
+			if ( 'development' === $update->response ) {
 				_e( 'You are using a development version of WordPress. You can update to the latest nightly build automatically.' );
 			} else if ( isset( $update->response ) && 'latest' !== $update->response ) {
 				printf( __( 'You can update to <a href="https://codex.wordpress.org/Version_%1$s">WordPress %2$s</a> automatically.' ), $update->current, $version_string );

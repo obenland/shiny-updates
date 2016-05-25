@@ -7,12 +7,6 @@
 	top: 0;
 }
 
-.plugin-update-tr .installed:before,
-.plugin-card .update-now:before {
-	color: #f56e28;
-	content: "\f463";
-}
-
 .wrap .notice p:before {
 	display: inline-block;
 	font: normal 18px/1 dashicons;
@@ -21,19 +15,54 @@
 	vertical-align: text-bottom;
 }
 
+.update-message p:before,
+.updating-message p:before,
+.plugin-card .updated-message:before,
+.plugin-card .installed:before,
+.button.updating-message:before,
+.button.updated-message:before,
+.button.installed:before,
+.button.installing:before {
+	display: inline-block;
+	font: normal 20px/1 'dashicons';
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	margin: 3px 5px 0 -2px;
+	vertical-align: top;
+}
+
+.update-message p:before,
+.updating-message p:before,
+.plugin-update-tr .installed:before,
+.plugin-card .update-now:before,
+.button.updating-message:before,
+.button.installing:before {
+	color: #f56e28;
+	content: "\f463";
+}
+
+.updating-message p:before,
+.button.updating-message:before,
+.button.installing:before {
+	-webkit-animation: rotation 2s infinite linear;
+	animation: rotation 2s infinite linear;
+}
+
+.wrap .notice-success p:before,
+.plugin-card .updated-message:before,
+.plugin-card .installed:before,
+.button.updated-message:before,
+.button.installed:before {
+	color: #79ba49;
+	content: '\f147';
+}
+
 .theme-install.updating-message:before {
 	color: #fff;
 }
 
-.plugin-update-tr .updated-message:before,
-.plugin-card .updated-message:before {
-	content: "";
-}
-
-.plugin-card .activated-message:before,
-.plugin-card .installed:before {
-	color: #79ba49;
-	content: '\f147';
+.theme-install.updated-message:before {
+	content: '';
 }
 
 .theme-install-php .theme .notice-error {
@@ -43,29 +72,6 @@
 	position: absolute;
 	top: 0;
 	right: 0;
-}
-
-.button.installed:before,
-.button.installing:before {
-	display: inline-block;
-	font: normal 20px/1 'dashicons';
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-	margin: 0 8px 0 -2px;
-}
-
-.button.installing:before {
-	-webkit-animation: rotation 2s infinite linear;
-	animation: rotation 2s infinite linear;
-	color: #f56e28;
-	content: '\f463';
-	vertical-align: top;
-}
-
-.button.installed:before {
-	color: #79ba49;
-	content: '\f147';
-	vertical-align: text-top;
 }
 
 /* Inline notifications */
@@ -111,25 +117,7 @@ tr.active.update + tr.plugin-update-tr .plugin-update {
 }
 
 .update-message p:before {
-	color: #f56e28;
-	display: inline-block;
-	font: normal 20px/1 dashicons;
-	content: "\f463";
 	margin: 0 10px 0 -25px;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-	vertical-align: top;
-}
-
-.updating-message p:before {
-	content: "\f463";
-	-webkit-animation: rotation 2s infinite linear;
-	animation: rotation 2s infinite linear;
-}
-
-.wrap .notice-success p:before {
-	color: #79ba49;
-	content: "\f147";
 }
 
 .wrap .notice-error p:before {

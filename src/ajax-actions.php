@@ -347,6 +347,10 @@ function wpsu_ajax_update_plugin() {
 	$upgrader = new Plugin_Upgrader( $skin );
 	$result   = $upgrader->bulk_upgrade( array( $plugin ) );
 
+	if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+		$status['debug'] = $upgrader->skin->get_upgrade_messages();
+	}
+
 	if ( is_array( $result ) && empty( $result[ $plugin ] ) && is_wp_error( $skin->result ) ) {
 		$result = $skin->result;
 	}
@@ -560,6 +564,10 @@ function wp_ajax_update_translations() {
 		'update' => 'translation',
 	);
 
+	if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+		$status['debug'] = $upgrader->skin->get_upgrade_messages();
+	}
+
 	if ( is_array( $result ) && is_wp_error( $skin->result ) ) {
 		$result = $skin->result;
 	}
@@ -636,6 +644,10 @@ function wp_ajax_update_core() {
 	$result   = $upgrader->upgrade( $update, array(
 		'allow_relaxed_file_ownership' => ! $reinstall && isset( $update->new_files ) && ! $update->new_files,
 	) );
+
+	if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+		$status['debug'] = $upgrader->skin->get_upgrade_messages();
+	}
 
 	if ( is_wp_error( $result ) ) {
 		$status['error'] = $result->get_error_message();
