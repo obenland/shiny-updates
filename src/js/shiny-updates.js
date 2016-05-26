@@ -1068,7 +1068,7 @@
 		$document.trigger( 'wp-' + type + '-update-success', response );
 
 		if ( 'core' === type && response.redirect ) {
-		//	window.location = response.redirect;
+			window.location = response.redirect;
 		}
 	};
 
