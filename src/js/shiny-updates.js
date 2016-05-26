@@ -283,7 +283,7 @@
 			$message   = $updateRow.find( '.update-message' ).addClass( 'updating-message' ).find( 'p' );
 			message    = wp.updates.l10n.updatingLabel.replace( '%s', $updateRow.find( '.plugin-title strong' ).text() );
 
-		} else if ( 'plugin-install' === pagenow ) {
+		} else if ( 'plugin-install' === pagenow || 'plugin-install-network' === pagenow ) {
 			$card    = $( '.plugin-card-' + args.slug );
 			$message = $card.find( '.update-now' ).addClass( 'updating-message' );
 			message  = wp.updates.l10n.updatingLabel.replace( '%s', $message.data( 'name' ) );
@@ -335,7 +335,7 @@
 			newText = $pluginRow.find( '.plugin-version-author-uri' ).html().replace( response.oldVersion, response.newVersion );
 			$pluginRow.find( '.plugin-version-author-uri' ).html( newText );
 
-		} else if ( 'plugin-install' === pagenow ) {
+		} else if ( 'plugin-install' === pagenow || 'plugin-install-network' === pagenow ) {
 			$updateMessage = $( '.plugin-card-' + response.slug ).find( '.update-now' ).removeClass( 'updating-message' ).addClass( 'button-disabled updated-message' );
 		}
 
@@ -376,7 +376,7 @@
 			$message = $( 'tr[data-plugin="' + response.plugin + '"]' ).find( '.update-message' );
 			$message.removeClass( 'updating-message notice-warning' ).addClass( 'notice-error' ).find( 'p' ).html( errorMessage );
 
-		} else if ( 'plugin-install' === pagenow ) {
+		} else if ( 'plugin-install' === pagenow || 'plugin-install-network' === pagenow ) {
 			$card = $( '.plugin-card-' + response.slug )
 				.addClass( 'plugin-card-update-failed' )
 				.append( wp.updates.adminNotice( {
@@ -448,7 +448,7 @@
 	wp.updates.installPluginSuccess = function( response ) {
 		var $message = $( '.plugin-card-' + response.slug ).find( '.install-now' );
 
-		$message.removeClass( 'updating-message install-now' ).addClass( 'updated-message installed button-disabled' )
+		$message.removeClass( 'updating-message' ).addClass( 'updated-message installed button-disabled' )
 			.text( wp.updates.l10n.installed );
 
 		wp.a11y.speak( wp.updates.l10n.installedMsg, 'polite' );
@@ -459,7 +459,7 @@
 			setTimeout( function() {
 
 				// Transform the 'Install' button into an 'Activate' button.
-				$message.removeClass( 'installed button-disabled' ).addClass( 'activate-now button-primary updated-message' )
+				$message.removeClass( 'install-now installed button-disabled updated-message' ).addClass( 'activate-now button-primary' )
 					.attr( 'href', response.activateUrl )
 					.text( wp.updates.l10n.activate );
 			}, 1000 );
@@ -1485,6 +1485,10 @@
 			var $button = $( event.target );
 			event.preventDefault();
 
+			if ( $button.hasClass( 'updating-message' ) || $button.hasClass( 'button-disabled' ) ) {
+				return false;
+			}
+
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
 				wp.updates.requestFilesystemCredentials( event );
 			}
@@ -1508,8 +1512,8 @@
 			var $button = $( event.target );
 			event.preventDefault();
 
-			if ( $button.hasClass( 'button-disabled' ) ) {
-				return;
+			if ( $button.hasClass( 'updating-message' ) || $button.hasClass( 'button-disabled' ) ) {
+				return false;
 			}
 
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
@@ -1905,7 +1909,7 @@
 
 			if ( 'plugins' === pagenow || 'plugins-network' === pagenow ) {
 				$message = $( 'tr[data-plugin="' + plugin + '"]' ).find( '.update-message' );
-			} else if ( 'plugin-install' === pagenow ) {
+			} else if ( 'plugin-install' === pagenow || 'plugin-install-network' === pagenow ) {
 				$message = $( '.update-now.updating-message' );
 			} else {
 				$message = $( '.updating-message' );
