@@ -282,6 +282,7 @@
 			$updateRow = $( 'tr[data-plugin="' + args.plugin + '"]' );
 			$message   = $updateRow.find( '.update-message' ).addClass( 'updating-message' ).find( 'p' );
 			message    = wp.updates.l10n.updatingLabel.replace( '%s', $updateRow.find( '.plugin-title strong' ).text() );
+
 		} else if ( 'plugin-install' === pagenow ) {
 			$card    = $( '.plugin-card-' + args.slug );
 			$message = $card.find( '.update-now' ).addClass( 'updating-message' );
@@ -289,6 +290,10 @@
 
 			// Remove previous error messages, if any.
 			$card.removeClass( 'plugin-card-update-failed' ).find( '.notice.notice-error' ).remove();
+
+		} else if ( 'update-core' === pagenow ) {
+			$message = $( '.update-link[data-plugin="' + args.plugin + '"]' ).addClass( 'updating-message' );
+			message  = wp.updates.l10n.updatingLabel.replace( '%s', $message.data( 'name' ) );
 		}
 
 		if ( ! wp.updates.updateLock ) {
@@ -436,8 +441,9 @@
 	 * @since 4.X.0
 	 *
 	 * @callback installPluginSuccess
-	 * @param {object} response      Response from the server.
-	 * @param {string} response.slug Slug of the plugin to be installed.
+	 * @param {object} response             Response from the server.
+	 * @param {string} response.slug        Slug of the plugin to be installed.
+	 * @param {string} response.activateUrl URL to activate the just installed plugin.
 	 */
 	wp.updates.installPluginSuccess = function( response ) {
 		var $message = $( '.plugin-card-' + response.slug ).find( '.install-now' );
@@ -451,6 +457,7 @@
 
 		if ( response.activateUrl ) {
 			setTimeout( function() {
+
 				// Transform the 'Install' button into an 'Activate' button.
 				$message.removeClass( 'installed button-disabled' ).addClass( 'activate-now button-primary updated-message' )
 					.attr( 'href', response.activateUrl )
@@ -638,7 +645,15 @@
 	wp.updates.updateTheme = function( args ) {
 		var $notice, message;
 
-		if ( 'themes-network' === pagenow ) {
+		if ( 'update-core' === pagenow ) {
+			$( '.update-link', '[data-slug="' + args.slug + '"]' )
+				.addClass( 'updating-message' )
+				.text( wp.updates.l10n.updating );
+			wp.a11y.speak( wp.updates.l10n.updatingMsg, 'polite' );
+
+			return wp.updates.ajax( 'update-theme', args );
+
+		 } else if ( 'themes-network' === pagenow ) {
 			$notice = $( '[data-slug="' + args.slug + '"]' ).find( '.update-message' );
 		} else {
 			$notice = $( '#update-theme' ).closest( '.notice' );
@@ -963,53 +978,53 @@
 	 *
 	 * @since 4.X.0
 	 *
-	 * @param {object}     args         Arguments.
-	 * @param {Function}   args.success Success callback.
-	 * @param {Function}   args.error   Error callback.
-	 * @param {jQuery}     args.el     The list table row
+	 * @param {object}            args         Arguments.
+	 * @param {string}            args.type    Type of update. 'core' or 'translations'.
+	 * @param {updateItemSuccess} args.success Success callback.
+	 * @param {updateItemError}   args.error   Error callback.
+	 * @param {jQuery}            args.el      The list table row
 	 * @return {$.promise} A jQuery promise that represents the request,
 	 *                     decorated with an abort() method.
 	 */
-	wp.updates.updateItem = function( args ) {
-		var $itemRow = args.el,
-		    $message = $itemRow.find( '.update-link' ),
-		    type     = $message.data( 'type' ) || $itemRow.data( 'type' );
+	wp.updates.updateCore = function( args ) {
+		var $message = $( '[data-type="core"]' ).find( '.update-link' );
 
-		// The item has already been updated, do not proceed.
-		if ( 0 === $message.length || $message.hasClass( 'updated-message' ) ) {
-			return;
+		if ( $message.html() !== wp.updates.l10n.updating ) {
+			$message.data( 'originaltext', $message.html() );
 		}
 
-		$message.addClass( 'updating-message' );
+		$message.addClass( 'updating-message' )
+			.attr( 'aria-label', wp.updates.l10n.updatingMsg )
+			.text( wp.updates.l10n.updating );
 
-		switch ( type ) {
-			case 'plugin':
-				args.plugin = $itemRow.data( 'plugin' );
-				args.slug   = $itemRow.data( 'slug' );
-				break;
-			case 'theme':
-				args.slug = $itemRow.data( 'slug' );
-				break;
-			case 'core':
-				args.version   = $itemRow.data( 'version' );
-				args.locale    = $itemRow.data( 'locale' );
-				args.reinstall = !! $itemRow.data( 'reinstall' );
-				break;
+		return wp.updates.ajax( 'update-core', args );
+	};
+
+	/**
+	 * Send an Ajax request to the server to update a single item in the updates list table
+	 *
+	 * @since 4.X.0
+	 *
+	 * @param {object}            args         Arguments.
+	 * @param {string}            args.type    Type of update. 'core' or 'translations'.
+	 * @param {updateItemSuccess} args.success Success callback.
+	 * @param {updateItemError}   args.error   Error callback.
+	 * @param {jQuery}            args.el      The list table row
+	 * @return {$.promise} A jQuery promise that represents the request,
+	 *                     decorated with an abort() method.
+	 */
+	wp.updates.updateTranslations = function( args ) {
+		var $message = $( '[data-type="translations"]' ).find( '.update-link' );
+
+		if ( $message.html() !== wp.updates.l10n.updating ) {
+			$message.data( 'originaltext', $message.html() );
 		}
 
-		if ( ! wp.updates.updateLock ) {
-			$message.attr( 'aria-label', wp.updates.l10n.updatingMsg );
+		$message.addClass( 'updating-message' )
+			.attr( 'aria-label', wp.updates.l10n.updatingMsg )
+			.text( wp.updates.l10n.updating );
 
-			if ( $message.html() !== wp.updates.l10n.updating ) {
-				$message.data( 'originaltext', $message.html() );
-			}
-
-			$message.text( wp.updates.l10n.updating );
-
-			$document.trigger( 'wp-' + type + '-updating' );
-		}
-
-		return wp.updates.ajax( 'update-' + type, args );
+		return wp.updates.ajax( 'update-translations', args );
 	};
 
 	/**
@@ -1018,14 +1033,25 @@
 	 * @since 4.X.0
 	 *
 	 * @callback updateItemSuccess
-	 * @param {object} response Response from the server.
-	 * @param {jQuery} row      The list table row
+	 * @param {object} response          Response from the server.
+	 * @param {string} response.slug     Optional. Slug of the theme or plugin that was updated.
+	 * @param {string} response.update   The type of update. 'core', 'plugin', 'theme', or 'translations'.
+	 * @param {string} response.redirect URL to redirect to after updating Core.
 	 */
-	wp.updates.updateItemSuccess = function( response, row ) {
-		var $message = row.find( '.update-link' ).removeClass( 'updating-message' ).addClass( 'button-disabled updated-message' ),
-		    type     = $message.data( 'type' ) || row.data( 'type' );
+	wp.updates.updateItemSuccess = function( response ) {
+		var type = response.update,
+			$row = $( '[data-type="' + type + '"]' );
 
-		$message.attr( 'aria-label', wp.updates.l10n.updated ).text( wp.updates.l10n.updated );
+		if ( 'plugin' === type || 'theme' === type ) {
+			$row = $row.filter( '[data-slug="' + response.slug + '"]' );
+		}
+
+		$row.find( '.update-link' )
+			.removeClass( 'updating-message' )
+			.addClass( 'button-disabled updated-message' )
+			.attr( 'aria-label', wp.updates.l10n.updated )
+			.prop( 'disabled', true )
+			.text( wp.updates.l10n.updated );
 
 		wp.a11y.speak( wp.updates.l10n.updatedMsg, 'polite' );
 
@@ -1034,7 +1060,7 @@
 		$document.trigger( 'wp-' + type + '-update-success', response );
 
 		if ( 'core' === type && response.redirect ) {
-			window.location = response.redirect;
+		//	window.location = response.redirect;
 		}
 	};
 
@@ -1044,21 +1070,28 @@
 	 * @since 4.X.0
 	 *
 	 * @callback updateItemError
-	 * @param {object} response Response from the server.
+	 * @param {object} response           Response from the server.
+	 * @param {string} response.slug      Optional. Slug of the theme or plugin that was updated.
+	 * @param {string} response.error     The error that occurred.
+	 * @param {string} response.errorCode Error code for the error that occurred.
 	 */
-	wp.updates.updateItemError = function( response, row ) {
-		var $message     = row.find( '.update-link' ).text( wp.updates.l10n.updateFailedShort ).removeClass( 'updating-message' ),
-		    type         = $message.data( 'type' ) || row.data( 'type' ),
-		    errorMessage = wp.updates.l10n.updateFailed.replace( '%s', response.error );
+	wp.updates.updateItemError = function( response ) {
+		var type = response.update,
+			$row = $( '[data-type="' + type + '"]' ),
+			errorMessage = wp.updates.l10n.updateFailed.replace( '%s', response.error );
 
 		if ( response.errorCode && 'unable_to_connect_to_filesystem' === response.errorCode && wp.updates.shouldRequestFilesystemCredentials ) {
 			wp.updates.credentialError( response, 'update-core' );
 			return;
 		}
 
-		setTimeout( function() {
-			$message.text( wp.updates.l10n.update );
-		}, 500 );
+		if ( 'plugin' === type || 'theme' === type ) {
+			$row = $row.filter( '[data-slug="' + response.slug + '"]' );
+		}
+
+		$row.find( '.update-link' )
+			.removeClass( 'updating-message' )
+			.text( wp.updates.l10n.updateFailedShort );
 
 		wp.a11y.speak( errorMessage, 'assertive' );
 
@@ -1095,6 +1128,7 @@
 		$.when(
 			$( $( '.wp-list-table.updates tr[data-type]' ).get().reverse() ).each( function() {
 				var $el = $( this );
+
 				wp.updates.updateItem( {
 					el:     $el,
 					success: function( response ) {
@@ -1167,11 +1201,6 @@
 
 		job = wp.updates.updateQueue.shift();
 
-		if ( 'update-core' === pagenow ) {
-			wp.updates.updateItem( job.data );
-			return;
-		}
-
 		// Handle a queue job.
 		switch ( job.type ) {
 			case 'install-plugin':
@@ -1196,6 +1225,14 @@
 
 			case 'delete-theme':
 				wp.updates.deleteTheme( job.data );
+				break;
+
+			case 'update-core':
+				wp.updates.updateCore( job.data );
+				break;
+
+			case 'update-translations':
+				wp.updates.updateTranslations( job.data );
 				break;
 
 			default:
@@ -1787,27 +1824,47 @@
 		 * @param {Event} event Event interface.
 		 */
 		$document.on( 'click', '.update-core-php .update-link', function( event ) {
-			var $itemRow = $( event.target ).parents( '[data-type]' ),
-			    args     = {
-				    el:      $itemRow,
-				    success: function( response ) {
-					    return wp.updates.updateItemSuccess( response, $itemRow );
-				    },
-				    error:   function( response ) {
-					    return wp.updates.updateItemError( response, $itemRow );
-				    }
-			    };
+			var $message = $( event.target ),
+				$itemRow = $message.parents( '[data-type]' ),
+				type     = $message.data( 'type' ) || $itemRow.data( 'type' ),
+				update   = {
+					type: 'update-' + type,
+					data: {
+						success: wp.updates.updateItemSuccess,
+						error:   wp.updates.updateItemError
+					}
+				};
 
 			event.preventDefault();
+
+			// The item has already been updated, do not proceed.
+			if ( 0 === $message.length || $message.hasClass( 'updated-message' ) ) {
+				return;
+			}
 
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
 				wp.updates.requestFilesystemCredentials( event );
 			}
 
-			// Return the user back to where he left off after closing the modal.
-			wp.updates.$elToReturnFocusToFromCredentialsModal = $( event.target );
+			switch ( type ) {
+				case 'plugin':
+					update.data.plugin = $itemRow.data( 'plugin' );
+					update.data.slug   = $itemRow.data( 'slug' );
+					break;
 
-			wp.updates.updateItem( args );
+				case 'theme':
+					update.data.slug = $itemRow.data( 'slug' );
+					break;
+
+				case 'core':
+					update.data.version   = $itemRow.data( 'version' );
+					update.data.locale    = $itemRow.data( 'locale' );
+					update.data.reinstall = !! $itemRow.data( 'reinstall' );
+					break;
+			}
+
+			wp.updates.updateQueue.push( update );
+			wp.updates.queueChecker();
 		} );
 
 		/**
@@ -1971,7 +2028,7 @@
 
 			$.support.postMessage = !! window.postMessage;
 
-			if ( false === $.support.postMessage || null === target || -1 !== window.parent.location.pathname.indexOf( 'update-core.php' ) ) {
+			if ( false === $.support.postMessage || null === target ) {
 				return;
 			}
 
@@ -2002,7 +2059,7 @@
 
 			$.support.postMessage = !! window.postMessage;
 
-			if ( false === $.support.postMessage || null === target || -1 !== window.parent.location.pathname.indexOf( 'update-core.php' ) ) {
+			if ( false === $.support.postMessage || null === target ) {
 				return;
 			}
 
@@ -2012,7 +2069,7 @@
 				action: 'installPlugin',
 				type:   'install-plugin',
 				data:   {
-					slug:    $( this ).data( 'slug' )
+					slug: $( this ).data( 'slug' )
 				}
 			};
 
