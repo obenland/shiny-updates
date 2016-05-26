@@ -978,16 +978,20 @@
 	 *
 	 * @since 4.X.0
 	 *
-	 * @param {object}            args         Arguments.
-	 * @param {string}            args.type    Type of update. 'core' or 'translations'.
-	 * @param {updateItemSuccess} args.success Success callback.
-	 * @param {updateItemError}   args.error   Error callback.
-	 * @param {jQuery}            args.el      The list table row
+	 * @param {object}            args           Arguments.
+	 * @param {string}            args.type      Type of update. 'core' or 'translations'.
+	 * @param {updateItemSuccess} args.success   Success callback.
+	 * @param {updateItemError}   args.error     Error callback.
+	 * @param {jQuery}            args.reinstall Whether this is a reinstall request or not.
 	 * @return {$.promise} A jQuery promise that represents the request,
 	 *                     decorated with an abort() method.
 	 */
 	wp.updates.updateCore = function( args ) {
-		var $message = $( '[data-type="core"]' ).find( '.update-link' );
+		var $message;
+
+		$message = $( '[data-type="core"]' ).filter( function() {
+			return args.reinstall && $( this ).is( '.wordpress-reinstall-card' ) || ! args.reinstall && ! $( this ).is( '.wordpress-reinstall-card' );
+		} ).find( '.update-link' );
 
 		if ( $message.html() !== wp.updates.l10n.updating ) {
 			$message.data( 'originaltext', $message.html() );
@@ -1044,6 +1048,10 @@
 
 		if ( 'plugin' === type || 'theme' === type ) {
 			$row = $row.filter( '[data-slug="' + response.slug + '"]' );
+		} else if ( 'core' === type ) {
+			$row = $row.filter( function() {
+				return 'reinstall' === response.reinstall && $( this ).is( '.wordpress-reinstall-card' ) || 'reinstall' !== response.reinstall && ! $( this ).is( '.wordpress-reinstall-card' );
+			} );
 		}
 
 		$row.find( '.update-link' )
@@ -1072,6 +1080,7 @@
 	 * @callback updateItemError
 	 * @param {object} response           Response from the server.
 	 * @param {string} response.slug      Optional. Slug of the theme or plugin that was updated.
+	 * @param {string} response.update    The type of update. 'core', 'plugin', 'theme', or 'translations'.
 	 * @param {string} response.error     The error that occurred.
 	 * @param {string} response.errorCode Error code for the error that occurred.
 	 */
@@ -1087,10 +1096,15 @@
 
 		if ( 'plugin' === type || 'theme' === type ) {
 			$row = $row.filter( '[data-slug="' + response.slug + '"]' );
+		} else if ( 'core' === type ) {
+			$row = $row.filter( function() {
+				return 'reinstall' === response.reinstall && $( this ).is( '.wordpress-reinstall-card' ) || 'reinstall' !== response.reinstall && ! $( this ).is( '.wordpress-reinstall-card' );
+			} );
 		}
 
 		$row.find( '.update-link' )
 			.removeClass( 'updating-message' )
+			.attr( 'aria-label', wp.updates.l10n.updateFailedShort )
 			.text( wp.updates.l10n.updateFailedShort );
 
 		wp.a11y.speak( errorMessage, 'assertive' );

@@ -625,7 +625,8 @@ function wp_ajax_update_core() {
 	}
 
 	if ( $reinstall ) {
-		$update->response = 'reinstall';
+		$update->response    = 'reinstall';
+		$status['reinstall'] = 'reinstall';
 	}
 
 	include_once( ABSPATH . 'wp-admin/includes/class-wp-upgrader.php' );
