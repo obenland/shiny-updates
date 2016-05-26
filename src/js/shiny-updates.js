@@ -1105,7 +1105,14 @@
 		$row.find( '.update-link' )
 			.removeClass( 'updating-message' )
 			.attr( 'aria-label', wp.updates.l10n.updateFailedShort )
+			.prop( 'disabled', true )
 			.text( wp.updates.l10n.updateFailedShort );
+
+		wp.updates.addAdminNotice( {
+			id:        response.errorCode,
+			className: 'notice-error is-dismissible',
+			message:   errorMessage
+		} );
 
 		wp.a11y.speak( errorMessage, 'assertive' );
 
