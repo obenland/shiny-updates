@@ -1,4 +1,22 @@
-/*global pagenow */
+/* global pagenow, commonL10n */
+/**
+ *
+ * @param {jQuery}  $                                   jQuery object.
+ * @param {object}  wp                                  WP object.
+ * @param {object}  settings                            WP Updates settings.
+ * @param {string}  settings.ajax_nonce                 AJAX nonce.
+ * @param {object}  settings.l10n                       Translation strings.
+ * @param {?object} settings.plugins                    Base names of plugins in their different states.
+ * @param {Array}   settings.plugins.all                Base names of all plugins.
+ * @param {Array}   settings.plugins.active             Base names of active plugins.
+ * @param {Array}   settings.plugins.inactive           Base names of inactive plugins.
+ * @param {Array}   settings.plugins.upgrade            Base names of plugins with updates available.
+ * @param {Array}   settings.plugins.recently_activated Base names of recently activated plugins.
+ * @param {?object} settings.totals                     Plugin/theme status information or null.
+ * @param {number}  settings.totals.all                 Amount of all plugins or themes.
+ * @param {number}  settings.totals.upgrade             Amount of plugins or themes with updates available.
+ * @param {number}  settings.totals.disabled            Amount of disabled themes.
+ */
 (function( $, wp, settings ) {
 	var $document = $( document );
 
@@ -95,7 +113,7 @@
 	 *
 	 * @since 4.2.0
 	 *
-	 * @type {array}
+	 * @type {Array.object}
 	 */
 	wp.updates.updateQueue = [];
 
@@ -113,10 +131,14 @@
 	 *
 	 * @since 4.X.0
 	 *
-	 * @param {object} data
-	 * @param {string} data.id        Unique id that will be used as the notice's id attribute.
-	 * @param {string} data.className Class names that will be used in the admin notice.
-	 * @param {string} data.message   The message displayed in the notice.
+	 * @param {object}  data
+	 * @param {string}  data.id            Unique id that will be used as the notice's id attribute.
+	 * @param {string=} data.className     Optional. Class names that will be used in the admin notice.
+	 * @param {string=} data.message       OptionalThe message displayed in the notice.
+	 * @param {number=} data.successes     Optional. The amount of successful operations.
+	 * @param {number=} data.errors        Optional. The amount of failed operations.
+	 * @param {Array=}  data.errorMessages Optional. Error messages of failed operations.
+	 *
 	 */
 	wp.updates.addAdminNotice = function( data ) {
 		var $notices     = $( '.wrap' ),
@@ -187,8 +209,8 @@
 	 *
 	 * @since 4.X.0
 	 *
-	 * @param {object} response
-	 * @param {array}  response.debug Debug inforamation. Optional.
+	 * @param {object}  response
+	 * @param {array=}  response.debug Optional. Debug information.
 	 */
 	wp.updates.ajaxAlways = function( response ) {
 		wp.updates.updateLock = false;
@@ -315,7 +337,7 @@
 	 *
 	 * @since 4.2.0
 	 *
-	 * @callback updateSuccess
+	 * @typedef {object} updateSuccess
 	 * @param {object} response            Response from the server.
 	 * @param {string} response.slug       Slug of the plugin to be updated.
 	 * @param {string} response.plugin     Basename of the plugin to be updated.
@@ -354,7 +376,7 @@
 	 *
 	 * @since 4.2.0
 	 *
-	 * @callback updateError
+	 * @typedef {object} updateError
 	 * @param {object} response            Response from the server.
 	 * @param {string} response.slug       Slug of the plugin to be updated.
 	 * @param {string} response.plugin     Basename of the plugin to be updated.
@@ -413,11 +435,10 @@
 	 *
 	 * @since 4.X.0
 	 *
-	 * @param {object}               args         Arguments.
-	 * @param {string}               args.plugin  Plugin basename.
-	 * @param {string}               args.slug    Plugin identifier in the WordPress.org Plugin repository.
-	 * @param {installPluginSuccess} args.success Success callback.
-	 * @param {installPluginError}   args.error   Error callback.
+	 * @param {object}                args         Arguments.
+	 * @param {string}                args.slug    Plugin identifier in the WordPress.org Plugin repository.
+	 * @param {installPluginSuccess=} args.success Optional. Success callback.
+	 * @param {installPluginError=}   args.error   Optional. Error callback.
 	 * @return {$.promise} A jQuery promise that represents the request,
 	 *                     decorated with an abort() method.
 	 */
@@ -440,7 +461,7 @@
 	 *
 	 * @since 4.X.0
 	 *
-	 * @callback installPluginSuccess
+	 * @typedef {object} installPluginSuccess
 	 * @param {object} response             Response from the server.
 	 * @param {string} response.slug        Slug of the plugin to be installed.
 	 * @param {string} response.activateUrl URL to activate the just installed plugin.
@@ -471,7 +492,7 @@
 	 *
 	 * @since 4.X.0
 	 *
-	 * @callback installPluginError
+	 * @typedef {object} installPluginError
 	 * @param {object} response            Response from the server.
 	 * @param {string} response.slug       Slug of the plugin to be installed.
 	 * @param {string} response.plugin     Basename of the plugin to be installed.
@@ -522,8 +543,8 @@
 	 * @param {object}              args         Arguments.
 	 * @param {string}              args.plugin  Plugin basename.
 	 * @param {string}              args.slug    Plugin slug.
-	 * @param {deletePluginSuccess} args.success Success callback.
-	 * @param {deletePluginError}   args.error   Error callback.
+	 * @param {deletePluginSuccess=} args.success Success callback.
+	 * @param {deletePluginError=}   args.error   Error callback.
 	 * @return {$.promise} A jQuery promise that represents the request,
 	 *                     decorated with an abort() method.
 	 */
@@ -538,7 +559,7 @@
 	 *
 	 * @since 4.X.0
 	 *
-	 * @callback deletePluginSuccess
+	 * @typedef {object} deletePluginSuccess
 	 * @param {object} response        Response from the server.
 	 * @param {string} response.slug   Slug of the plugin to be deleted.
 	 * @param {string} response.plugin Basename of the plugin to be deleted.
@@ -550,19 +571,20 @@
 			var $form       = $( '#bulk-action-form' ),
 			    $views      = $( '.subsubsub' ),
 			    columnCount = $form.find( 'thead th:not(.hidden), thead td' ).length,
-			    plugins     = settings.plugins;
+			    plugins     = settings.plugins,
+				index;
 
 			$( this ).remove();
 
 			// Remove plugin from update count.
-			if ( -1 !== plugins.upgrade.indexOf( response.plugin ) ) {
-				plugins.upgrade = _.without( plugins.upgrade, response.plugin );
+			if ( -1 !== ( index = plugins.upgrade.indexOf( response.plugin ) ) ) {
+				delete plugins.upgrade[ index ];
 				wp.updates.decrementCount( 'plugin' );
 			}
 
 			// Remove from views.
-			if ( -1 !== plugins.inactive.indexOf( response.plugin ) ) {
-				plugins.inactive = _.without( plugins.inactive, response.plugin );
+			if ( -1 !== ( index = plugins.inactive.indexOf( response.plugin ) ) ) {
+				delete plugins.inactive[ index ];
 				if ( plugins.inactive.length > 0 ) {
 					$views.find( '.inactive .count' ).text( '(' + plugins.inactive.length + ')' );
 				} else {
@@ -570,8 +592,8 @@
 				}
 			}
 
-			if ( -1 !== plugins.active.indexOf( response.plugin ) ) {
-				plugins.active = _.without( plugins.active, response.plugin );
+			if ( -1 !== ( index = plugins.active.indexOf( response.plugin ) ) ) {
+				delete plugins.active[ index ];
 				if ( plugins.active.length ) {
 					$views.find( '.active .count' ).text( '(' + plugins.active.length + ')' );
 				} else {
@@ -579,8 +601,8 @@
 				}
 			}
 
-			if ( -1 !== plugins.recently_activated.indexOf( response.plugin ) ) {
-				plugins.recently_activated = _.without( plugins.recently_activated, response.plugin );
+			if ( -1 !== ( index = plugins.recently_activated.indexOf( response.plugin ) ) ) {
+				delete plugins.recently_activated[ index ];
 				if ( plugins.recently_activated.length ) {
 					$views.find( '.recently_activated .count' ).text( '(' + plugins.recently_activated.length + ')' );
 				} else {
@@ -588,7 +610,8 @@
 				}
 			}
 
-			plugins.all = _.without( plugins.all, response.plugin );
+			index = plugins.all.indexOf( response.plugin );
+			delete plugins.all[ index ];
 			if ( plugins.all.length ) {
 				$views.find( '.all .count' ).text( '(' + plugins.all.length + ')' );
 			} else {
@@ -610,7 +633,7 @@
 	 *
 	 * @since 4.X.0
 	 *
-	 * @callback deletePluginError
+	 * @typedef {object} deletePluginError
 	 * @param {object} response           Response from the server.
 	 * @param {string} response.plugin    Basename of the plugin to be deleted.
 	 * @param {string} response.error     The error that occurred.
@@ -681,7 +704,7 @@
 	 *
 	 * @since 4.X.0
 	 *
-	 * @callback updateThemeSuccess
+	 * @typedef {object} updateThemeSuccess
 	 * @param {object} response
 	 * @param {string} response.slug       Slug of the theme to be updated.
 	 * @param {object} response.theme      Updated theme.
@@ -735,7 +758,7 @@
 	 *
 	 * @since 4.X.0
 	 *
-	 * @callback updateThemeError
+	 * @typedef {object} updateThemeError
 	 * @param {object} response           Response from the server.
 	 * @param {string} response.slug      Slug of the theme to be updated.
 	 * @param {string} response.error     The error that occurred.
@@ -805,7 +828,7 @@
 	 *
 	 * @since 4.X.0
 	 *
-	 * @callback installThemeSuccess
+	 * @typedef {object} installThemeSuccess
 	 * @param {object} response      Response from the server.
 	 * @param {string} response.slug Slug of the theme to be installed.
 	 */
@@ -826,7 +849,7 @@
 	 *
 	 * @since 4.X.0
 	 *
-	 * @callback installThemeError
+	 * @typedef {object} installThemeError
 	 * @param {object} response           Response from the server.
 	 * @param {string} response.slug      Slug of the theme to be installed.
 	 * @param {string} response.error     The error that occurred.
@@ -895,7 +918,7 @@
 	 *
 	 * @since 4.X.0
 	 *
-	 * @callback deleteThemeSuccess
+	 * @typedef {object} deleteThemeSuccess
 	 * @param {object} response      Response from the server.
 	 * @param {string} response.slug Slug of the theme to be deleted.
 	 */
@@ -913,7 +936,7 @@
 
 				// Remove plugin from update count.
 				if ( $themeRow.hasClass( 'update' ) ) {
-					totals.upgrades--;
+					totals.upgrade--;
 					wp.updates.decrementCount( 'theme' );
 				}
 
@@ -942,7 +965,7 @@
 	 *
 	 * @since 4.X.0
 	 *
-	 * @callback deleteThemeError
+	 * @typedef {object} deleteThemeError
 	 * @param {object} response           Response from the server.
 	 * @param {string} response.slug      Slug of the theme to be deleted.
 	 * @param {string} response.error     The error that occurred.
@@ -978,11 +1001,12 @@
 	 *
 	 * @since 4.X.0
 	 *
-	 * @param {object}            args           Arguments.
-	 * @param {string}            args.type      Type of update. 'core' or 'translations'.
-	 * @param {updateItemSuccess} args.success   Success callback.
-	 * @param {updateItemError}   args.error     Error callback.
-	 * @param {jQuery}            args.reinstall Whether this is a reinstall request or not.
+	 * @param {object}             args           Arguments.
+	 * @param {string}             args.version   The version to update to.
+	 * @param {string}             args.locale    The locale to get the update for.
+	 * @param {boolean}            args.reinstall Whether this is a reinstall request or not.
+	 * @param {updateItemSuccess=} args.success   Optional. Success callback.
+	 * @param {updateItemError=}   args.error     Optional. Error callback.
 	 * @return {$.promise} A jQuery promise that represents the request,
 	 *                     decorated with an abort() method.
 	 */
@@ -1009,11 +1033,9 @@
 	 *
 	 * @since 4.X.0
 	 *
-	 * @param {object}            args         Arguments.
-	 * @param {string}            args.type    Type of update. 'core' or 'translations'.
-	 * @param {updateItemSuccess} args.success Success callback.
-	 * @param {updateItemError}   args.error   Error callback.
-	 * @param {jQuery}            args.el      The list table row
+	 * @param {object}             args         Arguments.
+	 * @param {updateItemSuccess=} args.success Optional. Success callback.
+	 * @param {updateItemError=}   args.error   Optional. Error callback.
 	 * @return {$.promise} A jQuery promise that represents the request,
 	 *                     decorated with an abort() method.
 	 */
@@ -1029,102 +1051,6 @@
 			.text( wp.updates.l10n.updating );
 
 		return wp.updates.ajax( 'update-translations', args );
-	};
-
-	/**
-	 * On a successful core update, update the UI appropriately and redirect to the about page.
-	 *
-	 * @since 4.X.0
-	 *
-	 * @callback updateItemSuccess
-	 * @param {object} response            Response from the server.
-	 * @param {string} response.update     The type of update. 'core', 'plugin', 'theme', or 'translations'.
-	 * @param {string} response.slug       Optional. Slug of the theme or plugin that was updated.
-	 * @param {string} response.reinstall  Optional. Whether this was a reinstall request or not.
-	 * @param {string} response.redirect   Optional. URL to redirect to after updating Core.
-	 * @param {string} response.plugin     Optional. Basename of the plugin that was updated.
-	 * @param {string} response.pluginName Optional. Name of the plugin that was updated.
-	 * @param {string} response.oldVersion Optional. Old version of the theme or plugin.
-	 * @param {string} response.newVersion Optional. New version of the theme or plugin.
-	 */
-	wp.updates.updateItemSuccess = function( response ) {
-		var type = response.update,
-			$row = $( '[data-type="' + type + '"]' );
-
-		if ( 'plugin' === type || 'theme' === type ) {
-			$row = $row.filter( '[data-slug="' + response.slug + '"]' );
-		} else if ( 'core' === type ) {
-			$row = $row.filter( function() {
-				return 'reinstall' === response.reinstall && $( this ).is( '.wordpress-reinstall-card' ) || 'reinstall' !== response.reinstall && ! $( this ).is( '.wordpress-reinstall-card' );
-			} );
-		}
-
-		$row.find( '.update-link' )
-			.removeClass( 'updating-message' )
-			.addClass( 'updated-message' )
-			.attr( 'aria-label', wp.updates.l10n.updated )
-			.prop( 'disabled', true )
-			.text( wp.updates.l10n.updated );
-
-		wp.a11y.speak( wp.updates.l10n.updatedMsg, 'polite' );
-
-		wp.updates.decrementCount( type );
-
-		$document.trigger( 'wp-' + type + '-update-success', response );
-
-		if ( 'core' === type && response.redirect ) {
-			window.location = response.redirect;
-		}
-	};
-
-	/**
-	 * On a core update error, update the UI appropriately.
-	 *
-	 * @since 4.X.0
-	 *
-	 * @callback updateItemError
-	 * @param {object} response            Response from the server.
-	 * @param {string} response.update     The type of update. 'core', 'plugin', 'theme', or 'translations'.
-	 * @param {string} response.reinstall  Whether this was a reinstall request or not.
-	 * @param {string} response.error      The error that occurred.
-	 * @param {string} response.errorCode  Error code for the error that occurred.
-	 * @param {string} response.slug       Optional. Slug of the theme or plugin that was updated.
-	 * @param {string} response.plugin     Optional. Basename of the plugin that was updated.
-	 * @param {string} response.pluginName Optional. Name of the plugin that was updated.
-	 */
-	wp.updates.updateItemError = function( response ) {
-		var type = response.update,
-			$row = $( '[data-type="' + type + '"]' ),
-			errorMessage = wp.updates.l10n.updateFailed.replace( '%s', response.error );
-
-		if ( response.errorCode && 'unable_to_connect_to_filesystem' === response.errorCode && wp.updates.shouldRequestFilesystemCredentials ) {
-			wp.updates.credentialError( response, 'update-core' );
-			return;
-		}
-
-		if ( 'plugin' === type || 'theme' === type ) {
-			$row = $row.filter( '[data-slug="' + response.slug + '"]' );
-		} else if ( 'core' === type ) {
-			$row = $row.filter( function() {
-				return 'reinstall' === response.reinstall && $( this ).is( '.wordpress-reinstall-card' ) || 'reinstall' !== response.reinstall && ! $( this ).is( '.wordpress-reinstall-card' );
-			} );
-		}
-
-		$row.find( '.update-link' )
-			.removeClass( 'updating-message' )
-			.attr( 'aria-label', wp.updates.l10n.updateFailedShort )
-			.prop( 'disabled', true )
-			.text( wp.updates.l10n.updateFailedShort );
-
-		wp.updates.addAdminNotice( {
-			id:        response.errorCode,
-			className: 'notice-error is-dismissible',
-			message:   errorMessage
-		} );
-
-		wp.a11y.speak( errorMessage, 'assertive' );
-
-		$document.trigger( 'wp-' + type + '-update-error', response );
 	};
 
 	/**
@@ -1162,6 +1088,102 @@
 
 		wp.updates.updateQueue.push( update );
 		wp.updates.queueChecker();
+	};
+
+	/**
+	 * On a successful core update, update the UI appropriately and redirect to the about page.
+	 *
+	 * @since 4.X.0
+	 *
+	 * @typedef {object} updateItemSuccess
+	 * @param {object}  response            Response from the server.
+	 * @param {string}  response.update     The type of update. 'core', 'plugin', 'theme', or 'translations'.
+	 * @param {string=} response.slug       Optional. Slug of the theme or plugin that was updated.
+	 * @param {string=} response.reinstall  Optional. Whether this was a reinstall request or not.
+	 * @param {string=} response.redirect   Optional. URL to redirect to after updating Core.
+	 * @param {string=} response.plugin     Optional. Basename of the plugin that was updated.
+	 * @param {string=} response.pluginName Optional. Name of the plugin that was updated.
+	 * @param {string=} response.oldVersion Optional. Old version of the theme or plugin.
+	 * @param {string=} response.newVersion Optional. New version of the theme or plugin.
+	 */
+	wp.updates.updateItemSuccess = function( response ) {
+		var type = response.update,
+			$row = $( '[data-type="' + type + '"]' );
+
+		if ( 'plugin' === type || 'theme' === type ) {
+			$row = $row.filter( '[data-slug="' + response.slug + '"]' );
+		} else if ( 'core' === type ) {
+			$row = $row.filter( function() {
+				return 'reinstall' === response.reinstall && $( this ).is( '.wordpress-reinstall-card' ) || 'reinstall' !== response.reinstall && ! $( this ).is( '.wordpress-reinstall-card' );
+			} );
+		}
+
+		$row.find( '.update-link' )
+			.removeClass( 'updating-message' )
+			.addClass( 'updated-message' )
+			.attr( 'aria-label', wp.updates.l10n.updated )
+			.prop( 'disabled', true )
+			.text( wp.updates.l10n.updated );
+
+		wp.a11y.speak( wp.updates.l10n.updatedMsg, 'polite' );
+
+		wp.updates.decrementCount( type );
+
+		$document.trigger( 'wp-' + type + '-update-success', response );
+
+		if ( 'core' === type && response.redirect ) {
+			window.location = response.redirect;
+		}
+	};
+
+	/**
+	 * On a core update error, update the UI appropriately.
+	 *
+	 * @since 4.X.0
+	 *
+	 * @typedef {object} updateItemError
+	 * @param {object}  response            Response from the server.
+	 * @param {string}  response.update     The type of update. 'core', 'plugin', 'theme', or 'translations'.
+	 * @param {string}  response.error      The error that occurred.
+	 * @param {string}  response.errorCode  Error code for the error that occurred.
+	 * @param {string=} response.slug       Optional. Slug of the theme or plugin that was updated.
+	 * @param {string=} response.plugin     Optional. Basename of the plugin that was updated.
+	 * @param {string=} response.pluginName Optional. Name of the plugin that was updated.
+	 * @param {string=} response.reinstall  Optional. Whether this was a reinstall request or not.
+	 */
+	wp.updates.updateItemError = function( response ) {
+		var type = response.update,
+			$row = $( '[data-type="' + type + '"]' ),
+			errorMessage = wp.updates.l10n.updateFailed.replace( '%s', response.error );
+
+		if ( response.errorCode && 'unable_to_connect_to_filesystem' === response.errorCode && wp.updates.shouldRequestFilesystemCredentials ) {
+			wp.updates.credentialError( response, 'update-core' );
+			return;
+		}
+
+		if ( 'plugin' === type || 'theme' === type ) {
+			$row = $row.filter( '[data-slug="' + response.slug + '"]' );
+		} else if ( 'core' === type ) {
+			$row = $row.filter( function() {
+				return 'reinstall' === response.reinstall && $( this ).is( '.wordpress-reinstall-card' ) || 'reinstall' !== response.reinstall && ! $( this ).is( '.wordpress-reinstall-card' );
+			} );
+		}
+
+		$row.find( '.update-link' )
+			.removeClass( 'updating-message' )
+			.attr( 'aria-label', wp.updates.l10n.updateFailedShort )
+			.prop( 'disabled', true )
+			.text( wp.updates.l10n.updateFailedShort );
+
+		wp.updates.addAdminNotice( {
+			id:        response.errorCode,
+			className: 'notice-error is-dismissible',
+			message:   errorMessage
+		} );
+
+		wp.a11y.speak( errorMessage, 'assertive' );
+
+		$document.trigger( 'wp-' + type + '-update-error', response );
 	};
 
 	/**
@@ -1214,7 +1236,7 @@
 				break;
 
 			default:
-				window.console.log( 'Failed to execute queued update job.', job );
+				window.console.error( 'Failed to execute queued update job.', job );
 				break;
 		}
 	};
@@ -1224,7 +1246,7 @@
 	 *
 	 * @since 4.2.0
 	 *
-	 * @param {Event} event Event interface.
+	 * @param {Event=} event Optional. Event interface.
 	 */
 	wp.updates.requestFilesystemCredentials = function( event ) {
 		if ( false === wp.updates.filesystemCredentials.available ) {
@@ -1302,7 +1324,7 @@
 	 * @since 4.X.0 Triggers an event for callbacks to listen to and add their actions.
 	 */
 	wp.updates.requestForCredentialsModalCancel = function() {
-		var plugin = wp.updates.updateQueue[ 0 ].data.plugin;
+		var plugin = wp.updates.updateQueue[ 0 ].data.plugin || {};
 
 		// No updateLock and no updateQueue means we already have cleared things up.
 		if ( false === wp.updates.updateLock && 0 === wp.updates.updateQueue.length ) {
@@ -1349,8 +1371,6 @@
 				 * Not cool that we're depending on response for this data.
 				 * This would feel more whole in a view all tied together.
 				 */
-				plugin: response.plugin,
-				slug:   response.slug
 			}
 		} );
 
@@ -1635,6 +1655,7 @@
 					break;
 
 				default:
+					window.console.error( 'Failed to identify bulk action: %s', action );
 					return;
 			}
 
@@ -1739,6 +1760,7 @@
 					break;
 
 				default:
+					window.console.error( 'Failed to identify bulk action: %s', action );
 					return;
 			}
 
@@ -1821,20 +1843,20 @@
 			}
 
 			$message.attr( 'aria-label', wp.updates.l10n.updatingMsg ).text( wp.updates.l10n.updating );
-			
+
 			$document.on( 'wp-plugin-update-success wp-theme-update-success wp-core-update-success wp-translations-update-success wp-plugin-update-error wp-theme-update-error wp-core-update-error wp-translations-update-error ', function() {
 				if ( 0 === wp.updates.updateQueue.length ) {
 					$message
 						.removeClass( 'updating-message' )
 						.attr( 'aria-label', wp.updates.l10n.updated )
 						.prop( 'disabled', true )
-						.text( wp.updates.l10n.updated )
+						.text( wp.updates.l10n.updated );
 				}
 			} );
 
 			// Translations first, themes and plugins afterwards before updating core at last.
 			$( $( 'tr[data-type]', '#wp-updates-table' ).get().reverse() ).each( function( index, element ) {
-				var $itemRow = $( element )
+				var $itemRow = $( element );
 
 				if ( $( '.update-link', $itemRow ).prop( 'disabled' ) ) {
 					return;
@@ -1877,7 +1899,8 @@
 			$( '.notice.is-dismissible' ).each( function() {
 				var $notice = $( this ),
 				    $button = $( '<button type="button" class="notice-dismiss"><span class="screen-reader-text"></span></button>' ),
-				    btnText = window.commonL10n.dismiss || '';
+				    /** @property {string} commonL10n.dismiss Dismiss message. */
+				    btnText = commonL10n.dismiss || '';
 
 				// Ensure plain text.
 				$button.find( '.screen-reader-text' ).text( btnText );
@@ -1976,7 +1999,7 @@
 		 */
 		$( '#plugin_update_from_iframe' ).on( 'click', function( event ) {
 			var target = window.parent === window ? null : window.parent,
-			    job;
+			    update;
 
 			$.support.postMessage = !! window.postMessage;
 
@@ -1986,7 +2009,7 @@
 
 			event.preventDefault();
 
-			job = {
+			update = {
 				action: 'updatePlugin',
 				type:   'update-plugin',
 				data:   {
@@ -1995,7 +2018,7 @@
 				}
 			};
 
-			target.postMessage( JSON.stringify( job ), window.location.origin );
+			target.postMessage( JSON.stringify( update ), window.location.origin );
 		} );
 
 		/**
@@ -2007,7 +2030,7 @@
 		 */
 		$( '#plugin_install_from_iframe' ).on( 'click', function( event ) {
 			var target = window.parent === window ? null : window.parent,
-			    job;
+				install;
 
 			$.support.postMessage = !! window.postMessage;
 
@@ -2017,7 +2040,7 @@
 
 			event.preventDefault();
 
-			job = {
+			install = {
 				action: 'installPlugin',
 				type:   'install-plugin',
 				data:   {
@@ -2025,7 +2048,7 @@
 				}
 			};
 
-			target.postMessage( JSON.stringify( job ), window.location.origin );
+			target.postMessage( JSON.stringify( install ), window.location.origin );
 		} );
 
 		/**
@@ -2057,6 +2080,7 @@
 				 * @todo Check if that can be removed once this plugin was merged.
 				 */
 				case 'decrementUpdateCount':
+					/** @property {string} message.upgradeType */
 					wp.updates.decrementCount( message.upgradeType );
 					break;
 
