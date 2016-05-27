@@ -614,7 +614,7 @@ function wp_ajax_update_core() {
 		wp_send_json_error( $status );
 	}
 
-	$reinstall = isset( $_POST['reinstall'] ) ? (bool) $_POST['reinstall'] : false;
+	$reinstall = isset( $_POST['reinstall'] ) ? 'true' === wp_unslash( $_POST['reinstall'] ) : false;
 	$version   = isset( $_POST['version'] ) ? sanitize_text_field( wp_unslash( $_POST['version'] ) ) : false;
 	$locale    = isset( $_POST['locale'] ) ? sanitize_text_field( wp_unslash( $_POST['locale'] ) ) : 'en_US';
 
