@@ -1037,10 +1037,11 @@
 	 * @since 4.X.0
 	 *
 	 * @callback updateItemSuccess
-	 * @param {object} response          Response from the server.
-	 * @param {string} response.slug     Optional. Slug of the theme or plugin that was updated.
-	 * @param {string} response.update   The type of update. 'core', 'plugin', 'theme', or 'translations'.
-	 * @param {string} response.redirect URL to redirect to after updating Core.
+	 * @param {object} response           Response from the server.
+	 * @param {string} response.slug      Optional. Slug of the theme or plugin that was updated.
+	 * @param {string} response.update    The type of update. 'core', 'plugin', 'theme', or 'translations'.
+	 * @param {string} response.reinstall Optional. Whether this was a reinstall request or not.
+	 * @param {string} response.redirect  Optional. URL to redirect to after updating Core.
 	 */
 	wp.updates.updateItemSuccess = function( response ) {
 		var type = response.update,
@@ -1056,7 +1057,7 @@
 
 		$row.find( '.update-link' )
 			.removeClass( 'updating-message' )
-			.addClass( 'button-disabled updated-message' )
+			.addClass( 'updated-message' )
 			.attr( 'aria-label', wp.updates.l10n.updated )
 			.prop( 'disabled', true )
 			.text( wp.updates.l10n.updated );
@@ -1081,6 +1082,7 @@
 	 * @param {object} response           Response from the server.
 	 * @param {string} response.slug      Optional. Slug of the theme or plugin that was updated.
 	 * @param {string} response.update    The type of update. 'core', 'plugin', 'theme', or 'translations'.
+	 * @param {string} response.reinstall Whether this was a reinstall request or not.
 	 * @param {string} response.error     The error that occurred.
 	 * @param {string} response.errorCode Error code for the error that occurred.
 	 */
@@ -1123,88 +1125,37 @@
 	 * Send an Ajax request to the server to install all available updates.
 	 *
 	 * @since 4.X.0
-	 * @param {object}   args         Arguments.
-	 * @param {Function} args.success Success callback.
-	 * @param {Function} args.error   Error callback.
-	 * @return {$.promise} A jQuery promise that represents the request,
-	 *                     decorated with an abort() method.
+	 * @param {jQuery}   $itemRow jQuery object of the item to be updated.
 	 */
-	wp.updates.updateAll = function( args ) {
-		var $message = $( '.update-link[data-type="all"]' ).addClass( 'updating-message' ),
-		    message  = wp.updates.l10n.updatingMsg;
+	wp.updates.updateItem = function( $itemRow ) {
+		var type   = $itemRow.data( 'type' ),
+			update = {
+				type: 'update-' + type,
+				data: {
+					success: wp.updates.updateItemSuccess,
+					error:   wp.updates.updateItemError
+				}
+			};
 
-		if ( ! wp.updates.updateLock ) {
-			$message.attr( 'aria-label', message );
+		switch ( type ) {
+			case 'plugin':
+				update.data.plugin = $itemRow.data( 'plugin' );
+				update.data.slug   = $itemRow.data( 'slug' );
+				break;
 
-			if ( $message.html() !== wp.updates.l10n.updating ) {
-				$message.data( 'originaltext', $message.html() );
-			}
+			case 'theme':
+				update.data.slug = $itemRow.data( 'slug' );
+				break;
 
-			$message.text( wp.updates.l10n.updating );
-
-			$document.trigger( 'wp-all-updating' );
+			case 'core':
+				update.data.version   = $itemRow.data( 'version' );
+				update.data.locale    = $itemRow.data( 'locale' );
+				update.data.reinstall = !! $itemRow.data( 'reinstall' );
+				break;
 		}
 
-		// Translations first, themes and plugins afterwards before updating core at last.
-		$.when(
-			$( $( '.wp-list-table.updates tr[data-type]' ).get().reverse() ).each( function() {
-				var $el = $( this );
-
-				wp.updates.updateItem( {
-					el:     $el,
-					success: function( response ) {
-						return wp.updates.updateItemSuccess( response, $el );
-					},
-					error:   function( response ) {
-						return wp.updates.updateItemError( response, $el );
-					}
-				} );
-			} ).promise()
-		)
-			.done( args.success )
-			.fail( args.error );
-	};
-
-	/**
-	 * On a successful update, update the UI appropriately and redirect to the about page if necessary.
-	 *
-	 * @since 4.X.0
-	 *
-	 * @param {object} response Response from the server.
-	 */
-	wp.updates.updateAllSuccess = function( response ) {
-		var $updateMessage = $( 'tr[data-type="all"]' ).find( '.update-link' ).removeClass( 'updating-message' ).addClass( 'button-disabled updated-message' );
-
-		$updateMessage.attr( 'aria-label', wp.updates.l10n.updated ).text( wp.updates.l10n.updated );
-
-		wp.a11y.speak( wp.updates.l10n.updatedMsg, 'polite' );
-
-		$document.trigger( 'wp-all-update-success', response );
-	};
-
-	/**
-	 * On an update error, update the UI appropriately.
-	 *
-	 * @since 4.X.0
-	 *
-	 * @param {object} response Response from the server.
-	 */
-	wp.updates.updateAllError = function( response ) {
-		var $message     = $( 'tr[data-type="all"]' ).find( '.update-link' ).removeClass( 'updating-message' ).addClass( 'button-disabled updated-message' ),
-		    errorMessage = wp.updates.l10n.updateFailed.replace( '%s', response.error );
-
-		if ( response.errorCode && 'unable_to_connect_to_filesystem' === response.errorCode && wp.updates.shouldRequestFilesystemCredentials ) {
-			wp.updates.credentialError( response, 'update-all' );
-			return;
-		}
-
-		setTimeout( function() {
-			$message.text( wp.updates.l10n.update );
-		}, 500 );
-
-		wp.a11y.speak( errorMessage, 'assertive' );
-
-		$document.trigger( 'wp-all-update-error', response );
+		wp.updates.updateQueue.push( update );
+		wp.updates.queueChecker();
 	};
 
 	/**
@@ -1848,17 +1799,9 @@
 		 *
 		 * @param {Event} event Event interface.
 		 */
-		$document.on( 'click', '.update-core-php .update-link', function( event ) {
+		$( '#wp-updates-table' ).on( 'click', '.update-link', function( event ) {
 			var $message = $( event.target ),
-				$itemRow = $message.parents( '[data-type]' ),
-				type     = $message.data( 'type' ) || $itemRow.data( 'type' ),
-				update   = {
-					type: 'update-' + type,
-					data: {
-						success: wp.updates.updateItemSuccess,
-						error:   wp.updates.updateItemError
-					}
-				};
+				$itemRow = $message.parents( '[data-type]' );
 
 			event.preventDefault();
 
@@ -1871,25 +1814,7 @@
 				wp.updates.requestFilesystemCredentials( event );
 			}
 
-			switch ( type ) {
-				case 'plugin':
-					update.data.plugin = $itemRow.data( 'plugin' );
-					update.data.slug   = $itemRow.data( 'slug' );
-					break;
-
-				case 'theme':
-					update.data.slug = $itemRow.data( 'slug' );
-					break;
-
-				case 'core':
-					update.data.version   = $itemRow.data( 'version' );
-					update.data.locale    = $itemRow.data( 'locale' );
-					update.data.reinstall = !! $itemRow.data( 'reinstall' );
-					break;
-			}
-
-			wp.updates.updateQueue.push( update );
-			wp.updates.queueChecker();
+			wp.updates.updateItem( $itemRow );
 		} );
 
 		/**
@@ -1899,22 +1824,42 @@
 		 *
 		 * @param {Event} event Event interface.
 		 */
-		$document.on( 'click', '.wordpress-updates-table .tablenav .update-link', function( event ) {
-			var args = {
-				success: wp.updates.updateAllSuccess,
-				error:   wp.updates.updateAllError
-			};
+		$document.on( 'click', '.tablenav .update-link', function( event ) {
+			var $message = $( '.update-link[data-type="all"]' ).addClass( 'updating-message' );
 
 			event.preventDefault();
+
+			// The item has already been updated, do not proceed.
+			if ( $message.prop( 'disabled' ) ) {
+				return;
+			}
 
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
 				wp.updates.requestFilesystemCredentials( event );
 			}
 
-			// Return the user back to where he left off after closing the modal.
-			wp.updates.$elToReturnFocusToFromCredentialsModal = $( event.target );
+			$message.attr( 'aria-label', wp.updates.l10n.updatingMsg ).text( wp.updates.l10n.updating );
+			
+			$document.on( 'wp-plugin-update-success wp-theme-update-success wp-core-update-success wp-translations-update-success wp-plugin-update-error wp-theme-update-error wp-core-update-error wp-translations-update-error ', function() {
+				if ( 0 === wp.updates.updateQueue.length ) {
+					$message
+						.removeClass( 'updating-message' )
+						.attr( 'aria-label', wp.updates.l10n.updated )
+						.prop( 'disabled', true )
+						.text( wp.updates.l10n.updated )
+				}
+			} );
 
-			wp.updates.updateAll( args );
+			// Translations first, themes and plugins afterwards before updating core at last.
+			$( $( 'tr[data-type]', '#wp-updates-table' ).get().reverse() ).each( function( index, element ) {
+				var $itemRow = $( element )
+
+				if ( $( '.update-link', $itemRow ).prop( 'disabled' ) ) {
+					return;
+				}
+
+				wp.updates.updateItem( $itemRow );
+			} );
 		} );
 
 		/**
