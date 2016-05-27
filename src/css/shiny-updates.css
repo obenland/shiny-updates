@@ -57,6 +57,7 @@
 	content: '\f147';
 }
 
+.button-primary.updating-message:before,
 .theme-install.updating-message:before {
 	color: #fff;
 }
