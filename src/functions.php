@@ -37,20 +37,20 @@ function su_enqueue_scripts( $hook ) {
 		return;
 	}
 
-	$plugins = $totals = array();
+	$plugins = $totals = new stdClass;
 
 	if ( isset( $GLOBALS['totals'] ) ) {
 		$totals = $GLOBALS['totals'];
 	}
 
-	if ( ! isset( $GLOBALS['plugins'] ) ) {
-		$GLOBALS['plugins'] = array(
-			'all' => get_plugins(),
-		);
-	}
+	if ( strpos( $hook, 'plugin' ) ) {
+		if ( ! isset( $GLOBALS['plugins'] ) ) {
+			$GLOBALS['plugins'] = array( 'all' => get_plugins() );
+		}
 
-	foreach ( $GLOBALS['plugins'] as $key => $list ) {
-		$plugins[ $key ] = array_keys( (array) $list );
+		foreach ( $GLOBALS['plugins'] as $key => $list ) {
+			$plugins->$key = array_keys( (array) $list );
+		}
 	}
 
 	wp_enqueue_style( 'shiny-updates', plugin_dir_url( __FILE__ ) . 'css/shiny-updates.css' );
