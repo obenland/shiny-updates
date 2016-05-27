@@ -1037,11 +1037,15 @@
 	 * @since 4.X.0
 	 *
 	 * @callback updateItemSuccess
-	 * @param {object} response           Response from the server.
-	 * @param {string} response.slug      Optional. Slug of the theme or plugin that was updated.
-	 * @param {string} response.update    The type of update. 'core', 'plugin', 'theme', or 'translations'.
-	 * @param {string} response.reinstall Optional. Whether this was a reinstall request or not.
-	 * @param {string} response.redirect  Optional. URL to redirect to after updating Core.
+	 * @param {object} response            Response from the server.
+	 * @param {string} response.update     The type of update. 'core', 'plugin', 'theme', or 'translations'.
+	 * @param {string} response.slug       Optional. Slug of the theme or plugin that was updated.
+	 * @param {string} response.reinstall  Optional. Whether this was a reinstall request or not.
+	 * @param {string} response.redirect   Optional. URL to redirect to after updating Core.
+	 * @param {string} response.plugin     Optional. Basename of the plugin that was updated.
+	 * @param {string} response.pluginName Optional. Name of the plugin that was updated.
+	 * @param {string} response.oldVersion Optional. Old version of the theme or plugin.
+	 * @param {string} response.newVersion Optional. New version of the theme or plugin.
 	 */
 	wp.updates.updateItemSuccess = function( response ) {
 		var type = response.update,
@@ -1079,12 +1083,14 @@
 	 * @since 4.X.0
 	 *
 	 * @callback updateItemError
-	 * @param {object} response           Response from the server.
-	 * @param {string} response.slug      Optional. Slug of the theme or plugin that was updated.
-	 * @param {string} response.update    The type of update. 'core', 'plugin', 'theme', or 'translations'.
-	 * @param {string} response.reinstall Whether this was a reinstall request or not.
-	 * @param {string} response.error     The error that occurred.
-	 * @param {string} response.errorCode Error code for the error that occurred.
+	 * @param {object} response            Response from the server.
+	 * @param {string} response.update     The type of update. 'core', 'plugin', 'theme', or 'translations'.
+	 * @param {string} response.reinstall  Whether this was a reinstall request or not.
+	 * @param {string} response.error      The error that occurred.
+	 * @param {string} response.errorCode  Error code for the error that occurred.
+	 * @param {string} response.slug       Optional. Slug of the theme or plugin that was updated.
+	 * @param {string} response.plugin     Optional. Basename of the plugin that was updated.
+	 * @param {string} response.pluginName Optional. Name of the plugin that was updated.
 	 */
 	wp.updates.updateItemError = function( response ) {
 		var type = response.update,
