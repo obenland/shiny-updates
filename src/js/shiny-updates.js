@@ -1542,30 +1542,6 @@
 		} );
 
 		/**
-		 * Click handler for theme updates in List Table view.
-		 *
-		 * @since 4.2.0
-		 *
-		 * @param {Event} event Event interface.
-		 */
-		$theList.on( 'click', '[data-type="theme"] .update-link', function( event ) {
-			var $themeRow = $( event.target ).parents( 'tr' );
-			event.preventDefault();
-
-			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
-				wp.updates.requestFilesystemCredentials( event );
-			}
-
-			// Return the user to the input box of the theme's table row after closing the modal.
-			wp.updates.$elToReturnFocusToFromCredentialsModal = $themeRow.find( '.check-column input' );
-			wp.updates.updateTheme( {
-				slug:    $themeRow.data( 'slug' ),
-				success: wp.updates.updateThemeSuccess,
-				error:   wp.updates.updateThemeError
-			} );
-		} );
-
-		/**
 		 * Update a theme.
 		 *
 		 * @since 4.X.0
