@@ -52,10 +52,22 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Whether there are any available updates.
+	 *
+	 * @since 4.X.0
+	 * @access public
+	 *
+	 * @return bool Whether there are any available updates.
+	 */
+	public function has_available_updates() {
+		return $this->has_available_updates;
+	}
+
+	/**
 	 * Prepares the list of items for displaying.
 	 *
-	 * @access public
 	 * @since  4.X.0
+	 * @access public
 	 * @uses   WP_List_Table::set_pagination_args()
 	 */
 	public function prepare_items() {
@@ -125,16 +137,6 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 			'per_page'    => count( $this->items ),
 			'total_pages' => 1,
 		) );
-	}
-
-	/**
-	 * Message to be displayed when there are no items.
-	 *
-	 * @since  4.X.0
-	 * @access public
-	 */
-	public function no_items() {
-		_e( 'Your site is up to date, there are no available updates.' );
 	}
 
 	/**

@@ -589,10 +589,12 @@ function su_install_plugin_information() {
  *
  * @todo Merge: Add directly to wp-admin/update-core.php
  *
- * @global string $wp_version The current WordPress version.
+ * @global string $wp_version             The current WordPress version.
+ * @global string $required_php_version   The required PHP version string.
+ * @global string $required_mysql_version The required MySQL version string.
  */
 function su_update_table() {
-	global $wp_version;
+	global $wp_version, $required_php_version, $required_mysql_version;
 	?>
 	<div class="wordpress-updates-table">
 		<?php
@@ -601,8 +603,33 @@ function su_update_table() {
 		// Todo: Use _get_list_table().
 		$updates_table = new Shiny_Updates_List_Table();
 		$updates_table->prepare_items();
-		$updates_table->display();
-		?>
+
+		if ( $updates_table->has_available_updates() ) :
+			$updates_table->display();
+		else : ?>
+		<div class="notice inline">
+			<p>
+				<b><?php _e('Everything is up to date.'); ?></b>
+				<?php
+				if ( wp_http_supports( array( 'ssl' ) ) ) {
+					require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+
+					$upgrader = new WP_Automatic_Updater;
+					$future_minor_update = (object) array(
+						'current'       => $wp_version . '.1.next.minor',
+						'version'       => $wp_version . '.1.next.minor',
+						'php_version'   => $required_php_version,
+						'mysql_version' => $required_mysql_version,
+					);
+
+					if ( $upgrader->should_update( 'core', $future_minor_update, ABSPATH ) ) {
+						echo ' ' . __( 'Future security updates will be applied automatically.' );
+					}
+				}
+				?>
+			</p>
+		</div>
+		<?php endif; ?>
 	</div>
 
 	<?php
