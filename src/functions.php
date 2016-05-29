@@ -609,7 +609,7 @@ function su_update_table() {
 		else : ?>
 		<div class="notice inline">
 			<p>
-				<b><?php _e('Everything is up to date.'); ?></b>
+				<b><?php _e( 'Everything is up to date.' ); ?></b>
 				<?php
 				if ( wp_http_supports( array( 'ssl' ) ) ) {
 					require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
