@@ -493,7 +493,6 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	 */
 	public function column_action( $item ) {
 		$slug         = $item['slug'];
-		$checkbox_id  = 'checkbox_' . md5( $slug );
 		$form_action  = sprintf( 'update-core.php?action=do-%s-upgrade', $item['type'] );
 		$nonce_action = 'translations' === $item['type'] ? 'upgrade-translations' : 'upgrade-core';
 		$data         = '';
@@ -507,13 +506,12 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 			<?php if ( 'core' === $item['type'] ) : ?>
 				<input name="version" value="<?php echo esc_attr( $item['data']->current ); ?>" type="hidden"/>
 				<input name="locale" value="<?php echo esc_attr( $item['data']->locale ); ?>" type="hidden"/>
-			<?php else : ?>
-				<input type="hidden" name="checked[]" id="<?php echo $checkbox_id; ?>" value="<?php echo esc_attr( $slug ); ?>"/>
+			<?php elseif ( 'theme' === $item['type'] || 'plugin' === $item['type'] ) : ?>
+				<input type="hidden" name="checked[]" value="<?php echo esc_attr( $slug ); ?>"/>
 			<?php endif; ?>
 			<?php
 			printf(
-				'<button type="submit" name="%1$s" id="%1$s" class="button update-link" %2$s>%3$s</button>',
-				'core' === $item['type'] ? 'upgrade' : $checkbox_id,
+				'<button type="submit" class="button update-link" %1$s>%2$s</button>',
 				$data,
 				esc_attr__( 'Update' )
 			);
