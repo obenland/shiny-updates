@@ -209,7 +209,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 						<span class="displaying-num">
 							<?php printf( _n( '%s item', '%s items', $total_items ), number_format_i18n( $total_items ) ); ?>
 						</span>
-						<button class="button button-primary update-link" data-type="all" type="submit" value="" name="upgrade-all">
+						<button class="button update-link" data-type="all" type="submit" value="" name="upgrade-all">
 							<?php esc_attr_e( 'Update All' ); ?>
 						</button>
 					</form>
