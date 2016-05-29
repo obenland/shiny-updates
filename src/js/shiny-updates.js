@@ -1287,7 +1287,7 @@
 	 * @since 4.X.0 Triggers an event for callbacks to listen to and add their actions.
 	 */
 	wp.updates.requestForCredentialsModalCancel = function() {
-		var plugin = wp.updates.updateQueue[ 0 ].data.plugin;
+		var job = wp.updates.updateQueue[ 0 ].data;
 
 		// No updateLock and no updateQueue means we already have cleared things up.
 		if ( false === wp.updates.updateLock && 0 === wp.updates.updateQueue.length ) {
@@ -1300,7 +1300,7 @@
 
 		wp.updates.requestForCredentialsModalClose();
 
-		$document.trigger( 'credential-modal-cancel', plugin );
+		$document.trigger( 'credential-modal-cancel', job );
 	};
 
 	/**
