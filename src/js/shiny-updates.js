@@ -987,8 +987,6 @@
 			return;
 		}
 
-		$message.addClass( 'updating-message' );
-
 		switch ( type ) {
 			case 'plugin':
 				args.plugin = $itemRow.data( 'plugin' );
@@ -1005,6 +1003,8 @@
 		}
 
 		if ( ! wp.updates.updateLock ) {
+			$message.addClass( 'updating-message' );
+
 			$message.attr( 'aria-label', wp.updates.l10n.updatingMsg );
 
 			if ( $message.html() !== wp.updates.l10n.updating ) {
