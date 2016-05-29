@@ -1677,16 +1677,14 @@
 				} );
 			} );
 
-			$document.on( 'wp-plugin-update-success', function() {
-				success++;
-			} );
+			$document.on( 'wp-plugin-update-success wp-plugin-update-error', function( event, response ) {
+				if ( 'wp-plugin-update-success' === event.type ) {
+					success++;
+				} else {
+					error++;
+					errorMessages.push( response.pluginName + ': ' + response.error );
+				}
 
-			$document.on( 'wp-plugin-update-error', function( event, response ) {
-				error++;
-				errorMessages.push( response.pluginName + ': ' + response.error );
-			} );
-
-			$document.on( 'wp-plugin-update-success wp-plugin-update-error', function() {
 				wp.updates.adminNotice = wp.template( 'wp-bulk-updates-admin-notice' );
 
 				wp.updates.addAdminNotice( {
@@ -1699,6 +1697,10 @@
 				$( '#bulk-action-notice' ).on( 'click', 'button', function() {
 					$( '#bulk-action-notice' ).find( 'ul' ).toggleClass( 'hidden' );
 				} );
+
+				if ( 0 < error && 0 === wp.updates.updateQueue.length ) {
+					$( 'html, body' ).animate( { scrollTop: 0 } );
+				}
 			} );
 
 			// Reset admin notice template after #bulk-action-notice was added.
