@@ -268,6 +268,39 @@ tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-error.notic
 	max-width: 100%;
 }
 
+/* Todo: Merge: Change this in forms.css */
+.request-filesystem-credentials-dialog .ftp-username,
+.request-filesystem-credentials-dialog .ftp-password {
+	float: none;
+	width: auto;
+}
+
+.request-filesystem-credentials-dialog .ftp-username {
+	margin-bottom: 1em;
+}
+
+.request-filesystem-credentials-dialog .ftp-password {
+	margin: 0;
+}
+
+.request-filesystem-credentials-dialog .ftp-password em {
+	color: #888;
+}
+
+.request-filesystem-credentials-dialog label {
+	display: block;
+	line-height: 1.5;
+	margin-bottom: 1em;
+}
+
+.request-filesystem-credentials-form legend {
+	padding-bottom: 0;
+}
+
+.request-filesystem-credentials-form #ssh-keys legend {
+	font-size: 1.3em;
+}
+
 @media aural {
 	.wrap .notice p:before,
 	.theme .notice:before,
