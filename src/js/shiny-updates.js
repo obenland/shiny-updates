@@ -225,7 +225,7 @@
 		$adminBarUpdates.find( '.ab-label' ).text( count );
 
 		if ( 0 === count ) {
-			$adminBarUpdates.find( '.ab-label' ).remove();
+			$adminBarUpdates.find( '.ab-label' ).parents('li').remove();
 		}
 
 		$dashboardNavMenuUpdateCount.each( function( index, element ) {
