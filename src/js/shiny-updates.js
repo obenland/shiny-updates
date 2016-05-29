@@ -1318,11 +1318,12 @@
 	 * @param {string} message Error message.
 	 */
 	wp.updates.showErrorInCredentialsForm = function( message ) {
-		var $modal = $( '#request-filesystem-credentials-form' );
+		var $modal = $( '.notification-dialog' );
 
 		// Remove any existing error.
-		$modal.find( '.notice' ).remove();
-		$modal.find( 'h1' ).after( '<div class="notice notice-alt notice-error"><p>' + message + '</p></div>' );
+		$modal.find( '.error' ).remove();
+
+		$modal.find( 'h2' ).after( '<div class="error">' + message + '</div>' );
 	};
 
 	/**
