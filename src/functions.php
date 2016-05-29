@@ -32,6 +32,7 @@ function su_enqueue_scripts( $hook ) {
 		'themes.php',
 		'theme-install.php',
 		'update-core.php',
+		'import.php',
 	), true )
 	) {
 		return;
