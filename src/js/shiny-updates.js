@@ -297,6 +297,7 @@
 			if ( $message.html() !== wp.updates.l10n.updating ) {
 				$message.data( 'originaltext', $message.html() );
 			}
+
 			$message.text( wp.updates.l10n.updating );
 
 			$document.trigger( 'wp-plugin-updating' );
@@ -647,16 +648,20 @@
 			}
 		}
 
-		message = $notice.find( 'p' ).text();
-		if ( message !== wp.updates.l10n.updating ) {
-			$notice.data( 'originaltext', message );
-		}
+		if ( ! wp.updates.updateLock ) {
+			message = $notice.find( 'p' ).text();
 
-		$notice.replaceWith( wp.updates.adminNotice( {
-			className: 'update-message updating-message notice-warning notice-alt',
-			message:   wp.updates.l10n.updating
-		} ) );
-		wp.a11y.speak( wp.updates.l10n.updatingMsg, 'polite' );
+			if ( message !== wp.updates.l10n.updating ) {
+				$notice.data( 'originaltext', message );
+			}
+
+			$notice.replaceWith( wp.updates.adminNotice( {
+				className: 'update-message updating-message notice-warning notice-alt',
+				message:   wp.updates.l10n.updating
+			} ) );
+
+			wp.a11y.speak( wp.updates.l10n.updatingMsg, 'polite' );
+		}
 
 		return wp.updates.ajax( 'update-theme', args );
 	};
