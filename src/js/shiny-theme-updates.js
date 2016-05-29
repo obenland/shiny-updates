@@ -113,7 +113,7 @@ window.wp = window.wp || {};
 			} );
 
 			wp.updates.updateTheme( {
-				slug:    $( event.target ).parents( 'div.theme' ).data( 'slug' ),
+				slug:    $( event.target ).parents( 'div.theme' ).first().data( 'slug' ),
 				success: wp.updates.updateThemeSuccess,
 				error:   wp.updates.updateThemeError
 			} );

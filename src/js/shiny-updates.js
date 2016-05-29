@@ -778,7 +778,7 @@
 		var $message = $( '.theme-install[data-slug="' + args.slug + '"]' );
 
 		$message.addClass( 'updating-message' );
-		$message.parents( '.theme' ).addClass( 'focus' );
+		$message.parents( '.theme' ).addClass( 'focus' ).first();
 		if ( $message.html() !== wp.updates.l10n.installing ) {
 			$message.data( 'originaltext', $message.html() );
 		}
@@ -1430,7 +1430,7 @@
 		 * @param {Event} event Event interface.
 		 */
 		$theList.on( 'click', '[data-plugin] .update-link', function( event ) {
-			var $pluginRow = $( event.target ).parents( 'tr' );
+			var $pluginRow = $( event.target ).parents( 'tr' ).first();
 			event.preventDefault();
 
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
@@ -1516,7 +1516,7 @@
 		 * @param {Event} event Event interface.
 		 */
 		$theList.on( 'click', '[data-plugin] a.delete', function( event ) {
-			var $pluginRow = $( event.target ).parents( 'tr' );
+			var $pluginRow = $( event.target ).parents( 'tr' ).first();
 			event.preventDefault();
 
 			if ( ! window.confirm( wp.updates.l10n.aysDelete.replace( '%s', $pluginRow.find( '.plugin-title strong' ).text() ) ) ) {
@@ -1544,7 +1544,7 @@
 		 * @param {Event} event Event interface.
 		 */
 		$theList.on( 'click', '[data-type="theme"] .update-link', function( event ) {
-			var $themeRow = $( event.target ).parents( 'tr' );
+			var $themeRow = $( event.target ).parents( 'tr' ).first();
 			event.preventDefault();
 
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
@@ -1568,7 +1568,7 @@
 		 * @param {Event} event Event interface.
 		 */
 		$document.on( 'click', '.themes-php.network-admin .update-link', function( event ) {
-			var $themeRow = $( event.target ).parents( 'tr' );
+			var $themeRow = $( event.target ).parents( 'tr' ).first();
 			event.preventDefault();
 
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
@@ -1592,7 +1592,7 @@
 		 * @param {Event} event Event interface.
 		 */
 		$document.on( 'click', '.themes-php.network-admin a.delete', function( event ) {
-			var $themeRow = $( event.target ).parents( 'tr' );
+			var $themeRow = $( event.target ).parents( 'tr' ).first();
 			event.preventDefault();
 
 			if ( ! window.confirm( wp.updates.l10n.aysDelete.replace( '%s', $themeRow.find( '.plugin-title strong' ).text() ) ) ) {
@@ -1669,7 +1669,7 @@
 			// Find all the checkboxes which have been checked.
 			itemsSelected.each( function( index, element ) {
 				var $checkbox  = $( element ),
-				    $pluginRow = $checkbox.parents( 'tr' );
+				    $pluginRow = $checkbox.parents( 'tr' ).first();
 
 				// Un-check the box.
 				$checkbox.prop( 'checked', false );
@@ -1773,7 +1773,7 @@
 			// Find all the checkboxes which have been checked.
 			itemsSelected.each( function( index, element ) {
 				var $checkbox = $( element ),
-				    $themeRow = $checkbox.parents( 'tr' );
+				    $themeRow = $checkbox.parents( 'tr' ).first();
 
 				// Un-check the box.
 				$checkbox.prop( 'checked', false );
@@ -1801,7 +1801,7 @@
 		 * @param {Event} event Event interface.
 		 */
 		$document.on( 'click', '.update-core-php .update-link', function( event ) {
-			var $itemRow = $( event.target ).parents( '[data-type]' ),
+			var $itemRow = $( event.target ).parents( '[data-type]' ).first(),
 			    args     = {
 				    el:      $itemRow,
 				    success: function( response ) {
