@@ -212,19 +212,26 @@
 		var $menuItem, $itemCount,
 		    $adminBarUpdates             = $( '#wp-admin-bar-updates' ),
 		    $dashboardNavMenuUpdateCount = $( 'a[href="update-core.php"] .update-plugins' ),
-		    count, itemCount;
+		    count = $adminBarUpdates.find( '.ab-label' ).text(),
+		    itemCount;
 
-		count = $adminBarUpdates.find( '.ab-label' ).text();
 		count = parseInt( count, 10 ) - 1;
+
 		if ( count < 0 || isNaN( count ) ) {
 			return;
 		}
+
 		$adminBarUpdates.find( '.ab-item' ).removeAttr( 'title' );
 		$adminBarUpdates.find( '.ab-label' ).text( count );
+
+		if ( 0 === count ) {
+			$adminBarUpdates.find( '.ab-label' ).remove();
+		}
 
 		$dashboardNavMenuUpdateCount.each( function( index, element ) {
 			element.className = element.className.replace( /count-\d+/, 'count-' + count );
 		} );
+
 		$dashboardNavMenuUpdateCount.removeAttr( 'title' );
 		$dashboardNavMenuUpdateCount.find( '.update-count' ).text( count );
 
