@@ -221,7 +221,7 @@ tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-error.notic
 .update-core-php .wordpress-updates-table .tablenav .displaying-num {
 	display: inline-block;
 	margin: 5px 7px 0 0;
-	position: static;
+	position: relative;
 }
 
 .wp-list-table.updates {
