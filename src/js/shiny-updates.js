@@ -1363,6 +1363,9 @@
 		    $bulkActionForm  = $( '#bulk-action-form' ),
 		    $filesystemModal = $( '#request-filesystem-credentials-dialog' );
 
+		// Set initial focus on the first empty form field.
+		$( '#request-filesystem-credentials-form input[value=""]:first' ).focus();
+
 		/*
 		 * Check whether a user needs to submit filesystem credentials based on whether
 		 * the form was output on the page server-side.
@@ -1408,8 +1411,8 @@
 		 *
 		 * @since 4.2.0
 		 */
-		$filesystemModal.on( 'change', 'input[name="connection_type"]', function() {
-			$( this ).parents( 'form' ).find( '#private_key, #public_key' ).parents( 'label' ).toggle( ( 'ssh' === $( this ).val() ) );
+		$filesystemModal.on( 'change', '#request-filesystem-credentials-form input[name="connection_type"]', function() {
+			$( '#ssh-keys' ).toggleClass( 'hidden', ( 'ssh' !== $( this ).val() ) );
 		} ).change();
 
 		/**
