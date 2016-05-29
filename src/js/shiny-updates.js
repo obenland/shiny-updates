@@ -1275,7 +1275,7 @@
 	 * @since 4.2.0
 	 */
 	wp.updates.requestForCredentialsModalClose = function() {
-		$( '#request-filesystem-credentials-dialog' ).hide();
+		$( '#request-filesystem-credentials-dialog' ).off( 'keydown', wp.updates.keydown ).hide();
 		$( 'body' ).removeClass( 'modal-open' );
 		wp.updates.$elToReturnFocusToFromCredentialsModal.focus();
 	};
