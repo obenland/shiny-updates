@@ -338,6 +338,7 @@
 		$updateMessage
 			.attr( 'aria-label', wp.updates.l10n.updatedLabel.replace( '%s', response.pluginName ) )
 			.text( wp.updates.l10n.updated );
+
 		wp.a11y.speak( wp.updates.l10n.updatedMsg, 'polite' );
 
 		wp.updates.decrementCount( 'plugin' );
@@ -661,6 +662,8 @@
 			} ) );
 
 			wp.a11y.speak( wp.updates.l10n.updatingMsg, 'polite' );
+
+			$document.trigger( 'wp-theme-updating' );
 		}
 
 		return wp.updates.ajax( 'update-theme', args );
@@ -755,6 +758,7 @@
 			className: 'update-message notice-error notice-alt is-dismissible',
 			message:   errorMessage
 		} ) );
+
 		wp.a11y.speak( errorMessage, 'polite' );
 
 		$document.trigger( 'wp-theme-update-error', response );
