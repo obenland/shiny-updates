@@ -642,7 +642,7 @@ function su_update_table() {
 			<input name="version" value="<?php echo esc_attr( $update->current ); ?>" type="hidden"/>
 			<input name="locale" value="<?php echo esc_attr( $update->locale ); ?>" type="hidden"/>
 			<p>
-				<button type="submit" name="upgrade" id="upgrade" class="button update-link"><?php esc_attr_e( 'Re-install Now' ); ?></button>
+				<button type="submit" name="upgrade" id="reinstall" class="button update-link"><?php esc_attr_e( 'Re-install Now' ); ?></button>
 			</p>
 		</form>
 	</div>
