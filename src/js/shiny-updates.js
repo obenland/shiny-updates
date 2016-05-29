@@ -1014,6 +1014,13 @@
 			$document.trigger( 'wp-' + type + '-updating' );
 		}
 
+		args.success = args.success || function( response ) {
+			return wp.updates.updateItemSuccess( response, $itemRow );
+		};
+		args.error = args.error || function( response ) {
+			return wp.updates.updateItemError( response, $itemRow );
+		};
+
 		return wp.updates.ajax( 'update-' + type, args );
 	};
 
