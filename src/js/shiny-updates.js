@@ -166,7 +166,6 @@
 		// Do not send this data.
 		delete data.success;
 		delete data.error;
-		delete data.el;
 
 		options.data = _.extend( data, {
 			action:          action,
@@ -973,12 +972,11 @@
 	 * @param {object}     args         Arguments.
 	 * @param {Function}   args.success Success callback.
 	 * @param {Function}   args.error   Error callback.
-	 * @param {jQuery}     args.el     The list table row
 	 * @return {$.promise} A jQuery promise that represents the request,
 	 *                     decorated with an abort() method.
 	 */
 	wp.updates.updateItem = function( args ) {
-		var $itemRow = args.el,
+		var $itemRow = $( 'tr[data-slug="' + args.slug + '"]' ),
 		    $message = $itemRow.find( '.update-link' ),
 		    type     = $message.data( 'type' ) || $itemRow.data( 'type' );
 
@@ -1103,7 +1101,6 @@
 			$( $( '.wp-list-table.updates tr[data-type]' ).get().reverse() ).each( function() {
 				var $el = $( this );
 				wp.updates.updateItem( {
-					el:     $el,
 					success: function( response ) {
 						return wp.updates.updateItemSuccess( response, $el );
 					},
@@ -1220,7 +1217,6 @@
 	 */
 	wp.updates.requestFilesystemCredentials = function( event ) {
 		if ( false === wp.updates.filesystemCredentials.available ) {
-
 			/*
 			 * After exiting the credentials request modal,
 			 * return the focus to the element triggering the request.
@@ -1804,7 +1800,7 @@
 		$document.on( 'click', '.update-core-php .update-link', function( event ) {
 			var $itemRow = $( event.target ).parents( '[data-type]' ).first(),
 			    args     = {
-				    el:      $itemRow,
+				    slug:    $itemRow.data( 'slug' ),
 				    success: function( response ) {
 					    return wp.updates.updateItemSuccess( response, $itemRow );
 				    },
