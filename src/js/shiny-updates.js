@@ -661,8 +661,6 @@
 				message:   wp.updates.l10n.updating
 			} ) );
 
-			wp.a11y.speak( wp.updates.l10n.updatingMsg, 'polite' );
-
 			$document.trigger( 'wp-theme-updating' );
 		}
 
