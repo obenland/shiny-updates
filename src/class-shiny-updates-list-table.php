@@ -46,8 +46,8 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	 */
 	public function __construct() {
 		parent::__construct( array(
-			'singular' => __( 'Update' ),
-			'plural'   => __( 'Updates' ),
+			'singular' => _x( 'Update', 'noun' ),
+			'plural'   => _x( 'Updates', 'noun' ),
 		) );
 	}
 
@@ -230,7 +230,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	 */
 	public function get_columns() {
 		return array(
-			'title'  => __( 'Update' ),
+			'title'  => _x( 'Update', 'noun' ),
 			'type'   => __( 'Type' ),
 			'action' => __( 'Action' ),
 		);
