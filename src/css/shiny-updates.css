@@ -224,6 +224,13 @@ tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-error.notic
 	position: relative;
 }
 
+.wp-core-ui .button-primary.update-link {
+	color: #555;
+	background: #f7f7f7;
+	box-shadow: 0 1px 0 #cccccc;
+	text-shadow: none;
+}
+
 .wp-list-table.updates {
 	border-collapse: collapse;
 }
