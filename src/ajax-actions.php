@@ -545,7 +545,7 @@ function wp_ajax_update_translations() {
 
 	$skin     = new Automatic_Upgrader_Skin( compact( 'url', 'nonce', 'title', 'context' ) );
 	$upgrader = new Language_Pack_Upgrader( $skin );
-	$result   = $upgrader->bulk_upgrade();
+	$result   = $upgrader->bulk_upgrade( array(), array( 'clear_update_cache' => false ) );
 
 	$status = array(
 		'update' => 'translation',
