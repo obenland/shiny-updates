@@ -68,7 +68,18 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 		$themes       = (array) get_theme_updates();
 		$translations = (array) wp_get_translation_updates();
 
-		if ( ! empty( $core_updates ) ) {
+		if ( ! isset( $core_updates[0]->response ) ||
+		     'latest' === $core_updates[0]->response ||
+		     version_compare( $core_updates[0]->current, $this->cur_wp_version, '=' )
+		) {
+			$this->core_update_version = false;
+		} else {
+			$this->core_update_version = $core_updates[0]->current;
+		}
+
+		$this->has_available_updates = ( $this->core_update_version || ! empty( $plugins ) || ! empty( $themes ) || ! empty( $translations ) );
+
+		if ( ! empty( $core_updates ) && $this->core_update_version ) {
 			$this->items[] = array(
 				'type' => 'core',
 				'slug' => 'core',
@@ -98,20 +109,6 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 				'slug' => 'translations',
 				'data' => $translations,
 			);
-		}
-
-		if ( ! isset( $core_updates[0]->response ) ||
-		     'latest' === $core_updates[0]->response ||
-		     'development' === $core_updates[0]->response ||
-		     version_compare( $core_updates[0]->current, $this->cur_wp_version, '=' )
-		) {
-			$this->core_update_version = false;
-		} else {
-			$this->core_update_version = $core_updates[0]->current;
-		}
-
-		if ( $this->core_update_version || ! empty( $plugins ) || ! empty( $themes ) || ! empty( $translations ) ) {
-			$this->has_available_updates = true;
 		}
 
 		$columns  = $this->get_columns();

@@ -608,11 +608,7 @@ function su_update_table() {
 	<?php
 	$core_updates = (array) get_core_updates();
 
-	if ( ! isset( $core_updates[1] ) ) {
-		return;
-	}
-
-	$update = $core_updates[1];
+	$update = isset( $core_updates[1] ) ? $core_updates[1] : $core_updates[0];
 
 	if ( 'en_US' === $update->locale &&
 	     'en_US' === get_locale() ||
