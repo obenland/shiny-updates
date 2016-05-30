@@ -1287,7 +1287,10 @@
 	wp.updates.requestForCredentialsModalClose = function() {
 		$( '#request-filesystem-credentials-dialog' ).off( 'keydown', wp.updates.keydown ).hide();
 		$( 'body' ).removeClass( 'modal-open' );
-		wp.updates.$elToReturnFocusToFromCredentialsModal.focus();
+
+		if ( wp.updates.$elToReturnFocusToFromCredentialsModal ) {
+			wp.updates.$elToReturnFocusToFromCredentialsModal.focus();
+		}
 	};
 
 	/**
@@ -1390,7 +1393,8 @@
 		 *
 		 * @since 4.2.0
 		 */
-		$filesystemModal.on( 'submit', 'form', function() {
+		$filesystemModal.on( 'submit', 'form', function( event ) {
+			event.preventDefault();
 
 			// Persist the credentials input by the user for the duration of the page load.
 			wp.updates.filesystemCredentials.ftp.hostname       = $( '#hostname' ).val();
@@ -1401,13 +1405,11 @@
 			wp.updates.filesystemCredentials.ssh.privateKey     = $( '#private_key' ).val();
 			wp.updates.filesystemCredentials.available          = true;
 
-			wp.updates.requestForCredentialsModalClose();
-
 			// Unlock and invoke the queue.
 			wp.updates.updateLock = false;
 			wp.updates.queueChecker();
 
-			return false;
+			wp.updates.requestForCredentialsModalClose();
 		} );
 
 		/**
