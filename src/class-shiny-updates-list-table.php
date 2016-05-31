@@ -489,7 +489,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 				break;
 			case 'translations':
 				if ( 'button' === $context ) {
-					$attributes['aria-label'] = esc_attr( __( 'Update translations now' ) );
+					$attributes['aria-label'] = esc_attr__( 'Update translations now' );
 				}
 				break;
 			case 'core':
@@ -497,7 +497,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 				$attributes['data-locale']  = esc_attr( $item['data']->locale );
 
 				if ( 'button' === $context ) {
-					$attributes['aria-label'] = esc_attr( __( 'Update WordPress now' ) );
+					$attributes['aria-label'] = esc_attr__( 'Update WordPress now' );
 				}
 				break;
 			default:
