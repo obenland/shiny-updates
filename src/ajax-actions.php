@@ -21,15 +21,14 @@ function wp_ajax_install_theme() {
 		) );
 	}
 
+	if ( ! check_ajax_referer( 'updates', false, false ) || ! current_user_can( 'install_themes' ) ) {
+		wp_send_json_error( array( 'error' => __( 'You do not have sufficient permissions to install themes on this site.' ) ) );
+	}
+
 	$status = array(
 		'install' => 'theme',
 		'slug'    => sanitize_key( wp_unslash( $_POST['slug'] ) ),
 	);
-
-	if ( ! check_ajax_referer( 'updates', false, false ) || ! current_user_can( 'install_themes' ) ) {
-		$status['error'] = __( 'You do not have sufficient permissions to install themes on this site.' );
-		wp_send_json_error( $status );
-	}
 
 	include_once( ABSPATH . 'wp-admin/includes/class-wp-upgrader.php' );
 	include_once( ABSPATH . 'wp-admin/includes/theme.php' );
@@ -88,18 +87,18 @@ function wp_ajax_update_theme() {
 		) );
 	}
 
+	if ( ! check_ajax_referer( 'updates', false, false ) || ! current_user_can( 'update_themes' ) ) {
+		wp_send_json_error( array( 'error' => __( 'You do not have sufficient permissions to update themes on this site.' ) ) );
+	}
+
 	$stylesheet = sanitize_key( wp_unslash( $_POST['slug'] ) );
+
 	$status     = array(
 		'update'     => 'theme',
 		'slug'       => $stylesheet,
 		'oldVersion' => sprintf( __( 'Version %s' ), wp_get_theme( $stylesheet )->get( 'Version' ) ),
 		'newVersion' => '',
 	);
-
-	if ( ! check_ajax_referer( 'updates', false, false ) || ! current_user_can( 'update_themes' ) ) {
-		$status['error'] = __( 'You do not have sufficient permissions to update themes on this site.' );
-		wp_send_json_error( $status );
-	}
 
 	include_once( ABSPATH . 'wp-admin/includes/class-wp-upgrader.php' );
 
@@ -168,16 +167,16 @@ function wp_ajax_delete_theme() {
 		) );
 	}
 
+	if ( ! check_ajax_referer( 'updates', false, false ) || ! current_user_can( 'delete_themes' ) ) {
+		wp_send_json_error( array( 'error' => __( 'You do not have sufficient permissions to delete themes on this site.' ) ) );
+	}
+
 	$stylesheet = sanitize_key( wp_unslash( $_POST['slug'] ) );
-	$status     = array(
+
+	$status = array(
 		'delete' => 'theme',
 		'slug'   => $stylesheet,
 	);
-
-	if ( ! check_ajax_referer( 'updates', false, false ) || ! current_user_can( 'delete_themes' ) ) {
-		$status['error'] = __( 'You do not have sufficient permissions to delete themes on this site.' );
-		wp_send_json_error( $status );
-	}
 
 	if ( ! wp_get_theme( $stylesheet )->exists() ) {
 		$status['error'] = __( 'The requested theme does not exist.' );
@@ -229,15 +228,14 @@ function wp_ajax_install_plugin() {
 		wp_send_json_error( array( 'errorCode' => 'no_plugin_specified' ) );
 	}
 
+	if ( ! check_ajax_referer( 'updates', false, false ) || ! current_user_can( 'install_plugins' ) ) {
+		wp_send_json_error( array( 'error' => __( 'You do not have sufficient permissions to install plugins on this site.' ) ) );
+	}
+
 	$status = array(
 		'install' => 'plugin',
 		'slug'    => sanitize_key( wp_unslash( $_POST['slug'] ) ),
 	);
-
-	if ( ! check_ajax_referer( 'updates', false, false ) || ! current_user_can( 'install_plugins' ) ) {
-		$status['error'] = __( 'You do not have sufficient permissions to install plugins on this site.' );
-		wp_send_json_error( $status );
-	}
 
 	include_once( ABSPATH . 'wp-admin/includes/class-wp-upgrader.php' );
 	include_once( ABSPATH . 'wp-admin/includes/plugin-install.php' );
@@ -308,6 +306,10 @@ function wpsu_ajax_update_plugin() {
 		wp_send_json_error( array( 'errorCode' => 'no_plugin_specified' ) );
 	}
 
+	if ( ! check_ajax_referer( 'updates', false, false ) || ! current_user_can( 'update_plugins' ) ) {
+		wp_send_json_error( array( 'error' => __( 'You do not have sufficient permissions to update plugins for this site.' ) ) );
+	}
+
 	$plugin      = plugin_basename( sanitize_text_field( wp_unslash( $_POST['plugin'] ) ) );
 	$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin );
 
@@ -322,11 +324,6 @@ function wpsu_ajax_update_plugin() {
 
 	if ( $plugin_data['Version'] ) {
 		$status['oldVersion'] = sprintf( __( 'Version %s' ), $plugin_data['Version'] );
-	}
-
-	if ( ! check_ajax_referer( 'updates', false, false ) || ! current_user_can( 'update_plugins' ) ) {
-		$status['error'] = __( 'You do not have sufficient permissions to update plugins for this site.' );
-		wp_send_json_error( $status );
 	}
 
 	include_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
@@ -401,6 +398,10 @@ function wp_ajax_delete_plugin() {
 		wp_send_json_error( array( 'errorCode' => 'no_plugin_specified' ) );
 	}
 
+	if ( ! check_ajax_referer( 'updates', false, false ) || ! current_user_can( 'delete_plugins' ) ) {
+		wp_send_json_error( array( 'error' => __( 'You do not have sufficient permissions to delete plugins for this site.' ) ) );
+	}
+
 	$plugin      = plugin_basename( sanitize_text_field( wp_unslash( $_POST['plugin'] ) ) );
 	$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin );
 
@@ -410,11 +411,6 @@ function wp_ajax_delete_plugin() {
 		'plugin'     => $plugin,
 		'pluginName' => $plugin_data['Name'],
 	);
-
-	if ( ! check_ajax_referer( 'updates', false, false ) || ! current_user_can( 'delete_plugins' ) ) {
-		$status['error'] = __( 'You do not have sufficient permissions to delete plugins for this site.' );
-		wp_send_json_error( $status );
-	}
 
 	if ( is_plugin_active( $plugin ) ) {
 		$status['error'] = __( 'You cannot delete a plugin while it is active on the main site.' );
