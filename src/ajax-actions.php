@@ -626,6 +626,9 @@ function wp_ajax_update_core() {
 	$version   = isset( $_POST['version'] ) ? sanitize_text_field( wp_unslash( $_POST['version'] ) ) : false;
 	$locale    = isset( $_POST['locale'] ) ? sanitize_text_field( wp_unslash( $_POST['locale'] ) ) : 'en_US';
 
+	$status['version'] = $version;
+	$status['locale']  = $locale;
+
 	$update = find_core_update( $version, $locale );
 
 	if ( ! $update ) {

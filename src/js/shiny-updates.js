@@ -209,11 +209,14 @@
 	 * @since 4.X.0
 	 *
 	 * @param {object}  response
-	 * @param {array=}  response.debug Optional. Debug information.
+	 * @param {array=}  response.debug     Optional. Debug information.
+	 * @param {string=} response.errorCode Optional. Error code for an error that occurred.
 	 */
 	wp.updates.ajaxAlways = function( response ) {
-		wp.updates.updateLock = false;
-		wp.updates.queueChecker();
+		if ( ! response.errorCode || 'unable_to_connect_to_filesystem' !== response.errorCode ) {
+			wp.updates.updateLock = false;
+			wp.updates.queueChecker();
+		}
 
 		if ( 'undefined' !== typeof response.debug ) {
 			_.map( response.debug, function( message ) {
@@ -321,17 +324,15 @@
 			message  = wp.updates.l10n.updatingLabel.replace( '%s', $message.data( 'name' ) );
 		}
 
-		if ( ! wp.updates.updateLock ) {
-			$message.attr( 'aria-label', message );
-
-			if ( $message.html() !== wp.updates.l10n.updating ) {
-				$message.data( 'originaltext', $message.html() );
-			}
-
-			$message.text( wp.updates.l10n.updating );
-
-			$document.trigger( 'wp-plugin-updating' );
+		if ( $message.html() !== wp.updates.l10n.updating ) {
+			$message.data( 'originaltext', $message.html() );
 		}
+
+		$message
+			.attr( 'aria-label', message )
+			.text( wp.updates.l10n.updating );
+
+		$document.trigger( 'wp-plugin-updating' );
 
 		return wp.updates.ajax( 'update-plugin', args );
 	};
@@ -392,7 +393,7 @@
 	wp.updates.updateError = function( response ) {
 		var $card, $message, errorMessage;
 
-		if ( response.errorCode && 'unable_to_connect_to_filesystem' === response.errorCode && wp.updates.shouldRequestFilesystemCredentials ) {
+		if ( response.errorCode && 'unable_to_connect_to_filesystem' === response.errorCode ) {
 			wp.updates.credentialError( response, 'update-plugin' );
 			return;
 		}
@@ -673,37 +674,26 @@
 		var $notice, message;
 
 		if ( 'update-core' === pagenow ) {
-			$( '.update-link', '[data-slug="' + args.slug + '"]' )
-				.addClass( 'updating-message' )
-				.text( wp.updates.l10n.updating );
-			wp.a11y.speak( wp.updates.l10n.updatingMsg, 'polite' );
-
-			return wp.updates.ajax( 'update-theme', args );
+			$notice = $( '.update-link', '[data-slug="' + args.slug + '"]' ).addClass( 'updating-message' );
 
 		} else if ( 'themes-network' === pagenow ) {
-			$notice = $( '[data-slug="' + args.slug + '"]' ).find( '.update-message' );
+			$notice = $( '[data-slug="' + args.slug + '"]' ).find( '.update-message' ).addClass( 'updating-message' ).find( 'p' );
 
 		} else {
-			$notice = $( '#update-theme' ).closest( '.notice' );
+			$notice = $( '.modal-open .theme-info .notice' ).removeClass( 'notice-large' );
 			if ( ! $notice.length ) {
 				$notice = $( '[data-slug="' + args.slug + '"]' ).find( '.update-message' );
 			}
+			$notice.find( 'h3' ).remove();
+			$notice = $notice.addClass( 'updating-message' ).find( 'p' );
 		}
 
-		if ( ! wp.updates.updateLock ) {
-			message = $notice.find( 'p' ).text();
-
-			if ( message !== wp.updates.l10n.updating ) {
-				$notice.data( 'originaltext', message );
-			}
-
-			$notice.replaceWith( wp.updates.adminNotice( {
-				className: 'update-message updating-message notice-warning notice-alt',
-				message:   wp.updates.l10n.updating
-			} ) );
-
-			$document.trigger( 'wp-theme-updating' );
+		if ( $notice.html() !== wp.updates.l10n.updating ) {
+			$notice.data( 'originaltext', $notice.html() );
 		}
+
+		wp.a11y.speak( wp.updates.l10n.updatingMsg, 'polite' );
+		$notice.text( wp.updates.l10n.updating );
 
 		return wp.updates.ajax( 'update-theme', args );
 	};
@@ -819,7 +809,7 @@
 		var $message = $( '.theme-install[data-slug="' + args.slug + '"]' );
 
 		$message.addClass( 'updating-message' );
-		$message.parents( '.theme' ).addClass( 'focus' ).first();
+		$message.parents( '.theme' ).addClass( 'focus' );
 		if ( $message.html() !== wp.updates.l10n.installing ) {
 			$message.data( 'originaltext', $message.html() );
 		}
@@ -1167,8 +1157,8 @@
 		    $row = $( '[data-type="' + type + '"]' ),
 		    errorMessage = wp.updates.l10n.updateFailed.replace( '%s', response.error );
 
-		if ( response.errorCode && 'unable_to_connect_to_filesystem' === response.errorCode && wp.updates.shouldRequestFilesystemCredentials ) {
-			wp.updates.credentialError( response, 'update-core' );
+		if ( response.errorCode && 'unable_to_connect_to_filesystem' === response.errorCode ) {
+			wp.updates.credentialError( response, 'update-' + response.update );
 			return;
 		}
 
@@ -1323,7 +1313,7 @@
 	 * @since 4.2.0
 	 */
 	wp.updates.requestForCredentialsModalClose = function() {
-		$( '#request-filesystem-credentials-dialog' ).off( 'keydown', wp.updates.keydown ).hide();
+		$( '#request-filesystem-credentials-dialog' ).hide();
 		$( 'body' ).removeClass( 'modal-open' );
 
 		if ( wp.updates.$elToReturnFocusToFromCredentialsModal ) {
@@ -1350,7 +1340,6 @@
 		wp.updates.updateQueue = [];
 
 		wp.updates.requestForCredentialsModalClose();
-
 		$document.trigger( 'credential-modal-cancel', job );
 	};
 
@@ -1362,12 +1351,11 @@
 	 * @param {string} message Error message.
 	 */
 	wp.updates.showErrorInCredentialsForm = function( message ) {
-		var $modal = $( '.notification-dialog' );
+		var $modal = $( '#request-filesystem-credentials-dialog' );
 
 		// Remove any existing error.
-		$modal.find( '.error' ).remove();
-
-		$modal.find( 'h2' ).after( '<div class="error">' + message + '</div>' );
+		$modal.find( '.notice' ).remove();
+		$modal.find( 'h2' ).after( '<div class="notice notice-error notice-alt"><p>' + message + '</p></div>' );
 	};
 
 	/**
@@ -1381,14 +1369,12 @@
 	wp.updates.credentialError = function( response, type ) {
 		wp.updates.updateQueue.push( {
 			type: type,
-			data: {
-				/*
-				 * Not cool that we're depending on response for this data.
-				 * This would feel more whole in a view all tied together.
-				 */
-				plugin: response.plugin,
-				slug:   response.slug
-			}
+
+			/*
+			 * Not cool that we're depending on response for this data.
+			 * This would feel more whole in a view all tied together.
+			 */
+			data: response
 		} );
 
 		wp.updates.filesystemCredentials.available = false;
@@ -1414,9 +1400,6 @@
 		var $theList         = $( '.wp-list-table:not(.updates)' ),
 		    $bulkActionForm  = $( '#bulk-action-form' ),
 		    $filesystemModal = $( '#request-filesystem-credentials-dialog' );
-
-		// Set initial focus on the first empty form field.
-		$( '#request-filesystem-credentials-form input[value=""]:first' ).focus();
 
 		/*
 		 * Check whether a user needs to submit filesystem credentials based on whether
@@ -1455,16 +1438,52 @@
 		 *
 		 * @since 4.2.0
 		 */
-		$filesystemModal.find( '[data-js-action="close"], .notification-dialog-background' ).on( 'click', wp.updates.requestForCredentialsModalCancel );
+		$filesystemModal.on( 'click', '[data-js-action="close"], .notification-dialog-background', wp.updates.requestForCredentialsModalCancel );
 
 		/**
 		 * Hide SSH fields when not selected.
 		 *
 		 * @since 4.2.0
 		 */
-		$filesystemModal.on( 'change', '#request-filesystem-credentials-form input[name="connection_type"]', function() {
+		$filesystemModal.on( 'change', 'input[name="connection_type"]', function() {
 			$( '#ssh-keys' ).toggleClass( 'hidden', ( 'ssh' !== $( this ).val() ) );
 		} ).change();
+
+		/**
+		 * Handle events after the credential modal was closed.
+		 *
+		 * @since 4.X.0
+		 *
+		 * @param {Event}  event  Event interface.
+		 * @param {string} job    The install/update.delete request.
+		 */
+		$document.on( 'credential-modal-cancel', function( event, job ) {
+			var $message, originalText;
+
+			if ( 'update-core' === pagenow ) {
+				$( '.updating-message' ).removeClass( 'updating-message' ).text( function() {
+					return $( this ).data( 'originaltext' );
+				} );
+			} else if ( 'plugins' === pagenow || 'plugins-network' === pagenow ) {
+				$message = $( 'tr[data-plugin="' + job.data.plugin + '"]' ).find( '.update-message' );
+			} else if ( 'plugin-install' === pagenow || 'plugin-install-network' === pagenow ) {
+				$message = $( '.update-now.updating-message' );
+			} else {
+				$message = $( '.updating-message' );
+			}
+
+			if ( $message ) {
+				originalText = $message.data( 'originaltext' );
+				if ( 'undefined' === typeof originalText ) {
+					originalText = $( '<p>' ).html( $message.find( 'p' ).data( 'originaltext' ) );
+				}
+
+				$message.removeClass( 'updating-message' );
+				$message.html( originalText );
+			}
+
+			wp.a11y.speak( wp.updates.l10n.updateCancel, 'polite' );
+		} );
 
 		/**
 		 * Click handler for plugin updates in List Table view.
@@ -1474,7 +1493,7 @@
 		 * @param {Event} event Event interface.
 		 */
 		$theList.on( 'click', '[data-plugin] .update-link', function( event ) {
-			var $pluginRow = $( event.target ).parents( 'tr' ).first();
+			var $pluginRow = $( event.target ).parents( 'tr' );
 			event.preventDefault();
 
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
@@ -1693,7 +1712,7 @@
 			// Find all the checkboxes which have been checked.
 			itemsSelected.each( function( index, element ) {
 				var $checkbox  = $( element ),
-				    $pluginRow = $checkbox.parents( 'tr' ).first();
+				    $pluginRow = $checkbox.parents( 'tr' );
 
 				// Un-check the box.
 				$checkbox.prop( 'checked', false );
@@ -1800,7 +1819,7 @@
 			// Find all the checkboxes which have been checked.
 			itemsSelected.each( function( index, element ) {
 				var $checkbox = $( element ),
-				    $themeRow = $checkbox.parents( 'tr' ).first();
+				    $themeRow = $checkbox.parents( 'tr' );
 
 				// Un-check the box.
 				$checkbox.prop( 'checked', false );
@@ -1866,6 +1885,10 @@
 				wp.updates.requestFilesystemCredentials( event );
 			}
 
+			if ( $message.html() !== wp.updates.l10n.updating ) {
+				$message.data( 'originaltext', $message.html() );
+			}
+
 			$message.attr( 'aria-label', wp.updates.l10n.updatingMsg ).text( wp.updates.l10n.updating );
 
 			$document.on( 'wp-plugin-update-success wp-theme-update-success wp-core-update-success wp-translations-update-success wp-plugin-update-error wp-theme-update-error wp-core-update-error wp-translations-update-error ', function() {
@@ -1888,31 +1911,6 @@
 
 				wp.updates.updateItem( $itemRow );
 			} );
-		} );
-
-		/**
-		 * Handle events after the credential modal was closed.
-		 *
-		 * @since 4.X.0
-		 *
-		 * @param {Event}  event  Event interface.
-		 * @param {string} plugin The plugin identifier.
-		 */
-		$document.on( 'credential-modal-cancel', function( event, plugin ) {
-			var $message;
-
-			if ( 'plugins' === pagenow || 'plugins-network' === pagenow ) {
-				$message = $( 'tr[data-plugin="' + plugin + '"]' ).find( '.update-message' );
-			} else if ( 'plugin-install' === pagenow || 'plugin-install-network' === pagenow ) {
-				$message = $( '.update-now.updating-message' );
-			} else {
-				$message = $( '.updating-message' );
-			}
-
-			$message.removeClass( 'updating-message' );
-			$message.html( $message.data( 'originaltext' ) );
-
-			wp.a11y.speak( wp.updates.l10n.updateCancel, 'polite' );
 		} );
 
 		/**
