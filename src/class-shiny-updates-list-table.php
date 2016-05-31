@@ -1,12 +1,15 @@
 <?php
 /**
- * This file holds the shiny updates list table class.
+ * Upgrade API: Shiny_Updates_List_Table class.
  *
  * @package Shiny_Updates
+ * @since 4.X.0
  */
 
 /**
  * List table used on the available updates screen.
+ *
+ * Holds available updates for core, plugins, themes and translations.
  *
  * @since 4.X.0
  */
@@ -14,7 +17,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	/**
 	 * The current WordPress version.
 	 *
-	 * @since  4.X.0
+	 * @since 4.X.0
 	 * @access protected
 	 *
 	 * @var string
@@ -24,10 +27,10 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	/**
 	 * The available WordPress version, if applicable.
 	 *
-	 * @since  4.X.0
+	 * @since 4.X.0
 	 * @access protected
 	 *
-	 * @var string|false
+	 * @var string|false Available WordPress version or false if already up to date.
 	 */
 	protected $core_update_version;
 
@@ -42,7 +45,10 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	protected $has_available_updates = false;
 
 	/**
-	 * Constructor.
+	 * Construct the list table.
+	 *
+	 * @since 4.X.0
+	 * @access public
 	 */
 	public function __construct() {
 		parent::__construct( array(
@@ -55,8 +61,8 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	 * Prepares the list of items for displaying.
 	 *
 	 * @access public
-	 * @since  4.X.0
-	 * @uses   WP_List_Table::set_pagination_args()
+	 * @since 4.X.0
+	 * @uses WP_List_Table::set_pagination_args()
 	 */
 	public function prepare_items() {
 		global $wp_version;
@@ -135,7 +141,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Get a list of CSS classes for the WP_List_Table table tag.
+	 * Returns a list of CSS classes for the WP_List_Table table tag.
 	 *
 	 * @since 4.X.0
 	 * @access protected
@@ -147,7 +153,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Display the table
+	 * Displays the actual table.
 	 *
 	 * @since 4.X.0
 	 * @access public
@@ -187,7 +193,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Generate the table navigation above or below the table
+	 * Generates the table navigation above or below the table.
 	 *
 	 * @since 4.X.0
 	 * @access protected
@@ -218,9 +224,9 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Get a list of columns.
+	 * Gets a list of columns.
 	 *
-	 * @since  4.X.0
+	 * @since 4.X.0
 	 * @access public
 	 *
 	 * @return array The list table columns.
@@ -236,7 +242,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	/**
 	 * Generates content for a single row of the table
 	 *
-	 * @since  4.X.0
+	 * @since 4.X.0
 	 * @access public
 	 *
 	 * @param object $item The current item.
@@ -267,7 +273,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	/**
 	 * Handles the title column output.
 	 *
-	 * @since  4.X.0
+	 * @since 4.X.0
 	 * @access public
 	 *
 	 * @param array $item The current item.
@@ -284,7 +290,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	/**
 	 * Handles the title column output for a theme update item.
 	 *
-	 * @since  4.X.0
+	 * @since 4.X.0
 	 * @access public
 	 *
 	 * @param array $item The current item.
@@ -312,7 +318,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	/**
 	 * Handles the title column output for a plugin update item.
 	 *
-	 * @since  4.X.0
+	 * @since 4.X.0
 	 * @access public
 	 *
 	 * @param array $item The current item.
@@ -377,7 +383,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	/**
 	 * Handles the title column output for a core update item.
 	 *
-	 * @since  4.X.0
+	 * @since 4.X.0
 	 * @access public
 	 *
 	 * @global string $wp_version The current WordPress version.
@@ -421,7 +427,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	/**
 	 * Handles the title column output for the translations item.
 	 *
-	 * @since  4.X.0
+	 * @since 4.X.0
 	 * @access public
 	 */
 	public function column_title_translations() {
@@ -439,7 +445,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	/**
 	 * Handles the type column output.
 	 *
-	 * @since  4.X.0
+	 * @since 4.X.0
 	 * @access public
 	 *
 	 * @param array $item The current item.
@@ -464,8 +470,10 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	/**
 	 * Get the data attributes for a given list table item.
 	 *
-	 * @param array $item The current item.
+	 * @since 4.X.0
+	 * @access protected
 	 *
+	 * @param array $item The current item.
 	 * @return array Data attributes as key value pairs.
 	 */
 	protected function _get_data_attributes( $item ) {
@@ -484,6 +492,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	/**
 	 * Handles the action column output.
 	 *
+	 * @since 4.X.0
 	 * @access public
 	 *
 	 * @param array $item The current item.
