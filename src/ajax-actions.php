@@ -93,6 +93,7 @@ function wp_ajax_update_theme() {
 	}
 
 	$stylesheet = sanitize_key( wp_unslash( $_POST['slug'] ) );
+
 	$status     = array(
 		'update'     => 'theme',
 		'slug'       => $stylesheet,
@@ -175,7 +176,8 @@ function wp_ajax_delete_theme() {
 	}
 
 	$stylesheet = sanitize_key( wp_unslash( $_POST['slug'] ) );
-	$status     = array(
+
+	$status = array(
 		'delete' => 'theme',
 		'slug'   => $stylesheet,
 	);
@@ -234,7 +236,11 @@ function wp_ajax_install_plugin() {
 	check_ajax_referer( 'updates' );
 
 	if ( empty( $_POST['slug'] ) ) {
-		wp_send_json_error( array( 'errorCode' => 'no_plugin_specified' ) );
+		wp_send_json_error( array(
+			'slug'      => '',
+			'errorCode' => 'no_plugin_specified',
+			'error'     => __( 'No plugin specified.' ),
+		) );
 	}
 
 	$status = array(
@@ -315,7 +321,11 @@ function wpsu_ajax_update_plugin() {
 	check_ajax_referer( 'updates' );
 
 	if ( empty( $_POST['plugin'] ) || empty( $_POST['slug'] ) ) {
-		wp_send_json_error( array( 'errorCode' => 'no_plugin_specified' ) );
+		wp_send_json_error( array(
+			'slug'      => '',
+			'errorCode' => 'no_plugin_specified',
+			'error'     => __( 'No plugin specified.' ),
+		) );
 	}
 
 	$plugin      = plugin_basename( sanitize_text_field( wp_unslash( $_POST['plugin'] ) ) );
@@ -382,7 +392,6 @@ function wpsu_ajax_update_plugin() {
 	} else if ( is_wp_error( $result ) ) {
 		$status['error'] = $result->get_error_message();
 		wp_send_json_error( $status );
-
 	} else if ( false === $result ) {
 		global $wp_filesystem;
 
@@ -557,7 +566,7 @@ function wp_ajax_update_translations() {
 
 	$skin     = new Automatic_Upgrader_Skin();
 	$upgrader = new Language_Pack_Upgrader( $skin );
-	$result   = $upgrader->bulk_upgrade();
+	$result   = $upgrader->bulk_upgrade( array(), array( 'clear_update_cache' => false ) );
 
 	if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 		$status['debug'] = $upgrader->skin->get_upgrade_messages();
@@ -621,7 +630,8 @@ function wp_ajax_update_core() {
 	$update = find_core_update( $version, $locale );
 
 	if ( ! $update ) {
-		return;
+		$status['error'] = __( 'Core update failed.' );
+		wp_send_json_error( $status );
 	}
 
 	if ( $reinstall ) {

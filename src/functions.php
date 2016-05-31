@@ -100,7 +100,7 @@ function su_enqueue_scripts( $hook ) {
 			'installFailedLabel' => __( '%s installation failed' ),
 			'installingMsg'      => __( 'Installing... please wait.' ),
 			'installedMsg'       => __( 'Installation completed successfully.' ),
-			/* translators: Plugin name */
+			/* translators: %s: Plugin name */
 			'aysDelete'          => __( 'Are you sure you want to delete %s?' ),
 			'deleting'           => __( 'Deleting...' ),
 			'deleteFailed'       => __( 'Deletion failed: %s' ),
@@ -589,10 +589,12 @@ function su_install_plugin_information() {
  *
  * @todo Merge: Add directly to wp-admin/update-core.php
  *
- * @global string $wp_version The current WordPress version.
+ * @global string $wp_version             The current WordPress version.
+ * @global string $required_php_version   The required PHP version string.
+ * @global string $required_mysql_version The required MySQL version string.
  */
 function su_update_table() {
-	global $wp_version;
+	global $wp_version, $required_php_version, $required_mysql_version;
 	?>
 	<div class="wordpress-updates-table">
 		<?php
@@ -601,18 +603,39 @@ function su_update_table() {
 		// Todo: Use _get_list_table().
 		$updates_table = new Shiny_Updates_List_Table();
 		$updates_table->prepare_items();
-		$updates_table->display();
-		?>
+
+		if ( $updates_table->has_available_updates() ) :
+			$updates_table->display();
+		else : ?>
+		<div class="notice inline">
+			<p>
+				<b><?php _e( 'Everything is up to date.' ); ?></b>
+				<?php
+				if ( wp_http_supports( array( 'ssl' ) ) ) {
+					require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+
+					$upgrader = new WP_Automatic_Updater;
+					$future_minor_update = (object) array(
+						'current'       => $wp_version . '.1.next.minor',
+						'version'       => $wp_version . '.1.next.minor',
+						'php_version'   => $required_php_version,
+						'mysql_version' => $required_mysql_version,
+					);
+
+					if ( $upgrader->should_update( 'core', $future_minor_update, ABSPATH ) ) {
+						echo ' ' . __( 'Future security updates will be applied automatically.' );
+					}
+				}
+				?>
+			</p>
+		</div>
+		<?php endif; ?>
 	</div>
 
 	<?php
 	$core_updates = (array) get_core_updates();
 
-	if ( ! isset( $core_updates[1] ) ) {
-		return;
-	}
-
-	$update = $core_updates[1];
+	$update = isset( $core_updates[1] ) ? $core_updates[1] : $core_updates[0];
 
 	if ( 'en_US' === $update->locale &&
 	     'en_US' === get_locale() ||
@@ -642,7 +665,7 @@ function su_update_table() {
 			<input name="version" value="<?php echo esc_attr( $update->current ); ?>" type="hidden"/>
 			<input name="locale" value="<?php echo esc_attr( $update->locale ); ?>" type="hidden"/>
 			<p>
-				<button type="submit" name="upgrade" id="upgrade" class="button update-link"><?php esc_attr_e( 'Re-install Now' ); ?></button>
+				<button type="submit" name="upgrade" class="button update-link"><?php esc_attr_e( 'Re-install Now' ); ?></button>
 			</p>
 		</form>
 	</div>
@@ -736,7 +759,7 @@ function su_plugin_install_actions( $action_links, $plugin ) {
 				'action'   => 'activate',
 				'plugin'   => $status['file'],
 			), admin_url( 'plugins.php' ) ) ),
-			/* translators: %s: plugin name */
+			/* translators: %s: Plugin name */
 			esc_attr( sprintf( __( 'Activate %s' ), $plugin['name'] ) ),
 			__( 'Activate' )
 		);
