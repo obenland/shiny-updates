@@ -180,15 +180,12 @@
 
 		if ( data.success ) {
 			options.success = data.success;
+			delete data.success;
 		}
 		if ( data.error ) {
 			options.error = data.error;
+			delete data.error;
 		}
-
-		// Do not send this data.
-		delete data.success;
-		delete data.error;
-		delete data.el;
 
 		options.data = _.extend( data, {
 			action:          action,
@@ -231,11 +228,10 @@
 	 * @param {string} upgradeType
 	 */
 	wp.updates.decrementCount = function( upgradeType ) {
-		var $menuItem, $itemCount,
-		    $adminBarUpdates             = $( '#wp-admin-bar-updates' ),
+		var $adminBarUpdates             = $( '#wp-admin-bar-updates' ),
 		    $dashboardNavMenuUpdateCount = $( 'a[href="update-core.php"] .update-plugins' ),
-		    count = $adminBarUpdates.find( '.ab-label' ).text(),
-		    itemCount;
+		    count                        = $adminBarUpdates.find( '.ab-label' ).text(),
+		    $menuItem, $itemCount, itemCount;
 
 		count = parseInt( count, 10 ) - 1;
 
@@ -579,7 +575,7 @@
 			    $views      = $( '.subsubsub' ),
 			    columnCount = $form.find( 'thead th:not(.hidden), thead td' ).length,
 			    plugins     = settings.plugins,
-				index;
+			    index;
 
 			$( this ).remove();
 
@@ -683,8 +679,9 @@
 
 			return wp.updates.ajax( 'update-theme', args );
 
-		 } else if ( 'themes-network' === pagenow ) {
+		} else if ( 'themes-network' === pagenow ) {
 			$notice = $( '[data-slug="' + args.slug + '"]' ).find( '.update-message' );
+
 		} else {
 			$notice = $( '#update-theme' ).closest( '.notice' );
 			if ( ! $notice.length ) {
@@ -1064,11 +1061,11 @@
 	 * Send an Ajax request to the server to install all available updates.
 	 *
 	 * @since 4.X.0
-	 * @param {jQuery}   $itemRow jQuery object of the item to be updated.
+	 * @param {jQuery} $itemRow jQuery object of the item to be updated.
 	 */
 	wp.updates.updateItem = function( $itemRow ) {
 		var type   = $itemRow.data( 'type' ),
-			update = {
+		    update = {
 				type: 'update-' + type,
 				data: {
 					success: wp.updates.updateItemSuccess,
@@ -1115,10 +1112,11 @@
 	 */
 	wp.updates.updateItemSuccess = function( response ) {
 		var type = response.update,
-			$row = $( '[data-type="' + type + '"]' );
+		    $row = $( '[data-type="' + type + '"]' );
 
 		if ( 'plugin' === type || 'theme' === type ) {
 			$row = $row.filter( '[data-slug="' + response.slug + '"]' );
+
 		} else if ( 'core' === type ) {
 			$row = $row.filter( function() {
 				return 'reinstall' === response.reinstall && $( this ).is( '.wordpress-reinstall-card' ) || 'reinstall' !== response.reinstall && ! $( this ).is( '.wordpress-reinstall-card' );
@@ -1160,8 +1158,8 @@
 	 */
 	wp.updates.updateItemError = function( response ) {
 		var type = response.update,
-			$row = $( '[data-type="' + type + '"]' ),
-			errorMessage = wp.updates.l10n.updateFailed.replace( '%s', response.error );
+		    $row = $( '[data-type="' + type + '"]' ),
+		    errorMessage = wp.updates.l10n.updateFailed.replace( '%s', response.error );
 
 		if ( response.errorCode && 'unable_to_connect_to_filesystem' === response.errorCode && wp.updates.shouldRequestFilesystemCredentials ) {
 			wp.updates.credentialError( response, 'update-core' );
@@ -1170,6 +1168,7 @@
 
 		if ( 'plugin' === type || 'theme' === type ) {
 			$row = $row.filter( '[data-slug="' + response.slug + '"]' );
+
 		} else if ( 'core' === type ) {
 			$row = $row.filter( function() {
 				return 'reinstall' === response.reinstall && $( this ).is( '.wordpress-reinstall-card' ) || 'reinstall' !== response.reinstall && ! $( this ).is( '.wordpress-reinstall-card' );
@@ -1306,9 +1305,9 @@
 	 */
 	wp.updates.requestForCredentialsModalOpen = function() {
 		var $modal = $( '#request-filesystem-credentials-dialog' );
+
 		$( 'body' ).addClass( 'modal-open' );
 		$modal.show();
-
 		$modal.find( 'input:enabled:first' ).focus();
 		$modal.on( 'keydown', wp.updates.keydown );
 	};
@@ -1331,7 +1330,7 @@
 	 * @since 4.X.0 Triggers an event for callbacks to listen to and add their actions.
 	 */
 	wp.updates.requestForCredentialsModalCancel = function() {
-		var plugin = wp.updates.updateQueue[ 0 ].data.plugin || {};
+		var plugin = wp.updates.updateQueue[ 0 ].data.plugin;
 
 		// No updateLock and no updateQueue means we already have cleared things up.
 		if ( false === wp.updates.updateLock && 0 === wp.updates.updateQueue.length ) {
@@ -1378,6 +1377,8 @@
 				 * Not cool that we're depending on response for this data.
 				 * This would feel more whole in a view all tied together.
 				 */
+				plugin: response.plugin,
+				slug:   response.slug
 			}
 		} );
 
