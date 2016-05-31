@@ -348,9 +348,9 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 		$details     = sprintf(
 			'<a href="%1$s" class="thickbox open-plugin-details-modal" aria-label="%2$s">%3$s</a>',
 			esc_url( $details_url ),
-			/* translators: 1: plugin name, 2: version number */
+			/* translators: 1: Plugin name, 2: Version number */
 			esc_attr( sprintf( __( 'View %1$s version %2$s details' ), $plugin->Name, $plugin->update->new_version ) ),
-			/* translators: %s: plugin version */
+			/* translators: %s: Plugin version */
 			sprintf( __( 'View version %s details.' ), $plugin->update->new_version )
 		);
 		?>
@@ -358,7 +358,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 		<p>
 			<strong><?php echo $plugin->Name; ?></strong>
 			<?php
-			/* translators: 1: plugin version, 2: new version */
+			/* translators: 1: Plugin version, 2: New version */
 			printf( __( 'You have version %1$s installed. Update to %2$s.' ),
 				$plugin->Version,
 				$plugin->update->new_version
@@ -477,7 +477,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 				$attributes['data-name']   = esc_attr( $item['data']->Name );
 
 				if ( 'button' === $context ) {
-					/* translators: %s: plugin name */
+					/* translators: %s: Plugin name */
 					$attributes['aria-label'] = esc_attr( sprintf( __( 'Update %s now' ), $item['data']->Name ) );
 				}
 				break;
@@ -485,7 +485,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 				$attributes['data-slug'] = esc_attr( $item['slug'] );
 
 				if ( 'button' === $context ) {
-					/* translators: %s: theme name */
+					/* translators: %s: Theme name */
 					$attributes['aria-label'] = esc_attr( sprintf( __( 'Update %s now' ), $item['data']->display( 'Name' ) ) );
 				}
 				break;

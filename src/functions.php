@@ -100,7 +100,7 @@ function su_enqueue_scripts( $hook ) {
 			'installFailedLabel' => __( '%s installation failed' ),
 			'installingMsg'      => __( 'Installing... please wait.' ),
 			'installedMsg'       => __( 'Installation completed successfully.' ),
-			/* translators: Plugin name */
+			/* translators: %s: Plugin name */
 			'aysDelete'          => __( 'Are you sure you want to delete %s?' ),
 			'deleting'           => __( 'Deleting...' ),
 			'deleteFailed'       => __( 'Deletion failed: %s' ),
@@ -732,7 +732,7 @@ function su_plugin_install_actions( $action_links, $plugin ) {
 				'action'   => 'activate',
 				'plugin'   => $status['file'],
 			), admin_url( 'plugins.php' ) ) ),
-			/* translators: %s: plugin name */
+			/* translators: %s: Plugin name */
 			esc_attr( sprintf( __( 'Activate %s' ), $plugin['name'] ) ),
 			__( 'Activate' )
 		);
