@@ -1026,7 +1026,7 @@
 		}
 
 		$message.addClass( 'updating-message' )
-			.attr( 'aria-label', wp.updates.l10n.updatingMsg )
+			.attr( 'aria-label', wp.updates.l10n.updatingCoreLabel )
 			.text( wp.updates.l10n.updating );
 
 		return wp.updates.ajax( 'update-core', args );
@@ -1051,7 +1051,7 @@
 		}
 
 		$message.addClass( 'updating-message' )
-			.attr( 'aria-label', wp.updates.l10n.updatingMsg )
+			.attr( 'aria-label', wp.updates.l10n.updatingTranslationsLabel )
 			.text( wp.updates.l10n.updating );
 
 		return wp.updates.ajax( 'update-translations', args );
@@ -1854,7 +1854,7 @@
 				wp.updates.requestFilesystemCredentials( event );
 			}
 
-			$message.attr( 'aria-label', wp.updates.l10n.updatingMsg ).text( wp.updates.l10n.updating );
+			$message.attr( 'aria-label', wp.updates.l10n.updatingAllLabel ).text( wp.updates.l10n.updating );
 
 			$document.on( 'wp-plugin-update-success wp-theme-update-success wp-core-update-success wp-translations-update-success wp-plugin-update-error wp-theme-update-error wp-core-update-error wp-translations-update-error ', function() {
 				if ( 0 === wp.updates.updateQueue.length ) {
