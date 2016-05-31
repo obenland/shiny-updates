@@ -477,6 +477,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 				$attributes['data-name']   = esc_attr( $item['data']->Name );
 
 				if ( 'button' === $context ) {
+					/* translators: %s: plugin name */
 					$attributes['aria-label'] = esc_attr( sprintf( __( 'Update %s now' ), $item['data']->Name ) );
 				}
 				break;
@@ -484,6 +485,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 				$attributes['data-slug'] = esc_attr( $item['slug'] );
 
 				if ( 'button' === $context ) {
+					/* translators: %s: theme name */
 					$attributes['aria-label'] = esc_attr( sprintf( __( 'Update %s now' ), $item['data']->display( 'Name' ) ) );
 				}
 				break;
