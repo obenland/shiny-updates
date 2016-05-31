@@ -6,13 +6,13 @@
  * @param {object}  settings                            WP Updates settings.
  * @param {string}  settings.ajax_nonce                 AJAX nonce.
  * @param {object}  settings.l10n                       Translation strings.
- * @param {?object} settings.plugins                    Base names of plugins in their different states.
+ * @param {object=} settings.plugins                    Base names of plugins in their different states.
  * @param {Array}   settings.plugins.all                Base names of all plugins.
  * @param {Array}   settings.plugins.active             Base names of active plugins.
  * @param {Array}   settings.plugins.inactive           Base names of inactive plugins.
  * @param {Array}   settings.plugins.upgrade            Base names of plugins with updates available.
  * @param {Array}   settings.plugins.recently_activated Base names of recently activated plugins.
- * @param {?object} settings.totals                     Plugin/theme status information or null.
+ * @param {object=} settings.totals                     Plugin/theme status information or null.
  * @param {number}  settings.totals.all                 Amount of all plugins or themes.
  * @param {number}  settings.totals.upgrade             Amount of plugins or themes with updates available.
  * @param {number}  settings.totals.disabled            Amount of disabled themes.
@@ -24,6 +24,8 @@
 
 	/**
 	 * The WP Updates object.
+	 *
+	 * @since 4.2.0
 	 *
 	 * @type {object}
 	 */
@@ -307,7 +309,6 @@
 			$updateRow = $( 'tr[data-plugin="' + args.plugin + '"]' );
 			$message   = $updateRow.find( '.update-message' ).addClass( 'updating-message' ).find( 'p' );
 			message    = wp.updates.l10n.updatingLabel.replace( '%s', $updateRow.find( '.plugin-title strong' ).text() );
-
 		} else if ( 'plugin-install' === pagenow || 'plugin-install-network' === pagenow ) {
 			$card    = $( '.plugin-card-' + args.slug );
 			$message = $card.find( '.update-now' ).addClass( 'updating-message' );
@@ -315,7 +316,6 @@
 
 			// Remove previous error messages, if any.
 			$card.removeClass( 'plugin-card-update-failed' ).find( '.notice.notice-error' ).remove();
-
 		} else if ( 'update-core' === pagenow ) {
 			$message = $( '.update-link[data-plugin="' + args.plugin + '"]' ).addClass( 'updating-message' );
 			message  = wp.updates.l10n.updatingLabel.replace( '%s', $message.data( 'name' ) );
@@ -327,6 +327,7 @@
 			if ( $message.html() !== wp.updates.l10n.updating ) {
 				$message.data( 'originaltext', $message.html() );
 			}
+
 			$message.text( wp.updates.l10n.updating );
 
 			$document.trigger( 'wp-plugin-updating' );
@@ -400,7 +401,6 @@
 		if ( 'plugins' === pagenow || 'plugins-network' === pagenow ) {
 			$message = $( 'tr[data-plugin="' + response.plugin + '"]' ).find( '.update-message' );
 			$message.removeClass( 'updating-message notice-warning' ).addClass( 'notice-error' ).find( 'p' ).html( errorMessage );
-
 		} else if ( 'plugin-install' === pagenow || 'plugin-install-network' === pagenow ) {
 			$card = $( '.plugin-card-' + response.slug )
 				.addClass( 'plugin-card-update-failed' )
@@ -1116,10 +1116,10 @@
 
 		if ( 'plugin' === type || 'theme' === type ) {
 			$row = $row.filter( '[data-slug="' + response.slug + '"]' );
-
 		} else if ( 'core' === type ) {
 			$row = $row.filter( function() {
-				return 'reinstall' === response.reinstall && $( this ).is( '.wordpress-reinstall-card' ) || 'reinstall' !== response.reinstall && ! $( this ).is( '.wordpress-reinstall-card' );
+				return 'reinstall' === response.reinstall && $( this ).is( '.wordpress-reinstall-card' ) ||
+					'reinstall' !== response.reinstall && ! $( this ).is( '.wordpress-reinstall-card' );
 			} );
 		}
 
@@ -1168,10 +1168,10 @@
 
 		if ( 'plugin' === type || 'theme' === type ) {
 			$row = $row.filter( '[data-slug="' + response.slug + '"]' );
-
 		} else if ( 'core' === type ) {
 			$row = $row.filter( function() {
-				return 'reinstall' === response.reinstall && $( this ).is( '.wordpress-reinstall-card' ) || 'reinstall' !== response.reinstall && ! $( this ).is( '.wordpress-reinstall-card' );
+				return 'reinstall' === response.reinstall && $( this ).is( '.wordpress-reinstall-card' ) ||
+					'reinstall' !== response.reinstall && ! $( this ).is( '.wordpress-reinstall-card' );
 			} );
 		}
 
@@ -1256,7 +1256,6 @@
 	 */
 	wp.updates.requestFilesystemCredentials = function( event ) {
 		if ( false === wp.updates.filesystemCredentials.available ) {
-
 			/*
 			 * After exiting the credentials request modal,
 			 * return the focus to the element triggering the request.
@@ -1550,6 +1549,7 @@
 		 */
 		$theList.on( 'click', '[data-plugin] a.delete', function( event ) {
 			var $pluginRow = $( event.target ).parents( 'tr' );
+
 			event.preventDefault();
 
 			if ( ! window.confirm( wp.updates.l10n.aysDelete.replace( '%s', $pluginRow.find( '.plugin-title strong' ).text() ) ) ) {
@@ -1578,6 +1578,7 @@
 		 */
 		$document.on( 'click', '.themes-php.network-admin .update-link', function( event ) {
 			var $themeRow = $( event.target ).parents( 'tr' );
+
 			event.preventDefault();
 
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
@@ -1602,6 +1603,7 @@
 		 */
 		$document.on( 'click', '.themes-php.network-admin a.delete', function( event ) {
 			var $themeRow = $( event.target ).parents( 'tr' );
+
 			event.preventDefault();
 
 			if ( ! window.confirm( wp.updates.l10n.aysDelete.replace( '%s', $themeRow.find( '.plugin-title strong' ).text() ) ) ) {
@@ -1897,6 +1899,7 @@
 
 			$message.removeClass( 'updating-message' );
 			$message.html( $message.data( 'originaltext' ) );
+
 			wp.a11y.speak( wp.updates.l10n.updateCancel, 'polite' );
 		} );
 
