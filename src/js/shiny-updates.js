@@ -1351,11 +1351,11 @@
 	 * @param {string} message Error message.
 	 */
 	wp.updates.showErrorInCredentialsForm = function( message ) {
-		var $modal = $( '#request-filesystem-credentials-dialog' );
+		var $modal = $( '#request-filesystem-credentials-form' );
 
 		// Remove any existing error.
 		$modal.find( '.notice' ).remove();
-		$modal.find( 'h2' ).after( '<div class="notice notice-error notice-alt"><p>' + message + '</p></div>' );
+		$modal.find( 'h2' ).after( '<div class="notice notice-alt notice-error"><p>' + message + '</p></div>' );
 	};
 
 	/**
