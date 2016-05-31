@@ -93,7 +93,6 @@ function wp_ajax_update_theme() {
 	}
 
 	$stylesheet = sanitize_key( wp_unslash( $_POST['slug'] ) );
-
 	$status     = array(
 		'update'     => 'theme',
 		'slug'       => $stylesheet,
@@ -176,8 +175,7 @@ function wp_ajax_delete_theme() {
 	}
 
 	$stylesheet = sanitize_key( wp_unslash( $_POST['slug'] ) );
-
-	$status = array(
+	$status     = array(
 		'delete' => 'theme',
 		'slug'   => $stylesheet,
 	);
@@ -392,6 +390,7 @@ function wpsu_ajax_update_plugin() {
 	} else if ( is_wp_error( $result ) ) {
 		$status['error'] = $result->get_error_message();
 		wp_send_json_error( $status );
+
 	} else if ( false === $result ) {
 		global $wp_filesystem;
 
