@@ -625,7 +625,7 @@ function wp_ajax_update_core() {
 	$update = find_core_update( $version, $locale );
 
 	if ( ! $update ) {
-		$status['error'] = __( 'Installation failed' );
+		$status['error'] = __( 'Installation failed.' );
 		wp_send_json_error( $status );
 	}
 
@@ -655,7 +655,7 @@ function wp_ajax_update_core() {
 		wp_send_json_error( $status );
 	} else if ( false === $result ) {
 		// These aren't actual errors.
-		$status['error'] = __( 'Installation failed' );
+		$status['error'] = __( 'Installation failed.' );
 		wp_send_json_error( $status );
 	} else {
 		wp_send_json_success( $status );
