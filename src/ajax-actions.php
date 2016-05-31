@@ -558,7 +558,7 @@ function wp_ajax_update_translations() {
 
 	$skin     = new Automatic_Upgrader_Skin( compact( 'url', 'nonce', 'title', 'context' ) );
 	$upgrader = new Language_Pack_Upgrader( $skin );
-	$result   = $upgrader->bulk_upgrade();
+	$result   = $upgrader->bulk_upgrade( array(), array( 'clear_update_cache' => false ) );
 
 	$status = array(
 		'update' => 'translation',
@@ -607,6 +607,11 @@ function wp_ajax_update_translations() {
 function wp_ajax_update_core() {
 	check_ajax_referer( 'updates' );
 
+	$status = array(
+		'update'   => 'core',
+		'redirect' => esc_url( self_admin_url( 'about.php?updated' ) ),
+	);
+
 	if ( ! current_user_can( 'update_core' ) ) {
 		$status['error'] = __( 'You do not have sufficient permissions to update this site.' );
 		wp_send_json_error( $status );
@@ -620,13 +625,9 @@ function wp_ajax_update_core() {
 	$update = find_core_update( $version, $locale );
 
 	if ( ! $update ) {
-		return;
+		$status['error'] = __( 'Installation failed' );
+		wp_send_json_error( $status );
 	}
-
-	$status = array(
-		'update'   => 'core',
-		'redirect' => esc_url( self_admin_url( 'about.php?updated' ) ),
-	);
 
 	include_once( ABSPATH . 'wp-admin/includes/class-wp-upgrader.php' );
 
@@ -654,7 +655,7 @@ function wp_ajax_update_core() {
 		wp_send_json_error( $status );
 	} else if ( false === $result ) {
 		// These aren't actual errors.
-		$status['error'] = __( 'Installation Failed' );
+		$status['error'] = __( 'Installation failed' );
 		wp_send_json_error( $status );
 	} else {
 		wp_send_json_success( $status );
