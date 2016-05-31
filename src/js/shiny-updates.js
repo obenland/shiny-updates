@@ -212,19 +212,26 @@
 		var $menuItem, $itemCount,
 		    $adminBarUpdates             = $( '#wp-admin-bar-updates' ),
 		    $dashboardNavMenuUpdateCount = $( 'a[href="update-core.php"] .update-plugins' ),
-		    count, itemCount;
+		    count = $adminBarUpdates.find( '.ab-label' ).text(),
+		    itemCount;
 
-		count = $adminBarUpdates.find( '.ab-label' ).text();
 		count = parseInt( count, 10 ) - 1;
+
 		if ( count < 0 || isNaN( count ) ) {
 			return;
 		}
+
 		$adminBarUpdates.find( '.ab-item' ).removeAttr( 'title' );
 		$adminBarUpdates.find( '.ab-label' ).text( count );
+
+		if ( 0 === count ) {
+			$adminBarUpdates.find( '.ab-label' ).parents('li').remove();
+		}
 
 		$dashboardNavMenuUpdateCount.each( function( index, element ) {
 			element.className = element.className.replace( /count-\d+/, 'count-' + count );
 		} );
+
 		$dashboardNavMenuUpdateCount.removeAttr( 'title' );
 		$dashboardNavMenuUpdateCount.find( '.update-count' ).text( count );
 
@@ -1677,16 +1684,14 @@
 				} );
 			} );
 
-			$document.on( 'wp-plugin-update-success', function() {
-				success++;
-			} );
+			$document.on( 'wp-plugin-update-success wp-plugin-update-error', function( event, response ) {
+				if ( 'wp-plugin-update-success' === event.type ) {
+					success++;
+				} else {
+					error++;
+					errorMessages.push( response.pluginName + ': ' + response.error );
+				}
 
-			$document.on( 'wp-plugin-update-error', function( event, response ) {
-				error++;
-				errorMessages.push( response.pluginName + ': ' + response.error );
-			} );
-
-			$document.on( 'wp-plugin-update-success wp-plugin-update-error', function() {
 				wp.updates.adminNotice = wp.template( 'wp-bulk-updates-admin-notice' );
 
 				wp.updates.addAdminNotice( {
@@ -1699,6 +1704,10 @@
 				$( '#bulk-action-notice' ).on( 'click', 'button', function() {
 					$( '#bulk-action-notice' ).find( 'ul' ).toggleClass( 'hidden' );
 				} );
+
+				if ( 0 < error && 0 === wp.updates.updateQueue.length ) {
+					$( 'html, body' ).animate( { scrollTop: 0 } );
+				}
 			} );
 
 			// Reset admin notice template after #bulk-action-notice was added.
@@ -1975,7 +1984,7 @@
 
 			$.support.postMessage = !! window.postMessage;
 
-			if ( false === $.support.postMessage || null === target || -1 !== window.parent.location.pathname.indexOf( 'update-core.php' ) ) {
+			if ( false === $.support.postMessage || null === target ) {
 				return;
 			}
 

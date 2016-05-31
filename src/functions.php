@@ -100,7 +100,7 @@ function su_enqueue_scripts( $hook ) {
 			'installFailedLabel' => __( '%s installation failed' ),
 			'installingMsg'      => __( 'Installing... please wait.' ),
 			'installedMsg'       => __( 'Installation completed successfully.' ),
-			/* translators: Plugin name */
+			/* translators: %s: Plugin name */
 			'aysDelete'          => __( 'Are you sure you want to delete %s?' ),
 			'deleting'           => __( 'Deleting...' ),
 			'deleteFailed'       => __( 'Deletion failed: %s' ),
@@ -635,11 +635,7 @@ function su_update_table() {
 	<?php
 	$core_updates = (array) get_core_updates();
 
-	if ( ! isset( $core_updates[1] ) ) {
-		return;
-	}
-
-	$update = $core_updates[1];
+	$update = isset( $core_updates[1] ) ? $core_updates[1] : $core_updates[0];
 
 	if ( 'en_US' === $update->locale &&
 	     'en_US' === get_locale() ||
@@ -669,7 +665,7 @@ function su_update_table() {
 			<input name="version" value="<?php echo esc_attr( $update->current ); ?>" type="hidden"/>
 			<input name="locale" value="<?php echo esc_attr( $update->locale ); ?>" type="hidden"/>
 			<p>
-				<button type="submit" name="upgrade" id="upgrade" class="button update-link"><?php esc_attr_e( 'Re-install Now' ); ?></button>
+				<button type="submit" name="upgrade" class="button update-link"><?php esc_attr_e( 'Re-install Now' ); ?></button>
 			</p>
 		</form>
 	</div>
@@ -763,7 +759,7 @@ function su_plugin_install_actions( $action_links, $plugin ) {
 				'action'   => 'activate',
 				'plugin'   => $status['file'],
 			), admin_url( 'plugins.php' ) ) ),
-			/* translators: %s: plugin name */
+			/* translators: %s: Plugin name */
 			esc_attr( sprintf( __( 'Activate %s' ), $plugin['name'] ) ),
 			__( 'Activate' )
 		);
