@@ -485,6 +485,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 				break;
 			case 'theme':
 				$attributes['data-slug'] = esc_attr( $item['slug'] );
+				$attributes['data-name'] = esc_attr( $item['data']->display( 'Name' ) );
 
 				if ( 'button' === $context ) {
 					/* translators: %s: Theme name */
