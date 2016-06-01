@@ -1201,7 +1201,7 @@
 	wp.updates.queueChecker = function() {
 		var job;
 
-		if ( wp.updates.updateLock || wp.updates.updateQueue.length <= 0 ) {
+		if ( wp.updates.updateQueue.length <= 0 ) {
 			return;
 		}
 
