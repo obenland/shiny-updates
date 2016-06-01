@@ -672,24 +672,26 @@
 		var $notice, message;
 
 		if ( 'update-core' === pagenow ) {
-			$( '.update-link', '[data-slug="' + args.slug + '"]' )
+			$notice = $( '.update-link', '[data-slug="' + args.slug + '"]' );
+
+			$notice
 				.addClass( 'updating-message' )
+				.attr( 'aria-label', wp.updates.l10n.updatingLabel.replace( '%s', $notice.data( 'name' ) ) )
 				.text( wp.updates.l10n.updating );
+
 			wp.a11y.speak( wp.updates.l10n.updatingMsg, 'polite' );
 
 			return wp.updates.ajax( 'update-theme', args );
+		}
 
-		} else if ( 'themes-network' === pagenow ) {
+		if ( 'themes-network' === pagenow ) {
 			$notice = $( '[data-slug="' + args.slug + '"]' ).find( '.update-message' );
-
 		} else {
-			$notice = $( '#update-theme' ).closest( '.notice' );
-			if ( ! $notice.length ) {
-				$notice = $( '[data-slug="' + args.slug + '"]' ).find( '.update-message' );
-			}
+			$notice = $( '#update-theme' ).closest( '.notice' ) || $( '[data-slug="' + args.slug + '"]' ).find( '.update-message' );
 		}
 
 		message = $notice.find( 'p' ).text();
+
 		if ( message !== wp.updates.l10n.updating ) {
 			$notice.data( 'originaltext', message );
 		}
@@ -698,6 +700,7 @@
 			className: 'update-message updating-message notice-warning notice-alt',
 			message:   wp.updates.l10n.updating
 		} ) );
+
 		wp.a11y.speak( wp.updates.l10n.updatingMsg, 'polite' );
 
 		return wp.updates.ajax( 'update-theme', args );
