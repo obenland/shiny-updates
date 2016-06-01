@@ -38,20 +38,20 @@ function su_enqueue_scripts( $hook ) {
 		return;
 	}
 
-	$plugins = $totals = array();
+	$plugins = $totals = new stdClass;
 
 	if ( isset( $GLOBALS['totals'] ) ) {
 		$totals = $GLOBALS['totals'];
 	}
 
-	if ( ! isset( $GLOBALS['plugins'] ) ) {
-		$GLOBALS['plugins'] = array(
-			'all' => get_plugins(),
-		);
-	}
+	if ( strpos( $hook, 'plugin' ) ) {
+		if ( ! isset( $GLOBALS['plugins'] ) ) {
+			$GLOBALS['plugins'] = array( 'all' => get_plugins() );
+		}
 
-	foreach ( $GLOBALS['plugins'] as $key => $list ) {
-		$plugins[ $key ] = array_keys( (array) $list );
+		foreach ( $GLOBALS['plugins'] as $key => $list ) {
+			$plugins->$key = array_keys( (array) $list );
+		}
 	}
 
 	wp_enqueue_style( 'shiny-updates', plugin_dir_url( __FILE__ ) . 'css/shiny-updates.css' );
@@ -64,6 +64,7 @@ function su_enqueue_scripts( $hook ) {
 		'plugins'    => $plugins,
 		'totals'     => $totals,
 		'l10n'       => array(
+			/* translators: %s: Search string */
 			'searchResults'      => __( 'Search results for &#8220;%s&#8221;' ),
 			'noPlugins'          => __( 'You do not appear to have any plugins available at this time.' ),
 			'noItemsSelected'    => __( 'Please select at least one item to perform this action on.' ),
@@ -91,7 +92,7 @@ function su_enqueue_scripts( $hook ) {
 			'installing'         => __( 'Installing...' ),
 			'installed'          => __( 'Installed!' ),
 			'installFailedShort' => __( 'Install Failed!' ),
-			/* translators: Error string for a failed installation. */
+			/* translators: Error string for a failed installation */
 			'installFailed'      => __( 'Installation failed: %s' ),
 			/* translators: Plugin/Theme name and version */
 			'installingLabel'    => __( 'Installing %s...' ), // no ellipsis
@@ -101,9 +102,10 @@ function su_enqueue_scripts( $hook ) {
 			'installFailedLabel' => __( '%s installation failed' ),
 			'installingMsg'      => __( 'Installing... please wait.' ),
 			'installedMsg'       => __( 'Installation completed successfully.' ),
-			/* translators: Plugin name */
+			/* translators: %s: Plugin name */
 			'aysDelete'          => __( 'Are you sure you want to delete %s?' ),
 			'deleting'           => __( 'Deleting...' ),
+			/* translators: %s: Error string for a failed deletion */
 			'deleteFailed'       => __( 'Deletion failed: %s' ),
 			'deleted'            => __( 'Deleted!' ),
 			'activate'           => __( 'Activate' ),
@@ -150,16 +152,32 @@ function su_admin_notice_template() {
 			<p>
 				<# if ( data.successes ) { #>
 					<# if ( 1 === data.successes ) { #>
-						<?php printf( __( '%s plugin successfully updated.' ), '{{ data.successes }}' ); ?>
+						<?php
+							/* translators: %s: Number of plugins */
+							printf( __( '%s plugin successfully updated.' ), '{{ data.successes }}' );
+						?>
 					<# } else { #>
-						<?php printf( __( '%s plugins successfully updated.' ), '{{ data.successes }}' ); ?>
+						<?php
+							/* translators: %s: Number of plugins */
+							printf( __( '%s plugins successfully updated.' ), '{{ data.successes }}' );
+						?>
 					<# } #>
 				<# } #>
 				<# if ( data.errors ) { #>
 					<# if ( 1 === data.errors ) { #>
-						<button class="button-link"><?php printf( __( '%s failure.' ), '{{ data.errors }}' ); ?></button>
+						<button class="button-link">
+							<?php
+								/* translators: %s: Number of failures */
+								printf( __( '%s failure.' ), '{{ data.errors }}' );
+							?>
+						</button>
 					<# } else { #>
-						<button class="button-link"><?php printf( __( '%s failures.' ), '{{ data.errors }}' ); ?></button>
+						<button class="button-link">
+							<?php
+								/* translators: %s: Number of failures */
+								printf( __( '%s failures.' ), '{{ data.errors }}' );
+							?>
+						</button>
 					<# } #>
 				<# } #>
 			</p>
@@ -196,13 +214,18 @@ function su_theme_templates() {
 		<# } #>
 
 		<span class="more-details" id="{{ data.id }}-action"><?php _e( 'Theme Details' ); ?></span>
-		<div class="theme-author"><?php printf( __( 'By %s' ), '{{{ data.author }}}' ); ?></div>
+		<div class="theme-author">
+			<?php
+				/* translators: %s: Theme author name */
+				printf( __( 'By %s' ), '{{{ data.author }}}' );
+			?>
+		</div>
 
 		<# if ( data.active ) { #>
 			<h2 class="theme-name" id="{{ data.id }}-name">
 				<?php
-				/* translators: %s: theme name */
-				printf( __( '<span>Active:</span> %s' ), '{{{ data.name }}}' );
+					/* translators: %s: Theme name */
+					printf( __( '<span>Active:</span> %s' ), '{{{ data.name }}}' );
 				?>
 			</h2>
 		<# } else { #>
@@ -239,7 +262,12 @@ function theme_install_templates() {
 			<div class="theme-screenshot blank"></div>
 		<# } #>
 		<span class="more-details"><?php _ex( 'Details &amp; Preview', 'theme' ); ?></span>
-		<div class="theme-author"><?php printf( __( 'By %s' ), '{{ data.author }}' ); ?></div>
+		<div class="theme-author">
+			<?php
+				/* translators: %s: Theme author name */
+				printf( __( 'By %s' ), '{{ data.author }}' );
+			?>
+		</div>
 		<h3 class="theme-name">{{ data.name }}</h3>
 
 		<div class="theme-actions">
@@ -267,7 +295,12 @@ function theme_install_templates() {
 			<div class="wp-full-overlay-sidebar-content">
 				<div class="install-theme-info">
 					<h3 class="theme-name">{{ data.name }}</h3>
-					<span class="theme-by"><?php printf( __( 'By %s' ), '{{ data.author }}' ); ?></span>
+					<span class="theme-by">
+						<?php
+							/* translators: %s: Theme author name */
+							printf( __( 'By %s' ), '{{ data.author }}' );
+						?>
+					</span>
 
 					<img class="theme-screenshot" src="{{ data.screenshot_url }}" alt="" />
 
@@ -280,7 +313,12 @@ function theme_install_templates() {
 						<# } else { #>
 							<span class="no-rating"><?php _e( 'This theme has not been rated yet.' ); ?></span>
 						<# } #>
-						<div class="theme-version"><?php printf( __( 'Version: %s' ), '{{ data.version }}' ); ?></div>
+						<div class="theme-version">
+							<?php
+								/* translators: %s: Theme version */
+								printf( __( 'Version: %s' ), '{{ data.version }}' );
+							?>
+						</div>
 						<div class="theme-description">{{{ data.description }}}</div>
 					</div>
 				</div>
@@ -453,10 +491,19 @@ function su_install_plugin_information() {
 				<li><strong><?php _e( 'Author:' ); ?></strong> <?php echo links_add_target( $api->author, '_blank' ); ?></li>
 			<?php } if ( ! empty( $api->last_updated ) ) { ?>
 				<li><strong><?php _e( 'Last Updated:' ); ?></strong>
-					<?php printf( __( '%s ago' ), human_time_diff( strtotime( $api->last_updated ) ) ); ?>
+					<?php
+						/* translators: %s: Time since the last update */
+						printf( __( '%s ago' ), human_time_diff( strtotime( $api->last_updated ) ) );
+					?>
 				</li>
 			<?php } if ( ! empty( $api->requires ) ) { ?>
-				<li><strong><?php _e( 'Requires WordPress Version:' ); ?></strong> <?php printf( __( '%s or higher' ), $api->requires ); ?></li>
+				<li>
+					<strong><?php _e( 'Requires WordPress Version:' ); ?></strong>
+					<?php
+						/* translators: %s: WordPress version */
+						printf( __( '%s or higher' ), $api->requires );
+					?>
+				</li>
 			<?php } if ( ! empty( $api->tested ) ) { ?>
 				<li><strong><?php _e( 'Compatible up to:' ); ?></strong> <?php echo $api->tested; ?></li>
 			<?php } if ( ! empty( $api->active_installs ) ) { ?>
@@ -568,6 +615,7 @@ function su_install_plugin_information() {
 				}
 				break;
 			case 'newer_installed':
+				/* translators: %s: Plugin version */
 				echo '<a class="button button-primary right disabled">' . sprintf( __( 'Newer Version (%s) Installed'), $status['version'] ) . '</a>';
 				break;
 			case 'latest_installed':
@@ -590,10 +638,12 @@ function su_install_plugin_information() {
  *
  * @todo Merge: Add directly to wp-admin/update-core.php
  *
- * @global string $wp_version The current WordPress version.
+ * @global string $wp_version             The current WordPress version.
+ * @global string $required_php_version   The required PHP version string.
+ * @global string $required_mysql_version The required MySQL version string.
  */
 function su_update_table() {
-	global $wp_version;
+	global $wp_version, $required_php_version, $required_mysql_version;
 	?>
 	<div class="wordpress-updates-table">
 		<?php
@@ -602,18 +652,39 @@ function su_update_table() {
 		// Todo: Use _get_list_table().
 		$updates_table = new Shiny_Updates_List_Table();
 		$updates_table->prepare_items();
-		$updates_table->display();
-		?>
+
+		if ( $updates_table->has_available_updates() ) :
+			$updates_table->display();
+		else : ?>
+		<div class="notice inline">
+			<p>
+				<strong><?php _e( 'Everything is up to date.' ); ?></strong>
+				<?php
+				if ( wp_http_supports( array( 'ssl' ) ) ) {
+					require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+
+					$upgrader = new WP_Automatic_Updater;
+					$future_minor_update = (object) array(
+						'current'       => $wp_version . '.1.next.minor',
+						'version'       => $wp_version . '.1.next.minor',
+						'php_version'   => $required_php_version,
+						'mysql_version' => $required_mysql_version,
+					);
+
+					if ( $upgrader->should_update( 'core', $future_minor_update, ABSPATH ) ) {
+						echo ' ' . __( 'Future security updates will be applied automatically.' );
+					}
+				}
+				?>
+			</p>
+		</div>
+		<?php endif; ?>
 	</div>
 
 	<?php
 	$core_updates = (array) get_core_updates();
 
-	if ( ! isset( $core_updates[1] ) ) {
-		return;
-	}
-
-	$update = $core_updates[1];
+	$update = isset( $core_updates[1] ) ? $core_updates[1] : $core_updates[0];
 
 	if ( 'en_US' === $update->locale &&
 	     'en_US' === get_locale() ||
@@ -635,7 +706,10 @@ function su_update_table() {
 	<div class="wordpress-reinstall-card card" data-type="core" data-reinstall="true" data-version="<?php echo esc_attr( $update->current ); ?>" data-locale="<?php echo esc_attr( $update->locale ); ?>">
 		<h2><?php _e( 'Need to re-install WordPress?' ); ?></h2>
 		<p>
-			<?php printf( __( 'If you need to re-install version %s, you can do so here.' ), $version_string ); ?>
+			<?php
+				/* translators: %s: WordPress version */
+				printf( __( 'If you need to re-install version %s, you can do so here.' ), $version_string );
+			?>
 		</p>
 
 		<form method="post" action="update-core.php?action=do-core-reinstall" name="upgrade" class="upgrade">
@@ -643,7 +717,7 @@ function su_update_table() {
 			<input name="version" value="<?php echo esc_attr( $update->current ); ?>" type="hidden"/>
 			<input name="locale" value="<?php echo esc_attr( $update->locale ); ?>" type="hidden"/>
 			<p>
-				<button type="submit" name="upgrade" id="upgrade" class="button update-link"><?php esc_attr_e( 'Re-install Now' ); ?></button>
+				<button type="submit" name="upgrade" class="button update-link"><?php esc_attr_e( 'Re-install Now' ); ?></button>
 			</p>
 		</form>
 	</div>
@@ -737,7 +811,7 @@ function su_plugin_install_actions( $action_links, $plugin ) {
 				'action'   => 'activate',
 				'plugin'   => $status['file'],
 			), admin_url( 'plugins.php' ) ) ),
-			/* translators: %s: plugin name */
+			/* translators: %s: Plugin name */
 			esc_attr( sprintf( __( 'Activate %s' ), $plugin['name'] ) ),
 			__( 'Activate' )
 		);

@@ -96,6 +96,7 @@ function wp_ajax_update_theme() {
 	$status     = array(
 		'update'     => 'theme',
 		'slug'       => $stylesheet,
+		/* translators: %s: Theme version */
 		'oldVersion' => sprintf( __( 'Version %s' ), wp_get_theme( $stylesheet )->get( 'Version' ) ),
 		'newVersion' => '',
 	);
@@ -130,6 +131,7 @@ function wp_ajax_update_theme() {
 		$theme = wp_get_theme( $stylesheet );
 		if ( $theme->get( 'Version' ) ) {
 			$status['theme']      = wp_prepare_themes_for_js( array( $theme ) );
+			/* translators: %s: Theme version */
 			$status['newVersion'] = sprintf( __( 'Version %s' ), $theme->get( 'Version' ) );
 		}
 
@@ -234,7 +236,11 @@ function wp_ajax_install_plugin() {
 	check_ajax_referer( 'updates' );
 
 	if ( empty( $_POST['slug'] ) ) {
-		wp_send_json_error( array( 'errorCode' => 'no_plugin_specified' ) );
+		wp_send_json_error( array(
+			'slug'      => '',
+			'errorCode' => 'no_plugin_specified',
+			'error'     => __( 'No plugin specified.' ),
+		) );
 	}
 
 	$status = array(
@@ -315,7 +321,11 @@ function wpsu_ajax_update_plugin() {
 	check_ajax_referer( 'updates' );
 
 	if ( empty( $_POST['plugin'] ) || empty( $_POST['slug'] ) ) {
-		wp_send_json_error( array( 'errorCode' => 'no_plugin_specified' ) );
+		wp_send_json_error( array(
+			'slug'      => '',
+			'errorCode' => 'no_plugin_specified',
+			'error'     => __( 'No plugin specified.' ),
+		) );
 	}
 
 	$plugin      = plugin_basename( sanitize_text_field( wp_unslash( $_POST['plugin'] ) ) );
@@ -331,6 +341,7 @@ function wpsu_ajax_update_plugin() {
 	);
 
 	if ( $plugin_data['Version'] ) {
+		/* translators: %s: Theme version */
 		$status['oldVersion'] = sprintf( __( 'Version %s' ), $plugin_data['Version'] );
 	}
 
@@ -375,6 +386,7 @@ function wpsu_ajax_update_plugin() {
 		$plugin_data = reset( $plugin_data );
 
 		if ( $plugin_data['Version'] ) {
+			/* translators: %s: Theme version */
 			$status['newVersion'] = sprintf( __( 'Version %s' ), $plugin_data['Version'] );
 		}
 		wp_send_json_success( $status );
@@ -544,6 +556,10 @@ function wp_ajax_search_install_plugins() {
 function wp_ajax_update_translations() {
 	check_ajax_referer( 'updates' );
 
+	$status = array(
+		'update' => 'translations',
+	);
+
 	if ( ! current_user_can( 'update_core' ) && ! current_user_can( 'update_plugins' ) && ! current_user_can( 'update_themes' ) ) {
 		$status['error'] = __( 'You do not have sufficient permissions to update this site.' );
 		wp_send_json_error( $status );
@@ -551,18 +567,9 @@ function wp_ajax_update_translations() {
 
 	include_once( ABSPATH . 'wp-admin/includes/class-wp-upgrader.php' );
 
-	$url     = 'update-core.php?action=do-translation-upgrade';
-	$nonce   = 'upgrade-translations';
-	$title   = __( 'Update Translations' );
-	$context = WP_CONTENT_DIR;
-
-	$skin     = new Automatic_Upgrader_Skin( compact( 'url', 'nonce', 'title', 'context' ) );
+	$skin     = new Automatic_Upgrader_Skin();
 	$upgrader = new Language_Pack_Upgrader( $skin );
-	$result   = $upgrader->bulk_upgrade();
-
-	$status = array(
-		'update' => 'translation',
-	);
+	$result   = $upgrader->bulk_upgrade( array(), array( 'clear_update_cache' => false ) );
 
 	if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 		$status['debug'] = $upgrader->skin->get_upgrade_messages();
@@ -574,9 +581,11 @@ function wp_ajax_update_translations() {
 
 	if ( is_array( $result ) && ! empty( $result[0] ) ) {
 		wp_send_json_success( $status );
+
 	} else if ( is_wp_error( $result ) ) {
 		$status['error'] = $result->get_error_message();
 		wp_send_json_error( $status );
+
 	} else if ( false === $result ) {
 		global $wp_filesystem;
 
@@ -607,39 +616,35 @@ function wp_ajax_update_translations() {
 function wp_ajax_update_core() {
 	check_ajax_referer( 'updates' );
 
-	if ( ! current_user_can( 'update_core' ) ) {
-		$status['error'] = __( 'You do not have sufficient permissions to update this site.' );
-		wp_send_json_error( $status );
-	}
-
-	$reinstall = isset( $_POST['reinstall'] ) ? (bool) $_POST['reinstall'] : false;
-
-	$version = isset( $_POST['version'] ) ? sanitize_text_field( wp_unslash( $_POST['version'] ) ) : false;
-	$locale  = isset( $_POST['locale'] ) ? sanitize_text_field( wp_unslash( $_POST['locale'] ) ) : 'en_US';
-
-	$update = find_core_update( $version, $locale );
-
-	if ( ! $update ) {
-		return;
-	}
-
 	$status = array(
 		'update'   => 'core',
 		'redirect' => esc_url( self_admin_url( 'about.php?updated' ) ),
 	);
 
-	include_once( ABSPATH . 'wp-admin/includes/class-wp-upgrader.php' );
-
-	if ( $reinstall ) {
-		$update->response = 'reinstall';
+	if ( ! current_user_can( 'update_core' ) ) {
+		$status['error'] = __( 'You do not have sufficient permissions to update this site.' );
+		wp_send_json_error( $status );
 	}
 
-	$url     = 'update-core.php?action=do-core-upgrade';
-	$nonce   = 'upgrade-translations';
-	$title   = __( 'Update Core' );
-	$context = ABSPATH;
+	$reinstall = isset( $_POST['reinstall'] ) ? 'true' === sanitize_text_field( wp_unslash( $_POST['reinstall'] ) ) : false;
+	$version   = isset( $_POST['version'] ) ? sanitize_text_field( wp_unslash( $_POST['version'] ) ) : false;
+	$locale    = isset( $_POST['locale'] ) ? sanitize_text_field( wp_unslash( $_POST['locale'] ) ) : 'en_US';
 
-	$skin     = new Automatic_Upgrader_Skin( compact( 'url', 'nonce', 'title', 'context' ) );
+	$update = find_core_update( $version, $locale );
+
+	if ( ! $update ) {
+		$status['error'] = __( 'Core update failed.' );
+		wp_send_json_error( $status );
+	}
+
+	if ( $reinstall ) {
+		$update->response    = 'reinstall';
+		$status['reinstall'] = 'reinstall';
+	}
+
+	include_once( ABSPATH . 'wp-admin/includes/class-wp-upgrader.php' );
+
+	$skin     = new Automatic_Upgrader_Skin();
 	$upgrader = new Core_Upgrader( $skin );
 	$result   = $upgrader->upgrade( $update, array(
 		'allow_relaxed_file_ownership' => ! $reinstall && isset( $update->new_files ) && ! $update->new_files,
@@ -649,18 +654,28 @@ function wp_ajax_update_core() {
 		$status['debug'] = $upgrader->skin->get_upgrade_messages();
 	}
 
-	if ( is_wp_error( $result ) ) {
+	if ( is_string( $result ) ) {
+		wp_send_json_success( $status );
+
+	} else if ( is_wp_error( $result ) ) {
 		$status['error'] = $result->get_error_message();
 		wp_send_json_error( $status );
+
 	} else if ( false === $result ) {
-		// These aren't actual errors.
-		$status['error'] = __( 'Installation Failed' );
+		global $wp_filesystem;
+
+		$status['errorCode'] = 'unable_to_connect_to_filesystem';
+		$status['error']     = __( 'Unable to connect to the filesystem. Please confirm your credentials.' );
+
+		// Pass through the error from WP_Filesystem if one was raised.
+		if ( $wp_filesystem instanceof WP_Filesystem_Base && is_wp_error( $wp_filesystem->errors ) && $wp_filesystem->errors->get_error_code() ) {
+			$status['error'] = $wp_filesystem->errors->get_error_message();
+		}
+
 		wp_send_json_error( $status );
-	} else {
-		wp_send_json_success( $status );
 	}
 
 	// An unhandled error occurred.
-	$status['error'] = __( 'Installation failed.' );
+	$status['error'] = __( 'Core update failed.' );
 	wp_send_json_error( $status );
 }
