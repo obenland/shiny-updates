@@ -248,7 +248,7 @@
 		$adminBarUpdates.find( '.ab-label' ).text( count );
 
 		if ( 0 === count ) {
-			$adminBarUpdates.find( '.ab-label' ).parents('li').remove();
+			$adminBarUpdates.find( '.ab-label' ).parents( 'li' ).remove();
 		}
 
 		$dashboardNavMenuUpdateCount.each( function( index, element ) {
@@ -1846,7 +1846,7 @@
 		 *
 		 * @param {Event} event Event interface.
 		 */
-		$( '#wp-updates-table' ).on( 'click', '.update-link', function( event ) {
+		$( '.update-core-php .update-link' ).on( 'click', function( event ) {
 			var $message = $( event.target ),
 				$itemRow = $message.parents( '[data-type]' );
 
