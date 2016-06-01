@@ -680,10 +680,8 @@
 			$notice = $( '[data-slug="' + args.slug + '"]' ).find( '.update-message' ).addClass( 'updating-message' ).find( 'p' );
 
 		} else {
-			$notice = $( '.modal-open .theme-info .notice' ).removeClass( 'notice-large' );
-			if ( ! $notice.length ) {
-				$notice = $( '[data-slug="' + args.slug + '"]' ).find( '.update-message' );
-			}
+			$notice = $( '.modal-open .theme-info .notice' ).removeClass( 'notice-large' ) || $( '[data-slug="' + args.slug + '"]' ).find( '.update-message' );
+
 			$notice.find( 'h3' ).remove();
 			$notice = $notice.addClass( 'updating-message' ).find( 'p' );
 		}
@@ -1022,7 +1020,7 @@
 		}
 
 		$message.addClass( 'updating-message' )
-			.attr( 'aria-label', wp.updates.l10n.updatingMsg )
+			.attr( 'aria-label', wp.updates.l10n.updatingCoreLabel )
 			.text( wp.updates.l10n.updating );
 
 		return wp.updates.ajax( 'update-core', args );
@@ -1047,7 +1045,7 @@
 		}
 
 		$message.addClass( 'updating-message' )
-			.attr( 'aria-label', wp.updates.l10n.updatingMsg )
+			.attr( 'aria-label', wp.updates.l10n.updatingTranslationsLabel )
 			.text( wp.updates.l10n.updating );
 
 		return wp.updates.ajax( 'update-translations', args );
@@ -1197,7 +1195,7 @@
 	wp.updates.queueChecker = function() {
 		var job;
 
-		if ( wp.updates.updateLock || wp.updates.updateQueue.length <= 0 ) {
+		if ( wp.updates.updateQueue.length <= 0 ) {
 			return;
 		}
 
@@ -1493,8 +1491,14 @@
 		 * @param {Event} event Event interface.
 		 */
 		$theList.on( 'click', '[data-plugin] .update-link', function( event ) {
-			var $pluginRow = $( event.target ).parents( 'tr' );
+			var $message   = $( event.target ),
+			    $pluginRow = $message.parents( 'tr' );
+
 			event.preventDefault();
+
+			if ( $message.hasClass( 'updating-message' ) || $message.hasClass( 'button-disabled' ) ) {
+				return;
+			}
 
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
 				wp.updates.requestFilesystemCredentials( event );
@@ -1522,7 +1526,7 @@
 			event.preventDefault();
 
 			if ( $button.hasClass( 'updating-message' ) || $button.hasClass( 'button-disabled' ) ) {
-				return false;
+				return;
 			}
 
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
@@ -1549,7 +1553,7 @@
 			event.preventDefault();
 
 			if ( $button.hasClass( 'updating-message' ) || $button.hasClass( 'button-disabled' ) ) {
-				return false;
+				return;
 			}
 
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
@@ -1608,9 +1612,14 @@
 		 * @param {Event} event Event interface.
 		 */
 		$document.on( 'click', '.themes-php.network-admin .update-link', function( event ) {
-			var $themeRow = $( event.target ).parents( 'tr' );
+			var $message  = $( event.target ),
+			    $themeRow = $message.parents( 'tr' );
 
 			event.preventDefault();
+
+			if ( $message.hasClass( 'updating-message' ) || $message.hasClass( 'button-disabled' ) ) {
+				return;
+			}
 
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
 				wp.updates.requestFilesystemCredentials( event );
@@ -1853,7 +1862,7 @@
 			event.preventDefault();
 
 			// The item has already been updated, do not proceed.
-			if ( 0 === $message.length || $message.hasClass( 'updated-message' ) ) {
+			if ( 0 === $message.length || $message.hasClass( 'updated-message' ) || $message.hasClass( 'updating-message' ) || $message.hasClass( 'button-disabled' ) ) {
 				return;
 			}
 
@@ -1877,7 +1886,7 @@
 			event.preventDefault();
 
 			// The item has already been updated, do not proceed.
-			if ( $message.prop( 'disabled' ) ) {
+			if ( $message.prop( 'disabled' ) || $message.hasClass( 'updating-message' ) || $message.hasClass( 'button-disabled' ) ) {
 				return;
 			}
 
@@ -1889,7 +1898,7 @@
 				$message.data( 'originaltext', $message.html() );
 			}
 
-			$message.attr( 'aria-label', wp.updates.l10n.updatingMsg ).text( wp.updates.l10n.updating );
+			$message.attr( 'aria-label', wp.updates.l10n.updatingAllLabel ).text( wp.updates.l10n.updating );
 
 			$document.on( 'wp-plugin-update-success wp-theme-update-success wp-core-update-success wp-translations-update-success wp-plugin-update-error wp-theme-update-error wp-core-update-error wp-translations-update-error ', function() {
 				if ( 0 === wp.updates.updateQueue.length ) {
@@ -2112,8 +2121,13 @@
 					window.tb_remove();
 					/* jscs:enable */
 
-					message.data.success = wp.updates.updateSuccess;
-					message.data.error   = wp.updates.updateError;
+					if ( 'update-core' === pagenow ) {
+						message.data.success = wp.updates.updateItemSuccess;
+						message.data.error   = wp.updates.updateItemError;
+					} else {
+						message.data.success = wp.updates.updateSuccess;
+						message.data.error   = wp.updates.updateError;
+					}
 
 					wp.updates.updateQueue.push( message );
 					wp.updates.queueChecker();
