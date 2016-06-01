@@ -574,7 +574,8 @@
 			var $form       = $( '#bulk-action-form' ),
 			    $views      = $( '.subsubsub' ),
 			    columnCount = $form.find( 'thead th:not(.hidden), thead td' ).length,
-				plugins     = settings.plugins;
+			    /** @type {object} plugins Base names of plugins in their different states. */
+			    plugins     = settings.plugins;
 
 			$( this ).remove();
 
