@@ -626,20 +626,20 @@
 			var $form       = $( '#bulk-action-form' ),
 			    $views      = $( '.subsubsub' ),
 			    columnCount = $form.find( 'thead th:not(.hidden), thead td' ).length,
-			    plugins     = settings.plugins,
-			    index;
+			    /** @type {object} plugins Base names of plugins in their different states. */
+			    plugins     = settings.plugins;
 
 			$( this ).remove();
 
 			// Remove plugin from update count.
-			if ( -1 !== ( index = plugins.upgrade.indexOf( response.plugin ) ) ) {
-				delete plugins.upgrade[ index ];
+			if ( -1 !== plugins.upgrade.indexOf( response.plugin ) ) {
+				plugins.upgrade = _.without( plugins.upgrade, response.plugin );
 				wp.updates.decrementCount( 'plugin' );
 			}
 
 			// Remove from views.
-			if ( -1 !== ( index = plugins.inactive.indexOf( response.plugin ) ) ) {
-				delete plugins.inactive[ index ];
+			if ( -1 !== plugins.inactive.indexOf( response.plugin ) ) {
+				plugins.inactive = _.without( plugins.inactive, response.plugin );
 				if ( plugins.inactive.length > 0 ) {
 					$views.find( '.inactive .count' ).text( '(' + plugins.inactive.length + ')' );
 				} else {
@@ -647,8 +647,8 @@
 				}
 			}
 
-			if ( -1 !== ( index = plugins.active.indexOf( response.plugin ) ) ) {
-				delete plugins.active[ index ];
+			if ( -1 !== plugins.active.indexOf( response.plugin ) ) {
+				plugins.active = _.without( plugins.active, response.plugin );
 				if ( plugins.active.length ) {
 					$views.find( '.active .count' ).text( '(' + plugins.active.length + ')' );
 				} else {
@@ -656,8 +656,8 @@
 				}
 			}
 
-			if ( -1 !== ( index = plugins.recently_activated.indexOf( response.plugin ) ) ) {
-				delete plugins.recently_activated[ index ];
+			if ( -1 !== plugins.recently_activated.indexOf( response.plugin ) ) {
+				plugins.recently_activated = _.without( plugins.recently_activated, response.plugin );
 				if ( plugins.recently_activated.length ) {
 					$views.find( '.recently_activated .count' ).text( '(' + plugins.recently_activated.length + ')' );
 				} else {
@@ -665,8 +665,7 @@
 				}
 			}
 
-			index = plugins.all.indexOf( response.plugin );
-			delete plugins.all[ index ];
+			plugins.all = _.without( plugins.all, response.plugin );
 			if ( plugins.all.length ) {
 				$views.find( '.all .count' ).text( '(' + plugins.all.length + ')' );
 			} else {
