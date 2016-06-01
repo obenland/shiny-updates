@@ -1419,7 +1419,6 @@
 		 * @since 4.2.0
 		 */
 		$filesystemModal.on( 'submit', 'form', function() {
-
 			// Persist the credentials input by the user for the duration of the page load.
 			wp.updates.filesystemCredentials.ftp.hostname       = $( '#hostname' ).val();
 			wp.updates.filesystemCredentials.ftp.username       = $( '#username' ).val();
@@ -1462,8 +1461,14 @@
 		 * @param {Event} event Event interface.
 		 */
 		$theList.on( 'click', '[data-plugin] .update-link', function( event ) {
-			var $pluginRow = $( event.target ).parents( 'tr' );
+			var $message   = $( event.target ),
+			    $pluginRow = $message.parents( 'tr' );
+
 			event.preventDefault();
+
+			if ( $message.hasClass( 'updating-message' ) || $message.hasClass( 'button-disabled' ) ) {
+				return false;
+			}
 
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
 				wp.updates.requestFilesystemCredentials( event );
@@ -1577,9 +1582,14 @@
 		 * @param {Event} event Event interface.
 		 */
 		$document.on( 'click', '.themes-php.network-admin .update-link', function( event ) {
-			var $themeRow = $( event.target ).parents( 'tr' );
+			var $message  = $( event.target ),
+			    $themeRow = $message.parents( 'tr' );
 
 			event.preventDefault();
+
+			if ( $message.hasClass( 'updating-message' ) || $message.hasClass( 'button-disabled' ) ) {
+				return false;
+			}
 
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
 				wp.updates.requestFilesystemCredentials( event );
@@ -1826,6 +1836,10 @@
 				return;
 			}
 
+			if ( $message.hasClass( 'updating-message' ) || $message.hasClass( 'button-disabled' ) ) {
+				return false;
+			}
+
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
 				wp.updates.requestFilesystemCredentials( event );
 			}
@@ -1848,6 +1862,10 @@
 			// The item has already been updated, do not proceed.
 			if ( $message.prop( 'disabled' ) ) {
 				return;
+			}
+
+			if ( $message.hasClass( 'updating-message' ) || $message.hasClass( 'button-disabled' ) ) {
+				return false;
 			}
 
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
