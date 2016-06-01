@@ -44,7 +44,7 @@ function su_enqueue_scripts( $hook ) {
 		$totals = $GLOBALS['totals'];
 	}
 
-	if ( strpos( $hook, 'plugin' ) ) {
+	if ( stristr( $hook, 'plugin' ) ) {
 		if ( ! isset( $GLOBALS['plugins'] ) ) {
 			$GLOBALS['plugins'] = array( 'all' => get_plugins() );
 		}
@@ -102,6 +102,8 @@ function su_enqueue_scripts( $hook ) {
 			'installFailedLabel' => __( '%s installation failed' ),
 			'installingMsg'      => __( 'Installing... please wait.' ),
 			'installedMsg'       => __( 'Installation completed successfully.' ),
+			/* translators: Activation URL */
+			'importerInstalledMsg' => __( 'Importer installed successfully. <a href="%s">Activate plugin &#38; run importer</a>' ),
 			/* translators: %s: Plugin name */
 			'aysDelete'          => __( 'Are you sure you want to delete %s?' ),
 			'deleting'           => __( 'Deleting...' ),
