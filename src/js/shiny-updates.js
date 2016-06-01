@@ -1419,6 +1419,7 @@
 		 * @since 4.2.0
 		 */
 		$filesystemModal.on( 'submit', 'form', function() {
+
 			// Persist the credentials input by the user for the duration of the page load.
 			wp.updates.filesystemCredentials.ftp.hostname       = $( '#hostname' ).val();
 			wp.updates.filesystemCredentials.ftp.username       = $( '#username' ).val();
@@ -1467,7 +1468,7 @@
 			event.preventDefault();
 
 			if ( $message.hasClass( 'updating-message' ) || $message.hasClass( 'button-disabled' ) ) {
-				return false;
+				return;
 			}
 
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
@@ -1496,7 +1497,7 @@
 			event.preventDefault();
 
 			if ( $button.hasClass( 'updating-message' ) || $button.hasClass( 'button-disabled' ) ) {
-				return false;
+				return;
 			}
 
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
@@ -1523,7 +1524,7 @@
 			event.preventDefault();
 
 			if ( $button.hasClass( 'updating-message' ) || $button.hasClass( 'button-disabled' ) ) {
-				return false;
+				return;
 			}
 
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
@@ -1588,7 +1589,7 @@
 			event.preventDefault();
 
 			if ( $message.hasClass( 'updating-message' ) || $message.hasClass( 'button-disabled' ) ) {
-				return false;
+				return;
 			}
 
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
@@ -1832,12 +1833,8 @@
 			event.preventDefault();
 
 			// The item has already been updated, do not proceed.
-			if ( 0 === $message.length || $message.hasClass( 'updated-message' ) ) {
+			if ( 0 === $message.length || $message.hasClass( 'updated-message' ) || $message.hasClass( 'updating-message' ) || $message.hasClass( 'button-disabled' ) ) {
 				return;
-			}
-
-			if ( $message.hasClass( 'updating-message' ) || $message.hasClass( 'button-disabled' ) ) {
-				return false;
 			}
 
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
@@ -1860,12 +1857,8 @@
 			event.preventDefault();
 
 			// The item has already been updated, do not proceed.
-			if ( $message.prop( 'disabled' ) ) {
+			if ( $message.prop( 'disabled' ) || $message.hasClass( 'updating-message' ) || $message.hasClass( 'button-disabled' ) ) {
 				return;
-			}
-
-			if ( $message.hasClass( 'updating-message' ) || $message.hasClass( 'button-disabled' ) ) {
-				return false;
 			}
 
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
