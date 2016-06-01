@@ -671,7 +671,7 @@
 	 *                     decorated with an abort() method.
 	 */
 	wp.updates.updateTheme = function( args ) {
-		var $notice, message;
+		var $notice;
 
 		if ( 'update-core' === pagenow ) {
 			$notice = $( '.update-link', '[data-slug="' + args.slug + '"]' ).addClass( 'updating-message' );
