@@ -245,7 +245,7 @@
 		$adminBarUpdates.find( '.ab-label' ).text( count );
 
 		if ( 0 === count ) {
-			$adminBarUpdates.find( '.ab-label' ).parents('li').remove();
+			$adminBarUpdates.find( '.ab-label' ).parents( 'li' ).remove();
 		}
 
 		$dashboardNavMenuUpdateCount.each( function( index, element ) {
@@ -1204,7 +1204,7 @@
 	wp.updates.queueChecker = function() {
 		var job;
 
-		if ( wp.updates.updateLock || wp.updates.updateQueue.length <= 0 ) {
+		if ( wp.updates.updateQueue.length <= 0 ) {
 			return;
 		}
 
@@ -1465,8 +1465,14 @@
 		 * @param {Event} event Event interface.
 		 */
 		$theList.on( 'click', '[data-plugin] .update-link', function( event ) {
-			var $pluginRow = $( event.target ).parents( 'tr' );
+			var $message   = $( event.target ),
+			    $pluginRow = $message.parents( 'tr' );
+
 			event.preventDefault();
+
+			if ( $message.hasClass( 'updating-message' ) || $message.hasClass( 'button-disabled' ) ) {
+				return;
+			}
 
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
 				wp.updates.requestFilesystemCredentials( event );
@@ -1494,7 +1500,7 @@
 			event.preventDefault();
 
 			if ( $button.hasClass( 'updating-message' ) || $button.hasClass( 'button-disabled' ) ) {
-				return false;
+				return;
 			}
 
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
@@ -1521,7 +1527,7 @@
 			event.preventDefault();
 
 			if ( $button.hasClass( 'updating-message' ) || $button.hasClass( 'button-disabled' ) ) {
-				return false;
+				return;
 			}
 
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
@@ -1580,9 +1586,14 @@
 		 * @param {Event} event Event interface.
 		 */
 		$document.on( 'click', '.themes-php.network-admin .update-link', function( event ) {
-			var $themeRow = $( event.target ).parents( 'tr' );
+			var $message  = $( event.target ),
+			    $themeRow = $message.parents( 'tr' );
 
 			event.preventDefault();
+
+			if ( $message.hasClass( 'updating-message' ) || $message.hasClass( 'button-disabled' ) ) {
+				return;
+			}
 
 			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
 				wp.updates.requestFilesystemCredentials( event );
@@ -1818,14 +1829,14 @@
 		 *
 		 * @param {Event} event Event interface.
 		 */
-		$( '#wp-updates-table' ).on( 'click', '.update-link', function( event ) {
+		$( '.update-core-php .update-link' ).on( 'click', function( event ) {
 			var $message = $( event.target ),
 				$itemRow = $message.parents( '[data-type]' );
 
 			event.preventDefault();
 
 			// The item has already been updated, do not proceed.
-			if ( 0 === $message.length || $message.hasClass( 'updated-message' ) ) {
+			if ( 0 === $message.length || $message.hasClass( 'updated-message' ) || $message.hasClass( 'updating-message' ) || $message.hasClass( 'button-disabled' ) ) {
 				return;
 			}
 
@@ -1849,7 +1860,7 @@
 			event.preventDefault();
 
 			// The item has already been updated, do not proceed.
-			if ( $message.prop( 'disabled' ) ) {
+			if ( $message.prop( 'disabled' ) || $message.hasClass( 'updating-message' ) || $message.hasClass( 'button-disabled' ) ) {
 				return;
 			}
 
@@ -2105,8 +2116,13 @@
 					window.tb_remove();
 					/* jscs:enable */
 
-					message.data.success = wp.updates.updateSuccess;
-					message.data.error   = wp.updates.updateError;
+					if ( 'update-core' === pagenow ) {
+						message.data.success = wp.updates.updateItemSuccess;
+						message.data.error   = wp.updates.updateItemError;
+					} else {
+						message.data.success = wp.updates.updateSuccess;
+						message.data.error   = wp.updates.updateError;
+					}
 
 					wp.updates.updateQueue.push( message );
 					wp.updates.queueChecker();

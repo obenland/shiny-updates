@@ -225,30 +225,30 @@ tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-error.notic
 	position: static;
 }
 
-#wp-updates-table {
+.wp-list-table.updates {
 	border-collapse: collapse;
 }
 
-#wp-updates-table tr {
+.wp-list-table.updates tr {
 	border-bottom: 1px solid #e5e5e5;
 }
 
-#wp-updates-table .manage-column.column-title {
+.wp-list-table.updates .manage-column.column-title {
 	padding-left: 115px;
 	width: 80%;
 }
 
 @media screen and (min-width: 782px) {
-	#wp-updates-table .column-action {
+	.wp-list-table.updates .column-action {
 		text-align: right;
 	}
 }
 
-#wp-updates-table .manage-column.column-action form {
+.wp-list-table.updates .manage-column.column-action form {
 	margin: 0;
 }
 
-#wp-updates-table .dashicons-translation {
+.wp-list-table.updates .dashicons-translation {
 	width: 85px;
 	height: 85px;
 	font-size: 85px;
@@ -256,12 +256,12 @@ tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-error.notic
 	margin: 0 10px 5px 0;
 }
 
-#wp-updates-table .updates-table-screenshot {
+.wp-list-table.updates .updates-table-screenshot {
 	padding: 7px 15px 0 5px;
 	width: 85px;
 }
 
-#wp-updates-table .updates-table-screenshot + p {
+.wp-list-table.updates .updates-table-screenshot + p {
 	margin-left: 105px;
 }
 

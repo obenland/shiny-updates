@@ -96,6 +96,7 @@ function wp_ajax_update_theme() {
 	$status     = array(
 		'update'     => 'theme',
 		'slug'       => $stylesheet,
+		/* translators: %s: Theme version */
 		'oldVersion' => sprintf( __( 'Version %s' ), wp_get_theme( $stylesheet )->get( 'Version' ) ),
 		'newVersion' => '',
 	);
@@ -130,6 +131,7 @@ function wp_ajax_update_theme() {
 		$theme = wp_get_theme( $stylesheet );
 		if ( $theme->get( 'Version' ) ) {
 			$status['theme']      = wp_prepare_themes_for_js( array( $theme ) );
+			/* translators: %s: Theme version */
 			$status['newVersion'] = sprintf( __( 'Version %s' ), $theme->get( 'Version' ) );
 		}
 
@@ -339,6 +341,7 @@ function wpsu_ajax_update_plugin() {
 	);
 
 	if ( $plugin_data['Version'] ) {
+		/* translators: %s: Theme version */
 		$status['oldVersion'] = sprintf( __( 'Version %s' ), $plugin_data['Version'] );
 	}
 
@@ -383,6 +386,7 @@ function wpsu_ajax_update_plugin() {
 		$plugin_data = reset( $plugin_data );
 
 		if ( $plugin_data['Version'] ) {
+			/* translators: %s: Theme version */
 			$status['newVersion'] = sprintf( __( 'Version %s' ), $plugin_data['Version'] );
 		}
 		wp_send_json_success( $status );
