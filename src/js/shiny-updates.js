@@ -555,7 +555,11 @@
 			message:   wp.updates.l10n.importerInstalledMsg.replace( '%s', response.activateUrl + '&from=import' )
 		} );
 
-		$( 'a[href*="' + response.slug + '"]' ).attr( 'href', response.activateUrl + '&from=import' );
+		$( 'a[href*="' + response.slug + '"]' )
+			.removeClass( 'thickbox open-plugin-details-modal' )
+			.off( 'click' )
+			.attr( 'href', response.activateUrl + '&from=import' )
+			.attr( 'title', wp.updates.l10n.activateImporter );
 
 		wp.a11y.speak( wp.updates.l10n.installedMsg, 'polite' );
 

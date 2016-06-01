@@ -111,6 +111,7 @@ function su_enqueue_scripts( $hook ) {
 			'deleteFailed'       => __( 'Deletion failed: %s' ),
 			'deleted'            => __( 'Deleted!' ),
 			'activate'           => __( 'Activate' ),
+			'activateImporter'   => __( 'Activate importer' ),
 		),
 	) );
 

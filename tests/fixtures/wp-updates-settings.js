@@ -28,10 +28,12 @@ window._wpUpdatesSettings = {
 		'installingMsg': 'Installing... please wait.',
 		'installedMsg': 'Installation completed successfully.',
 		'importerInstalledMsg': 'Importer installed successfully. <a href="%s">Activate plugin &#38; run importer</a>',
-	'aysDelete': 'Are you sure you want to delete %s?',
+		'aysDelete': 'Are you sure you want to delete %s?',
 		'deleting': 'Deleting...',
 		'deleteFailed': 'Deletion failed: %s',
-		'deleted': 'Deleted!'
+		'deleted': 'Deleted!',
+		'activate': 'Activate',
+		'activateImporter': 'Activate importer'
 	}
 };
 window._wpUtilSettings = {
