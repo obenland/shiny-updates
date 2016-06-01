@@ -2113,8 +2113,13 @@
 					window.tb_remove();
 					/* jscs:enable */
 
-					message.data.success = wp.updates.updateSuccess;
-					message.data.error   = wp.updates.updateError;
+					if ( 'update-core' === pagenow ) {
+						message.data.success = wp.updates.updateItemSuccess;
+						message.data.error   = wp.updates.updateItemError;
+					} else {
+						message.data.success = wp.updates.updateSuccess;
+						message.data.error   = wp.updates.updateError;
+					}
 
 					wp.updates.updateQueue.push( message );
 					wp.updates.queueChecker();
