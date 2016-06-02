@@ -75,6 +75,22 @@
 	right: 0;
 }
 
+/* Theme install browser */
+.theme-install-overlay .close-full-overlay,
+.theme-install-overlay .previous-theme,
+.theme-install-overlay .next-theme {
+	border-left: 0;
+	border-top: 0;
+	border-bottom: 0;
+}
+
+.theme-install-overlay .close-full-overlay:before,
+.theme-install-overlay .previous-theme:before,
+.theme-install-overlay .next-theme:before {
+	top: 2px;
+	left: 0;
+}
+
 /* Inline notifications */
 .plugins .active.update th.check-column,
 .plugins .active.update + .plugin-update-tr .plugin-update {
