@@ -438,6 +438,19 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 
 		$update = $item['data'];
 
+		if ( 'en_US' === $update->locale &&
+		     'en_US' === get_locale() ||
+		     (
+			     $update->packages->partial &&
+			     $wp_version === $update->partial_version &&
+			     1 === count( get_core_updates() )
+		     )
+		) {
+			$version_string = $update->current;
+		} else {
+			$version_string = sprintf( '%s&ndash;<code>%s</code>', $update->current, $update->locale );
+		}
+
 		$dismiss_url = add_query_arg(
 			array(
 				'locale'  => $update->locale,
@@ -447,7 +460,13 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 		);
 
 		if ( 'en_US' !== $update->locale && isset( $update->dismissed ) && $update->dismissed ) :
-			printf( '<p><a href="%1$s">%2$s</a></p>', esc_url( add_query_arg( 'undismiss', '', $dismiss_url ) ), __( 'Show this update' ) );
+			printf(
+				'<p><a href="%1$s" aria-label="%2$s">%3$s</a></p>',
+				esc_url( add_query_arg( 'undismiss', '', $dismiss_url ) ),
+				/* translators: 1: WordPress version, 2: locale */
+				sprintf( __( 'Show the WordPress %1$s (%2$s) update' ), $update->current, $update->locale ),
+				__( 'Show this update' )
+			);
 		else : ?>
 			<div class="updates-table-screenshot">
 				<img src="<?php echo esc_url( admin_url( 'images/wordpress-logo.svg' ) ); ?>" width="85" height="85" alt=""/>
@@ -455,29 +474,23 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 			<p>
 				<strong><?php _e( 'WordPress' ); ?></strong>
 				<?php
-				if ( 'en_US' === $update->locale &&
-				     'en_US' === get_locale() ||
-				     (
-					     $update->packages->partial &&
-					     $wp_version === $update->partial_version &&
-					     1 === count( get_core_updates() )
-				     )
-				) {
-					$version_string = $update->current;
-				} else {
-					$version_string = sprintf( '%s&ndash;<code>%s</code>', $update->current, $update->locale );
-				}
-
 				if ( 'development' === $update->response ) {
 					_e( 'You are using a development version of WordPress. You can update to the latest nightly build automatically.' );
 				} else if ( isset( $update->response ) && 'latest' !== $update->response ) {
+					/* translators: 1: WordPress version, 2: WordPress version including locale */
 					printf( __( 'You can update to <a href="https://codex.wordpress.org/Version_%1$s">WordPress %2$s</a> automatically.' ), $update->current, $version_string );
 				}
 				?>
 			</p>
 			<?php
 			if ( 'en_US' !== $update->locale && ! ( isset( $update->dismissed ) && $update->dismissed ) ) {
-				printf( '<p><a href="%1$s">%2$s</a></p>', esc_url( add_query_arg( 'dismiss', '', $dismiss_url ) ), __( 'Hide this update' ) );
+				printf(
+					'<p><a href="%1$s" aria-label="%2$s">%3$s</a></p>',
+					esc_url( add_query_arg( 'dismiss', '', $dismiss_url ) ),
+					/* translators: 1: WordPress version, 2: locale */
+					sprintf( __( 'Show the WordPress %1$s (%2$s) update' ), $update->current, $update->locale ),
+					__( 'Hide this update' )
+				);
 			}
 		endif;
 	}
