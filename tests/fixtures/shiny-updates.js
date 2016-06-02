@@ -27,7 +27,8 @@ window.shinyUpdates = {
 	'installFailedLabel': '%s installation failed',
 	'installingMsg': 'Installing... please wait.',
 	'installedMsg': 'Installation completed successfully.',
-	'aysDelete': 'Are you sure you want to delete %s?',
+	'aysDelete': 'Are you sure you want to delete %s? This might delete data!',
+	'aysBulkDelete': 'Are you sure you want to delete the selected plugins? This might delete data!',
 	'deleting': 'Deleting...',
 	'deleteFailed': 'Deletion failed: %s',
 	'deleted': 'Deleted!'

@@ -568,7 +568,6 @@
 	 * @param {string} response.plugin Basename of the plugin to be deleted.
 	 */
 	wp.updates.deletePluginSuccess = function( response ) {
-
 		// Removes the plugin and updates rows.
 		$( '[data-plugin="' + response.plugin + '"]' ).css( { backgroundColor: '#faafaa' } ).fadeOut( 350, function() {
 			var $form       = $( '#bulk-action-form' ),
@@ -1678,6 +1677,11 @@
 					pluginAction     = wp.updates.deletePlugin;
 					pluginActionDone = wp.updates.deletePluginSuccess;
 					pluginActionFail = wp.updates.deletePluginError;
+
+					if ( ! window.confirm( wp.updates.l10n.aysBulkDelete ) ) {
+						return;
+					}
+
 					break;
 
 				default:
