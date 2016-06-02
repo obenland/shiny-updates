@@ -591,7 +591,7 @@
 			message:   errorMessage
 		} );
 
-		$( 'a[href*="' + response.slug + '"]' ).removeClass( 'updating-message' )
+		$( 'a[href*="' + response.slug + '"]' ).removeClass( 'updating-message' );
 
 		wp.a11y.speak( errorMessage, 'assertive' );
 
