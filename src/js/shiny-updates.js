@@ -213,7 +213,7 @@
 	 * @param {string=} response.errorCode Optional. Error code for an error that occurred.
 	 */
 	wp.updates.ajaxAlways = function( response ) {
-		if ( ! response.errorCode || 'unable_to_connect_to_filesystem' !== response.errorCode ) {
+		if ( ! response.errorCode && 'unable_to_connect_to_filesystem' !== response.errorCode ) {
 			wp.updates.updateLock = false;
 			wp.updates.queueChecker();
 		}
@@ -1189,6 +1189,64 @@
 	};
 
 	/**
+	 * Adds the appropriate callback based on the type of action and the current page.
+	 *
+	 * @since 4.X.0
+	 *
+	 * @param {object} data AJAX payload.
+	 * @param {string} type The type of action.
+	 * @return {object} The AJAX payload with the appropriate callbacks.
+	 */
+	wp.updates._addCallbacks = function( data, type ) {
+		switch ( type ) {
+			case 'install-plugin':
+				response.success = wp.updates.installPluginSuccess;
+				response.error   = wp.updates.installPluginError;
+				break;
+
+			case 'update-plugin':
+				response.success = wp.updates.updateSuccess;
+				response.error   = wp.updates.updateError;
+				break;
+
+			case 'delete-plugin':
+				response.success = wp.updates.deletePluginSuccess;
+				response.error   = wp.updates.deletePluginError;
+				break;
+
+			case 'install-theme':
+				response.success = wp.updates.installThemeSuccess;
+				response.error   = wp.updates.installThemeError;
+				break;
+
+			case 'update-theme':
+				response.success = wp.updates.updateThemeSuccess;
+				response.error   = wp.updates.updateThemeError;
+				break;
+
+			case 'delete-theme':
+				response.success = wp.updates.deleteThemeSuccess;
+				response.error   = wp.updates.deleteThemeError;
+				break;
+
+			default:
+				response.success = wp.updates.updateItemSuccess;
+				response.error   = wp.updates.updateItemError;
+		}
+
+		if ( 'update-core' === pagenow ) {
+			response.success = wp.updates.updateItemSuccess;
+			response.error   = wp.updates.updateItemError;
+
+		} else if ( 'import' === pagenow && 'install-plugin' === type ) {
+			response.success = wp.updates.installImporterSuccess;
+			response.error   = wp.updates.installImporterError;
+		}
+
+		return data;
+	};
+
+	/**
 	 * If an install/update job has been placed in the queue, queueChecker pulls it out and runs it.
 	 *
 	 * @since 4.2.0
@@ -1367,6 +1425,10 @@
 	 * @param {string} type     The type of action.
 	 */
 	wp.updates.credentialError = function( response, type ) {
+
+		// Restore callbacks.
+		response = wp.updates._addCallbacks( response, type );
+
 		wp.updates.updateQueue.push( {
 			type: type,
 
@@ -2123,13 +2185,7 @@
 					window.tb_remove();
 					/* jscs:enable */
 
-					if ( 'update-core' === pagenow ) {
-						message.data.success = wp.updates.updateItemSuccess;
-						message.data.error   = wp.updates.updateItemError;
-					} else {
-						message.data.success = wp.updates.updateSuccess;
-						message.data.error   = wp.updates.updateError;
-					}
+					message.data = wp.updates._addCallbacks( message.data, 'update-plugin' );
 
 					wp.updates.updateQueue.push( message );
 					wp.updates.queueChecker();
@@ -2140,8 +2196,7 @@
 					window.tb_remove();
 					/* jscs:enable */
 
-					message.data.success = wp.updates.installPluginSuccess;
-					message.data.error   = wp.updates.installPluginError;
+					message.data = wp.updates._addCallbacks( message.data, 'install-plugin' );
 
 					wp.updates.updateQueue.push( message );
 					wp.updates.queueChecker();
