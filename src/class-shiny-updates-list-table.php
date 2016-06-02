@@ -81,7 +81,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 
 		$this->cur_wp_version = preg_replace( '/-.*$/', '', $wp_version );
 
-		$core_updates = (array) get_core_updates( array( 'dismissed' => true ));
+		$core_updates = (array) get_core_updates( array( 'dismissed' => true ) );
 		$plugins      = (array) get_plugin_updates();
 		$themes       = (array) get_theme_updates();
 		$translations = (array) wp_get_translation_updates();
@@ -386,10 +386,11 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 
 		$update = $item['data'];
 
-		$dismiss_url = add_query_arg( array(
-			'locale'  => $update->locale,
-			'version' => $update->current,
-		),
+		$dismiss_url = add_query_arg(
+			array(
+				'locale'  => $update->locale,
+				'version' => $update->current,
+			),
 			admin_url( 'update-core.php' )
 		);
 
@@ -402,8 +403,6 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 			<p>
 				<strong><?php _e( 'WordPress' ); ?></strong>
 				<?php
-
-
 				if ( 'en_US' === $update->locale &&
 				     'en_US' === get_locale() ||
 				     (

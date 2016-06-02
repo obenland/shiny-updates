@@ -652,23 +652,18 @@ function su_update_table() {
 		require_once( 'class-shiny-updates-list-table.php' );
 
 		// Do the (un)dismiss actions before headers, so that they can redirect.
-		if ( isset( $_GET['dismiss'] ) ) {
-			$version = isset( $_GET['version'] ) ? $_GET['version'] : false;
-			$locale  = isset( $_GET['locale'] ) ? $_GET['locale'] : 'en_US';
+		if ( isset( $_GET['dismiss'] ) || isset( $_GET['undismiss'] ) ) {
+			$version = isset( $_GET['version'] ) ? sanitize_text_field( wp_unslash( $_GET['version'] ) ) : false;
+			$locale  = isset( $_GET['locale'] ) ? sanitize_text_field( wp_unslash( $_GET['locale'] ) ) : 'en_US';
 
 			$update = find_core_update( $version, $locale );
 
 			if ( $update ) {
-				dismiss_core_update( $update );
-			}
-		} else if ( isset( $_GET['undismiss'] ) ) {
-			$version = isset( $_GET['version'] ) ? $_GET['version'] : false;
-			$locale  = isset( $_GET['locale'] ) ? $_GET['locale'] : 'en_US';
-
-			$update = find_core_update( $version, $locale );
-
-			if ( $update ) {
-				undismiss_core_update( $version, $locale );
+				if ( isset( $_GET['dismiss'] ) ) {
+					dismiss_core_update( $update );
+				} else {
+					undismiss_core_update( $version, $locale );
+				}
 			}
 		}
 
