@@ -32,7 +32,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	 *
 	 * @var string|false Available WordPress version or false if already up to date.
 	 */
-	protected $core_update_version;
+	protected $core_update_version = false;
 
 	/**
 	 * Whether there are any available updates.
@@ -86,24 +86,22 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 		$themes       = (array) get_theme_updates();
 		$translations = (array) wp_get_translation_updates();
 
-		if ( ! isset( $core_updates[0]->response ) ||
-		     'latest' === $core_updates[0]->response ||
-		     version_compare( $core_updates[0]->current, $this->cur_wp_version, '=' )
-		) {
-			$this->core_update_version = false;
-		} else {
-			$this->core_update_version = $core_updates[0]->current;
+		foreach ( $core_updates as $core_update ) {
+			if ( isset( $core_update->response ) &&
+			     'latest' !== $core_update->response &&
+			     ! version_compare( $core_update->current, $this->cur_wp_version, '=' )
+			) {
+				$this->core_update_version = $core_update->current;
+
+				$this->items[] = array(
+					'type' => 'core',
+					'slug' => 'core',
+					'data' => $core_update,
+				);
+			}
 		}
 
 		$this->has_available_updates = ( $this->core_update_version || ! empty( $plugins ) || ! empty( $themes ) || ! empty( $translations ) );
-
-		if ( ! empty( $core_updates ) && $this->core_update_version ) {
-			$this->items[] = array(
-				'type' => 'core',
-				'slug' => 'core',
-				'data' => $core_updates[0],
-			);
-		}
 
 		foreach ( $plugins as $plugin_file => $plugin_data ) {
 			$this->items[] = array(
@@ -478,7 +476,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 				?>
 			</p>
 			<?php
-			if ( 'en_US' !== $update->locale && ! isset( $update->dismissed ) || ! $update->dismissed ) {
+			if ( 'en_US' !== $update->locale && ! ( isset( $update->dismissed ) && $update->dismissed ) ) {
 				printf( '<p><a href="%1$s">%2$s</a></p>', esc_url( add_query_arg( 'dismiss', '', $dismiss_url ) ), __( 'Hide this update' ) );
 			}
 		endif;
@@ -541,7 +539,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 		$nonce_action = 'translations' === $item['type'] ? 'upgrade-translations' : 'upgrade-core';
 		$data         = '';
 
-		if ( 'core' === $item['type'] && ( 'en_US' !== $item['data']->locale && isset( $item['data']->dismissed ) || $item['data']->dismissed ) ) {
+		if ( 'core' === $item['type'] && ( 'en_US' !== $item['data']->locale && isset( $item['data']->dismissed ) && $item['data']->dismissed ) ) {
 			return;
 		}
 
