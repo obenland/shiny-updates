@@ -295,7 +295,6 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 			'width'     => 640,
 			'height'    => 662,
 		), $theme->update['url'] );
-
 		?>
 		<div class="updates-table-screenshot">
 			<img src="<?php echo esc_url( $theme->get_screenshot() ); ?>" width="85" height="64" alt=""/>
@@ -303,7 +302,6 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 		<p>
 			<strong><?php echo $theme->display( 'Name' ); ?></strong>
 			<?php
-
 			/* translators: 1: theme version, 2: new version */
 			printf( __( 'You have version %1$s installed. Update to %2$s. <a href="%3$s" class="thickbox open-plugin-details-modal" aria-label="%4$s" data-title="%5$s">View version %2$s details</a>.' ),
 				$theme->display( 'Version' ),
