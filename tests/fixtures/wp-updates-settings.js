@@ -30,8 +30,8 @@ window._wpUpdatesSettings = {
 		'installFailedLabel': '%s installation failed',
 		'installingMsg': 'Installing... please wait.',
 		'installedMsg': 'Installation completed successfully.',
-		'aysDelete': 'Are you sure you want to delete %s? This might delete data!',
-        'aysBulkDelete': 'Are you sure you want to delete the selected plugins? This might delete data!',
+		'aysDelete': 'Are you sure you want to delete %s and its data?',
+		'aysBulkDelete': 'Are you sure you want to delete the selected plugins and their data?',
 		'deleting': 'Deleting...',
 		'deleteFailed': 'Deletion failed: %s',
 		'deleted': 'Deleted!'

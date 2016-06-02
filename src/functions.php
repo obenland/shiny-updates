@@ -105,8 +105,8 @@ function su_enqueue_scripts( $hook ) {
 			'installingMsg'              => __( 'Installing... please wait.' ),
 			'installedMsg'               => __( 'Installation completed successfully.' ),
 			/* translators: %s: Plugin name */
-			'aysDelete'                  => __( 'Are you sure you want to delete %s? This might delete data!' ),
-			'aysBulkDelete'              => __( 'Are you sure you want to delete the selected plugins? This might delete data!' ),
+			'aysDelete'                  => __( 'Are you sure you want to delete %s and its data?' ),
+			'aysBulkDelete'              => __( 'Are you sure you want to delete the selected plugins and their data?' ),
 			'deleting'                   => __( 'Deleting...' ),
 			/* translators: %s: Error string for a failed deletion */
 			'deleteFailed'               => __( 'Deletion failed: %s' ),
