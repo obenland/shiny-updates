@@ -297,16 +297,21 @@
 	 *
 	 * @since 4.2.0
 	 *
-	 * @param {object}        args         Arguments.
-	 * @param {string}        args.plugin  Plugin basename.
-	 * @param {string}        args.slug    Plugin slug.
-	 * @param {updateSuccess} args.success Success callback.
-	 * @param {updateError}   args.error   Error callback.
+	 * @param {object}         args         Arguments.
+	 * @param {string}         args.plugin  Plugin basename.
+	 * @param {string}         args.slug    Plugin slug.
+	 * @param {updateSuccess=} args.success Optional. Success callback. Default: wp.updates.updateSuccess
+	 * @param {updateError=}   args.error   Optional. Error callback. Default: wp.updates.updateError
 	 * @return {$.promise} A jQuery promise that represents the request,
 	 *                     decorated with an abort() method.
 	 */
 	wp.updates.updatePlugin = function( args ) {
 		var $updateRow, $card, $message, message;
+
+		args = _.extend( {
+			success: wp.updates.updateSuccess,
+			error: wp.updates.updateError
+		}, args );
 
 		if ( 'plugins' === pagenow || 'plugins-network' === pagenow ) {
 			$updateRow = $( 'tr[data-plugin="' + args.plugin + '"]' );
@@ -442,14 +447,19 @@
 	 *
 	 * @param {object}                args         Arguments.
 	 * @param {string}                args.slug    Plugin identifier in the WordPress.org Plugin repository.
-	 * @param {installPluginSuccess=} args.success Optional. Success callback.
-	 * @param {installPluginError=}   args.error   Optional. Error callback.
+	 * @param {installPluginSuccess=} args.success Optional. Success callback. Default: wp.updates.installPluginSuccess
+	 * @param {installPluginError=}   args.error   Optional. Error callback. Default: wp.updates.installPluginError
 	 * @return {$.promise} A jQuery promise that represents the request,
 	 *                     decorated with an abort() method.
 	 */
 	wp.updates.installPlugin = function( args ) {
 		var $card    = $( '.plugin-card-' + args.slug ),
 		    $message = $card.find( '.install-now' );
+
+		args = _.extend( {
+			success: wp.updates.installPluginSuccess,
+			error: wp.updates.installPluginError
+		}, args );
 
 		$message.addClass( 'updating-message' );
 		$message.text( wp.updates.l10n.installing );
@@ -548,12 +558,17 @@
 	 * @param {object}               args         Arguments.
 	 * @param {string}               args.plugin  Plugin basename.
 	 * @param {string}               args.slug    Plugin slug.
-	 * @param {deletePluginSuccess=} args.success Success callback.
-	 * @param {deletePluginError=}   args.error   Error callback.
+	 * @param {deletePluginSuccess=} args.success Optional. Success callback. Default: wp.updates.deletePluginSuccess
+	 * @param {deletePluginError=}   args.error   Optional. Error callback. Default: wp.updates.deletePluginError
 	 * @return {$.promise} A jQuery promise that represents the request,
 	 *                     decorated with an abort() method.
 	 */
 	wp.updates.deletePlugin = function( args ) {
+		args = _.extend( {
+			success: wp.updates.deletePluginSuccess,
+			error: wp.updates.deletePluginError
+		}, args );
+
 		wp.a11y.speak( wp.updates.l10n.deleting, 'polite' );
 
 		return wp.updates.ajax( 'delete-plugin', args );
@@ -651,7 +666,7 @@
 
 		$( 'tr[data-plugin="' + response.plugin + '"]' ).find( '.column-description' ).prepend( wp.updates.adminNotice( {
 			className: 'update-message notice-error notice-alt',
-			message:   response.error
+			message:   response.errorMessage
 		} ) );
 
 		$document.trigger( 'wp-plugin-delete-error', response );
@@ -662,15 +677,20 @@
 	 *
 	 * @since 4.X.0
 	 *
-	 * @param {object}             args
-	 * @param {string}             args.slug    Theme stylesheet.
-	 * @param {updateThemeSuccess} args.success Success callback.
-	 * @param {updateThemeError}   args.error   Error callback.
+	 * @param {object}              args
+	 * @param {string}              args.slug    Theme stylesheet.
+	 * @param {updateThemeSuccess=} args.success Optional. Success callback. Default: wp.updates.updateThemeSuccess
+	 * @param {updateThemeError=}   args.error   Optional. Error callback. Default: wp.updates.updateThemeError
 	 * @return {$.promise} A jQuery promise that represents the request,
 	 *                     decorated with an abort() method.
 	 */
 	wp.updates.updateTheme = function( args ) {
 		var $notice;
+
+		args = _.extend( {
+			success: wp.updates.updateThemeSuccess,
+			error: wp.updates.updateThemeError
+		}, args );
 
 		if ( 'update-core' === pagenow ) {
 			$notice = $( '.update-link', '[data-slug="' + args.slug + '"]' ).addClass( 'updating-message' );
@@ -798,15 +818,20 @@
 	 *
 	 * @since 4.X.0
 	 *
-	 * @param {object}              args
-	 * @param {string}              args.slug    Theme stylesheet.
-	 * @param {installThemeSuccess} args.success Success callback.
-	 * @param {installThemeError}   args.error   Error callback.
+	 * @param {object}               args
+	 * @param {string}               args.slug    Theme stylesheet.
+	 * @param {installThemeSuccess=} args.success Optional. Success callback. Default: wp.updates.installThemeSuccess
+	 * @param {installThemeError=}   args.error   Optional. Error callback. Default: wp.updates.installThemeError
 	 * @return {$.promise} A jQuery promise that represents the request,
 	 *                     decorated with an abort() method.
 	 */
 	wp.updates.installTheme = function( args ) {
 		var $message = $( '.theme-install[data-slug="' + args.slug + '"]' );
+
+		args = _.extend( {
+			success: wp.updates.installThemeSuccess,
+			error: wp.updates.installThemeError
+		}, args );
 
 		$message.addClass( 'updating-message' );
 		$message.parents( '.theme' ).addClass( 'focus' );
@@ -890,15 +915,20 @@
 	 *
 	 * @since 4.X.0
 	 *
-	 * @param {object}             args
-	 * @param {string}             args.slug    Theme stylesheet.
-	 * @param {deleteThemeSuccess} args.success Success callback.
-	 * @param {deleteThemeError}   args.error   Error callback.
+	 * @param {object}              args
+	 * @param {string}              args.slug    Theme stylesheet.
+	 * @param {deleteThemeSuccess=} args.success Optional. Success callback. Default: wp.updates.deleteThemeSuccess
+	 * @param {deleteThemeError=}   args.error   Optional. Error callback. Default: wp.updates.deleteThemeError
 	 * @return {$.promise} A jQuery promise that represents the request,
 	 *                     decorated with an abort() method.
 	 */
 	wp.updates.deleteTheme = function( args ) {
 		var $button = $( '.theme-actions .delete-theme' );
+
+		args = _.extend( {
+			success: wp.updates.deleteThemeSuccess,
+			error: wp.updates.deleteThemeError
+		}, args );
 
 		if ( $button.html() !== wp.updates.l10n.deleting ) {
 			$button.data( 'originaltext', $button.html() );
@@ -1005,13 +1035,18 @@
 	 * @param {string}             args.version   The version to update to.
 	 * @param {string}             args.locale    The locale to get the update for.
 	 * @param {boolean}            args.reinstall Whether this is a reinstall request or not.
-	 * @param {updateItemSuccess=} args.success   Optional. Success callback.
-	 * @param {updateItemError=}   args.error     Optional. Error callback.
+	 * @param {updateItemSuccess=} args.success   Optional. Success callback. Default: wp.updates.updateItemSuccess
+	 * @param {updateItemError=}   args.error     Optional. Error callback. Default: wp.updates.updateItemError
 	 * @return {$.promise} A jQuery promise that represents the request,
 	 *                     decorated with an abort() method.
 	 */
 	wp.updates.updateCore = function( args ) {
 		var $message;
+
+		args = _.extend( {
+			success: wp.updates.updateItemSuccess,
+			error: wp.updates.updateItemError
+		}, args );
 
 		$message = $( '[data-type="core"]' ).filter( function() {
 			return args.reinstall && $( this ).is( '.wordpress-reinstall-card' ) || ! args.reinstall && ! $( this ).is( '.wordpress-reinstall-card' );
@@ -1034,13 +1069,18 @@
 	 * @since 4.X.0
 	 *
 	 * @param {object}             args         Arguments.
-	 * @param {updateItemSuccess=} args.success Optional. Success callback.
-	 * @param {updateItemError=}   args.error   Optional. Error callback.
+	 * @param {updateItemSuccess=} args.success Optional. Success callback. Default: wp.updates.updateItemSuccess
+	 * @param {updateItemError=}   args.error   Optional. Error callback. Default: wp.updates.updateItemError
 	 * @return {$.promise} A jQuery promise that represents the request,
 	 *                     decorated with an abort() method.
 	 */
 	wp.updates.updateTranslations = function( args ) {
 		var $message = $( '[data-type="translations"]' ).find( '.update-link' );
+
+		args = _.extend( {
+			success: wp.updates.updateItemSuccess,
+			error: wp.updates.updateItemError
+		}, args );
 
 		if ( $message.html() !== wp.updates.l10n.updating ) {
 			$message.data( 'originaltext', $message.html() );
@@ -1198,42 +1238,6 @@
 	 * @return {object} The AJAX payload with the appropriate callbacks.
 	 */
 	wp.updates._addCallbacks = function( data, type ) {
-		switch ( type ) {
-			case 'install-plugin':
-				data.success = wp.updates.installPluginSuccess;
-				data.error   = wp.updates.installPluginError;
-				break;
-
-			case 'update-plugin':
-				data.success = wp.updates.updateSuccess;
-				data.error   = wp.updates.updateError;
-				break;
-
-			case 'delete-plugin':
-				data.success = wp.updates.deletePluginSuccess;
-				data.error   = wp.updates.deletePluginError;
-				break;
-
-			case 'install-theme':
-				data.success = wp.updates.installThemeSuccess;
-				data.error   = wp.updates.installThemeError;
-				break;
-
-			case 'update-theme':
-				data.success = wp.updates.updateThemeSuccess;
-				data.error   = wp.updates.updateThemeError;
-				break;
-
-			case 'delete-theme':
-				data.success = wp.updates.deleteThemeSuccess;
-				data.error   = wp.updates.deleteThemeError;
-				break;
-
-			default:
-				data.success = wp.updates.updateItemSuccess;
-				data.error   = wp.updates.updateItemError;
-		}
-
 		if ( 'update-core' === pagenow ) {
 			data.success = wp.updates.updateItemSuccess;
 			data.error   = wp.updates.updateItemError;
@@ -1571,10 +1575,8 @@
 			// Return the user to the input box of the plugin's table row after closing the modal.
 			wp.updates.$elToReturnFocusToFromCredentialsModal = $pluginRow.find( '.check-column input' );
 			wp.updates.updatePlugin( {
-				plugin:  $pluginRow.data( 'plugin' ),
-				slug:    $pluginRow.data( 'slug' ),
-				success: wp.updates.updateSuccess,
-				error:   wp.updates.updateError
+				plugin: $pluginRow.data( 'plugin' ),
+				slug:   $pluginRow.data( 'slug' )
 			} );
 		} );
 
@@ -1598,10 +1600,8 @@
 			}
 
 			wp.updates.updatePlugin( {
-				plugin:  $button.data( 'plugin' ),
-				slug:    $button.data( 'slug' ),
-				success: wp.updates.updateSuccess,
-				error:   wp.updates.updateError
+				plugin: $button.data( 'plugin' ),
+				slug:   $button.data( 'slug' )
 			} );
 		} );
 
@@ -1633,9 +1633,7 @@
 			}
 
 			wp.updates.installPlugin( {
-				slug:    $button.data( 'slug' ),
-				success: wp.updates.installPluginSuccess,
-				error:   wp.updates.installPluginError
+				slug: $button.data( 'slug' )
 			} );
 		} );
 
@@ -1660,10 +1658,8 @@
 			}
 
 			wp.updates.deletePlugin( {
-				plugin:  $pluginRow.data( 'plugin' ),
-				slug:    $pluginRow.data( 'slug' ),
-				success: wp.updates.deletePluginSuccess,
-				error:   wp.updates.deletePluginError
+				plugin: $pluginRow.data( 'plugin' ),
+				slug:   $pluginRow.data( 'slug' )
 			} );
 
 		} );
@@ -1692,9 +1688,7 @@
 			// Return the user to the input box of the theme's table row after closing the modal.
 			wp.updates.$elToReturnFocusToFromCredentialsModal = $themeRow.find( '.check-column input' );
 			wp.updates.updateTheme( {
-				slug:    $themeRow.data( 'slug' ),
-				success: wp.updates.updateThemeSuccess,
-				error:   wp.updates.updateThemeError
+				slug: $themeRow.data( 'slug' )
 			} );
 		} );
 
@@ -1719,9 +1713,7 @@
 			}
 
 			wp.updates.deleteTheme( {
-				slug:    $themeRow.data( 'slug' ),
-				success: wp.updates.deleteThemeSuccess,
-				error:   wp.updates.deleteThemeError
+				slug: $themeRow.data( 'slug' )
 			} );
 		} );
 
@@ -1738,7 +1730,7 @@
 			    success       = 0,
 			    error         = 0,
 			    errorMessages = [],
-			    pluginAction, pluginActionDone, pluginActionFail;
+			    pluginAction;
 
 			if ( 'plugins' !== pagenow && 'plugins-network' !== pagenow ) {
 				return;
@@ -1757,15 +1749,11 @@
 
 			switch ( action ) {
 				case 'update-selected':
-					pluginAction     = wp.updates.updatePlugin;
-					pluginActionDone = wp.updates.updateSuccess;
-					pluginActionFail = wp.updates.updateError;
+					pluginAction = wp.updates.updatePlugin;
 					break;
 
 				case 'delete-selected':
-					pluginAction     = wp.updates.deletePlugin;
-					pluginActionDone = wp.updates.deletePluginSuccess;
-					pluginActionFail = wp.updates.deletePluginError;
+					pluginAction = wp.updates.deletePlugin;
 					break;
 
 				default:
@@ -1797,9 +1785,7 @@
 
 				pluginAction( {
 					plugin:  $pluginRow.data( 'plugin' ),
-					slug:    $pluginRow.data( 'slug' ),
-					success: pluginActionDone,
-					error:   pluginActionFail
+					slug:    $pluginRow.data( 'slug' )
 				} );
 			} );
 
@@ -1845,7 +1831,7 @@
 		$bulkActionForm.on( 'click', '[type="submit"]', function( event ) {
 			var action        = $( event.target ).siblings( 'select' ).val(),
 			    itemsSelected = $bulkActionForm.find( 'input[name="checked[]"]:checked' ),
-			    themeAction, themeActionDone, themeActionFail;
+			    themeAction;
 
 			if ( 'themes-network' !== pagenow ) {
 				return;
@@ -1864,15 +1850,11 @@
 
 			switch ( action ) {
 				case 'update-selected':
-					themeAction     = wp.updates.updateTheme;
-					themeActionDone = wp.updates.updateThemeSuccess;
-					themeActionFail = wp.updates.updateThemeError;
+					themeAction = wp.updates.updateTheme;
 					break;
 
 				case 'delete-selected':
-					themeAction     = wp.updates.deleteTheme;
-					themeActionDone = wp.updates.deleteThemeSuccess;
-					themeActionFail = wp.updates.deleteThemeError;
+					themeAction = wp.updates.deleteTheme;
 					break;
 
 				default:
@@ -1903,9 +1885,7 @@
 				}
 
 				themeAction( {
-					slug:    $themeRow.data( 'slug' ),
-					success: themeActionDone,
-					error:   themeActionFail
+					slug: $themeRow.data( 'slug' )
 				} );
 			} );
 		} );

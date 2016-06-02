@@ -58,9 +58,7 @@ window.wp = window.wp || {};
 			} );
 
 			wp.updates.installTheme( {
-				slug:    $( event.target ).data( 'slug' ),
-				success: wp.updates.installThemeSuccess,
-				error:   wp.updates.installThemeError
+				slug: $( event.target ).data( 'slug' )
 			} );
 		},
 
@@ -113,9 +111,7 @@ window.wp = window.wp || {};
 			} );
 
 			wp.updates.updateTheme( {
-				slug:    $( event.target ).parents( 'div.theme' ).first().data( 'slug' ),
-				success: wp.updates.updateThemeSuccess,
-				error:   wp.updates.updateThemeError
+				slug: $( event.target ).parents( 'div.theme' ).first().data( 'slug' )
 			} );
 		}
 	} );
@@ -145,9 +141,7 @@ window.wp = window.wp || {};
 			} );
 
 			wp.updates.updateTheme( {
-				slug:    $( event.target ).data( 'slug' ),
-				success: wp.updates.updateThemeSuccess,
-				error:   wp.updates.updateThemeError
+				slug: $( event.target ).data( 'slug' )
 			} );
 		},
 
@@ -175,9 +169,7 @@ window.wp = window.wp || {};
 			} );
 
 			wp.updates.deleteTheme( {
-				slug:    this.model.get( 'id' ),
-				success: wp.updates.deleteThemeSuccess,
-				error:   wp.updates.deleteThemeError
+				slug: this.model.get( 'id' )
 			} );
 		}
 	} );
@@ -212,9 +204,7 @@ window.wp = window.wp || {};
 			} );
 
 			wp.updates.installTheme( {
-				slug:    $target.data( 'slug' ),
-				success: wp.updates.installThemeSuccess,
-				error:   wp.updates.installThemeError
+				slug: $target.data( 'slug' )
 			} );
 		}
 	} );
