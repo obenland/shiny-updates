@@ -43,7 +43,7 @@ function su_enqueue_scripts( $hook ) {
 		$totals = $GLOBALS['totals'];
 	}
 
-	if ( strpos( $hook, 'plugin' ) ) {
+	if ( stristr( $hook, 'plugin' ) ) {
 		if ( ! isset( $GLOBALS['plugins'] ) ) {
 			$GLOBALS['plugins'] = array( 'all' => get_plugins() );
 		}
