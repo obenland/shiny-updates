@@ -686,7 +686,10 @@
 		if ( 'themes-network' === pagenow ) {
 			$notice = $( '[data-slug="' + args.slug + '"]' ).find( '.update-message' );
 		} else {
-			$notice = $( '#update-theme' ).closest( '.notice' ) || $( '[data-slug="' + args.slug + '"]' ).find( '.update-message' );
+			$notice = $( '#update-theme' ).closest( '.notice' );
+			if ( ! $notice.length ) {
+				$notice = $( '[data-slug="' + args.slug + '"]' ).find( '.update-message' );
+			}
 		}
 
 		message = $notice.find( 'p' ).text();
