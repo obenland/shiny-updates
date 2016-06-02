@@ -702,7 +702,11 @@ function su_update_table() {
 	<?php
 	$core_updates = (array) get_core_updates();
 
-	$update = isset( $core_updates[1] ) ? $core_updates[1] : $core_updates[0];
+	if ( empty( $core_updates ) ) {
+		return;
+	}
+
+	$update = array_pop( $core_updates );
 
 	if ( 'en_US' === $update->locale &&
 	     'en_US' === get_locale() ||
