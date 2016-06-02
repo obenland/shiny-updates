@@ -48,10 +48,11 @@
 	animation: rotation 2s infinite linear;
 }
 
-.wrap .notice-success p:before,
 .plugin-card .updated-message:before,
 .plugin-card .installed:before,
+.updated-message p:before,
 .button.updated-message:before,
+.installed:before p:before,
 .button.installed:before {
 	color: #79ba49;
 	content: '\f147';
@@ -166,11 +167,6 @@ tr.active.update + tr.plugin-update-tr .plugin-update {
 	color: #00a0d2;
 }
 
-.notice-success,
-div.updated {
-	border-left-color: #46b450;
-}
-
 tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-success.notice-alt,
 .notice-success.notice-alt {
 	background-color: #ecf7ed;
@@ -185,22 +181,9 @@ tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-warning.not
 	background-color: #fff8e5;
 }
 
-.notice-error,
-div.error {
-	border-left-color: #dc3232;
-}
-
 tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-error.notice-alt,
 .notice-error.notice-alt {
 	background-color: #fbeaea;
-}
-
-.notice-info {
-	border-left-color: #00a0d2;
-}
-
-.notice-info.notice-alt {
-	background-color: #e5f5fa;
 }
 
 .update-core-php .wrap > h2,

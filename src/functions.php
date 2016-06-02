@@ -659,7 +659,7 @@ function su_update_table() {
 		if ( $updates_table->has_available_updates() ) :
 			$updates_table->display();
 		else : ?>
-		<div class="notice inline">
+		<div class="notice notice-success inline">
 			<p>
 				<strong><?php _e( 'Everything is up to date.' ); ?></strong>
 				<?php
