@@ -1857,8 +1857,8 @@
 		 *
 		 * @param {Event} event Event interface.
 		 */
-			var $message = $( '.update-link[data-type="all"]' ).addClass( 'updating-message' );
 		$document.on( 'click', '.wordpress-updates-table .tablenav .update-link', function( event ) {
+			var $message = $( '.update-link[data-type="all"]' );
 
 			event.preventDefault();
 
@@ -1871,7 +1871,7 @@
 				wp.updates.requestFilesystemCredentials( event );
 			}
 
-			$message.attr( 'aria-label', wp.updates.l10n.updatingAllLabel ).text( wp.updates.l10n.updating );
+			$message.addClass( 'updating-message' ).attr( 'aria-label', wp.updates.l10n.updatingAllLabel ).text( wp.updates.l10n.updating );
 
 			$document.on( 'wp-plugin-update-success wp-theme-update-success wp-core-update-success wp-translations-update-success wp-plugin-update-error wp-theme-update-error wp-core-update-error wp-translations-update-error ', function() {
 				if ( 0 === wp.updates.updateQueue.length ) {
