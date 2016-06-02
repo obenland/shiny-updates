@@ -681,7 +681,8 @@ function su_update_table() {
 				if ( wp_http_supports( array( 'ssl' ) ) ) {
 					require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
 
-					$upgrader = new WP_Automatic_Updater;
+					$upgrader = new WP_Automatic_Updater();
+
 					$future_minor_update = (object) array(
 						'current'       => $wp_version . '.1.next.minor',
 						'version'       => $wp_version . '.1.next.minor',
