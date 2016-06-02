@@ -7,18 +7,12 @@
 	top: 0;
 }
 
-.wrap .notice p:before {
-	display: inline-block;
-	font: normal 18px/1 dashicons;
-	-webkit-font-smoothing: antialiased;
-	margin-right: 6px;
-	vertical-align: text-bottom;
-}
-
+.wrap .notice p:before,
 .update-message p:before,
 .updating-message p:before,
 .plugin-card .updated-message:before,
 .plugin-card .installed:before,
+.import-php .updating-message:before,
 .button.updating-message:before,
 .button.updated-message:before,
 .button.installed:before,
@@ -35,6 +29,7 @@
 .updating-message p:before,
 .plugin-update-tr .installed:before,
 .plugin-card .update-now:before,
+.import-php .updating-message:before,
 .button.updating-message:before,
 .button.installing:before {
 	color: #f56e28;
@@ -43,6 +38,7 @@
 
 .updating-message p:before,
 .button.updating-message:before,
+.import-php .updating-message:before,
 .button.installing:before {
 	-webkit-animation: rotation 2s infinite linear;
 	animation: rotation 2s infinite linear;
@@ -55,6 +51,15 @@
 .button.installed:before {
 	color: #79ba49;
 	content: '\f147';
+}
+
+.wrap .notice p:before {
+	margin-right: 6px;
+	vertical-align: text-bottom;
+}
+
+.import-php .updating-message:before {
+	vertical-align: bottom;
 }
 
 .button-primary.updating-message:before,

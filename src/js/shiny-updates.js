@@ -449,8 +449,14 @@
 		var $card    = $( '.plugin-card-' + args.slug ),
 		    $message = $card.find( '.install-now' );
 
+		if ( 'import' === pagenow ) {
+			$message = $( 'a[href*="' + args.slug + '"]' );
+		} else {
+			$message.text( wp.updates.l10n.installing );
+		}
+
 		$message.addClass( 'updating-message' );
-		$message.text( wp.updates.l10n.installing );
+
 		wp.a11y.speak( wp.updates.l10n.installingMsg, 'polite' );
 
 		// Remove previous error messages, if any.
@@ -556,7 +562,7 @@
 		} );
 
 		$( 'a[href*="' + response.slug + '"]' )
-			.removeClass( 'thickbox open-plugin-details-modal' )
+			.removeClass( 'thickbox open-plugin-details-modal updating-message' )
 			.off( 'click' )
 			.attr( 'href', response.activateUrl + '&from=import' )
 			.attr( 'title', wp.updates.l10n.activateImporter );
@@ -584,6 +590,8 @@
 			className: 'notice-error is-dismissible',
 			message:   errorMessage
 		} );
+
+		$( 'a[href*="' + response.slug + '"]' ).removeClass( 'updating-message' )
 
 		wp.a11y.speak( errorMessage, 'assertive' );
 
