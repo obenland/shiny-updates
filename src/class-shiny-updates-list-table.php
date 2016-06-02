@@ -287,8 +287,21 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	 * @param array $item The current item.
 	 */
 	public function column_title_theme( $item ) {
+		static $themes_update = null;
+
 		/* @var WP_Theme $theme */
 		$theme = $item['data'];
+
+		if ( ! isset( $themes_update ) ) {
+			$themes_update = get_site_transient( 'update_themes' );
+		}
+
+		$details_url = add_query_arg( array(
+			'TB_iframe' => 'true',
+			'width'     => 640,
+			'height'    => 662,
+		), $themes_update->response[ $theme->get_stylesheet() ]['url'] );
+
 		?>
 		<div class="updates-table-screenshot">
 			<img src="<?php echo esc_url( $theme->get_screenshot() ); ?>" width="85" height="64" alt=""/>
@@ -296,10 +309,15 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 		<p>
 			<strong><?php echo $theme->display( 'Name' ); ?></strong>
 			<?php
+
 			/* translators: 1: theme version, 2: new version */
-			printf( __( 'You have version %1$s installed. Update to %2$s.' ),
+			printf( __( 'You have version %1$s installed. Update to %2$s. <a href="%3$s" class="thickbox open-plugin-details-modal" aria-label="%4$s" data-title="%5$s">View version %2$s details</a>.' ),
 				$theme->display( 'Version' ),
-				$theme->update['new_version']
+				$theme->update['new_version'],
+				esc_url( $details_url ),
+				/* translators: 1: theme name, 2: version number */
+				esc_attr( sprintf( __( 'View %1$s version %2$s details' ), $theme->display( 'Name' ), $theme->update['new_version'] ) ),
+				esc_attr( $theme->display( 'Name' ) )
 			);
 			?>
 		</p>
