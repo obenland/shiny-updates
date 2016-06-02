@@ -274,7 +274,7 @@ function theme_install_templates() {
 
 		<div class="theme-actions">
 			<a class="button button-primary theme-install" data-slug="{{ data.id }}" href="{{ data.install_url }}"><?php esc_html_e( 'Install' ); ?></a>
-			<a class="button button-secondary preview install-theme-preview" href="#"><?php esc_html_e( 'Preview' ); ?></a>
+			<button class="button-secondary preview install-theme-preview"><?php esc_html_e( 'Preview' ); ?></button>
 		</div>
 
 		<# if ( data.installed ) { #>
@@ -285,11 +285,11 @@ function theme_install_templates() {
 	<script id="tmpl-shiny-theme-preview" type="text/template">
 		<div class="wp-full-overlay-sidebar">
 			<div class="wp-full-overlay-header">
-				<a href="#" class="close-full-overlay"><span class="screen-reader-text"><?php _e( 'Close' ); ?></span></a>
-				<a href="#" class="previous-theme"><span class="screen-reader-text"><?php _ex( 'Previous', 'Button label for a theme' ); ?></span></a>
-				<a href="#" class="next-theme"><span class="screen-reader-text"><?php _ex( 'Next', 'Button label for a theme' ); ?></span></a>
+				<button class="close-full-overlay"><span class="screen-reader-text"><?php _e( 'Close' ); ?></span></button>
+				<button class="previous-theme"><span class="screen-reader-text"><?php _ex( 'Previous', 'Button label for a theme' ); ?></span></button>
+				<button class="next-theme"><span class="screen-reader-text"><?php _ex( 'Next', 'Button label for a theme' ); ?></span></button>
 				<# if ( data.installed ) { #>
-					<a href="#" class="button button-primary theme-install disabled"><?php _ex( 'Installed', 'theme' ); ?></a>
+					<button class="button button-primary theme-install disabled"><?php _ex( 'Installed', 'theme' ); ?></button>
 				<# } else { #>
 					<a href="{{ data.install_url }}" class="button button-primary theme-install" data-slug="{{ data.id }}"><?php _e( 'Install' ); ?></a>
 				<# } #>
