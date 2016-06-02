@@ -226,6 +226,60 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Get the data attributes for a given list table item.
+	 *
+	 * @since 4.X.0
+	 * @access protected
+	 *
+	 * @param array  $item    The current item.
+	 * @param string $context Optional. Context where the attributes should be applied.
+	 *                        Can be either 'row' or 'button'. Default 'row'.
+	 * @return array Data attributes as key value pairs.
+	 */
+	protected function _get_data_attributes( $item, $context = 'row' ) {
+		$attributes = array( 'data-type' => esc_attr( $item['type'] ) );
+
+		switch ( $item['type'] ) {
+			case 'plugin':
+				$attributes['data-plugin'] = esc_attr( $item['slug'] );
+				$attributes['data-slug']   = esc_attr( $item['data']->update->slug );
+				$attributes['data-name']   = esc_attr( $item['data']->Name );
+
+				if ( 'button' === $context ) {
+					/* translators: %s: Plugin name */
+					$attributes['aria-label'] = esc_attr( sprintf( __( 'Update %s now' ), $item['data']->Name ) );
+				}
+				break;
+			case 'theme':
+				$attributes['data-slug'] = esc_attr( $item['slug'] );
+				$attributes['data-name'] = esc_attr( $item['data']->display( 'Name' ) );
+
+				if ( 'button' === $context ) {
+					/* translators: %s: Theme name */
+					$attributes['aria-label'] = esc_attr( sprintf( __( 'Update %s now' ), $item['data']->display( 'Name' ) ) );
+				}
+				break;
+			case 'translations':
+				if ( 'button' === $context ) {
+					$attributes['aria-label'] = esc_attr__( 'Update translations now' );
+				}
+				break;
+			case 'core':
+				$attributes['data-version'] = esc_attr( $item['data']->current );
+				$attributes['data-locale']  = esc_attr( $item['data']->locale );
+
+				if ( 'button' === $context ) {
+					$attributes['aria-label'] = esc_attr__( 'Update WordPress now' );
+				}
+				break;
+			default:
+				break;
+		}
+
+		return $attributes;
+	}
+
+	/**
 	 * Gets a list of columns.
 	 *
 	 * @since 4.X.0
@@ -471,60 +525,6 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 				_e( 'Core' );
 				break;
 		}
-	}
-
-	/**
-	 * Get the data attributes for a given list table item.
-	 *
-	 * @since 4.X.0
-	 * @access protected
-	 *
-	 * @param array  $item    The current item.
-	 * @param string $context Optional. Context where the attributes should be applied.
-	 *                        Can be either 'row' or 'button'. Default 'row'.
-	 * @return array Data attributes as key value pairs.
-	 */
-	protected function _get_data_attributes( $item, $context = 'row' ) {
-		$attributes = array( 'data-type' => esc_attr( $item['type'] ) );
-
-		switch ( $item['type'] ) {
-			case 'plugin':
-				$attributes['data-plugin'] = esc_attr( $item['slug'] );
-				$attributes['data-slug']   = esc_attr( $item['data']->update->slug );
-				$attributes['data-name']   = esc_attr( $item['data']->Name );
-
-				if ( 'button' === $context ) {
-					/* translators: %s: Plugin name */
-					$attributes['aria-label'] = esc_attr( sprintf( __( 'Update %s now' ), $item['data']->Name ) );
-				}
-				break;
-			case 'theme':
-				$attributes['data-slug'] = esc_attr( $item['slug'] );
-				$attributes['data-name'] = esc_attr( $item['data']->display( 'Name' ) );
-
-				if ( 'button' === $context ) {
-					/* translators: %s: Theme name */
-					$attributes['aria-label'] = esc_attr( sprintf( __( 'Update %s now' ), $item['data']->display( 'Name' ) ) );
-				}
-				break;
-			case 'translations':
-				if ( 'button' === $context ) {
-					$attributes['aria-label'] = esc_attr__( 'Update translations now' );
-				}
-				break;
-			case 'core':
-				$attributes['data-version'] = esc_attr( $item['data']->current );
-				$attributes['data-locale']  = esc_attr( $item['data']->locale );
-
-				if ( 'button' === $context ) {
-					$attributes['aria-label'] = esc_attr__( 'Update WordPress now' );
-				}
-				break;
-			default:
-				break;
-		}
-
-		return $attributes;
 	}
 
 	/**
