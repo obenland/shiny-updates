@@ -17,9 +17,9 @@ function wp_ajax_install_theme() {
 
 	if ( empty( $_POST['slug'] ) ) {
 		wp_send_json_error( array(
-			'slug'      => '',
-			'errorCode' => 'no_theme_specified',
-			'error'     => __( 'No theme specified.' ),
+			'slug'         => '',
+			'errorCode'    => 'no_theme_specified',
+			'errorMessage' => __( 'No theme specified.' ),
 		) );
 	}
 
@@ -29,7 +29,7 @@ function wp_ajax_install_theme() {
 	);
 
 	if ( ! current_user_can( 'install_themes' ) ) {
-		$status['error'] = __( 'You do not have sufficient permissions to install themes on this site.' );
+		$status['errorMessage'] = __( 'You do not have sufficient permissions to install themes on this site.' );
 		wp_send_json_error( $status );
 	}
 
@@ -42,7 +42,7 @@ function wp_ajax_install_theme() {
 	) );
 
 	if ( is_wp_error( $api ) ) {
-		$status['error'] = $api->get_error_message();
+		$status['errorMessage'] = $api->get_error_message();
 		wp_send_json_error( $status );
 	}
 
@@ -54,18 +54,17 @@ function wp_ajax_install_theme() {
 	}
 
 	if ( is_wp_error( $result ) ) {
-		$status['error'] = $result->get_error_message();
+		$status['errorMessage'] = $result->get_error_message();
 		wp_send_json_error( $status );
-
 	} else if ( is_null( $result ) ) {
 		global $wp_filesystem;
 
-		$status['errorCode'] = 'unable_to_connect_to_filesystem';
-		$status['error']     = __( 'Unable to connect to the filesystem. Please confirm your credentials.' );
+		$status['errorCode']    = 'unable_to_connect_to_filesystem';
+		$status['errorMessage'] = __( 'Unable to connect to the filesystem. Please confirm your credentials.' );
 
 		// Pass through the error from WP_Filesystem if one was raised.
 		if ( $wp_filesystem instanceof WP_Filesystem_Base && is_wp_error( $wp_filesystem->errors ) && $wp_filesystem->errors->get_error_code() ) {
-			$status['error'] = $wp_filesystem->errors->get_error_message();
+			$status['errorMessage'] = $wp_filesystem->errors->get_error_message();
 		}
 
 		wp_send_json_error( $status );
@@ -86,9 +85,9 @@ function wp_ajax_update_theme() {
 
 	if ( empty( $_POST['slug'] ) ) {
 		wp_send_json_error( array(
-			'slug'      => '',
-			'errorCode' => 'no_theme_specified',
-			'error'     => __( 'No theme specified.' ),
+			'slug'         => '',
+			'errorCode'    => 'no_theme_specified',
+			'errorMessage' => __( 'No theme specified.' ),
 		) );
 	}
 
@@ -102,7 +101,7 @@ function wp_ajax_update_theme() {
 	);
 
 	if ( ! current_user_can( 'update_themes' ) ) {
-		$status['error'] = __( 'You do not have sufficient permissions to update themes on this site.' );
+		$status['errorMessage'] = __( 'You do not have sufficient permissions to update themes on this site.' );
 		wp_send_json_error( $status );
 	}
 
@@ -124,39 +123,37 @@ function wp_ajax_update_theme() {
 
 		// Theme is already at the latest version.
 		if ( true === $result[ $stylesheet ] ) {
-			$status['error'] = $upgrader->strings['up_to_date'];
+			$status['errorMessage'] = $upgrader->strings['up_to_date'];
 			wp_send_json_error( $status );
 		}
 
 		$theme = wp_get_theme( $stylesheet );
 		if ( $theme->get( 'Version' ) ) {
-			$status['theme']      = wp_prepare_themes_for_js( array( $theme ) );
+			$status['theme'] = wp_prepare_themes_for_js( array( $theme ) );
 			/* translators: %s: Theme version */
 			$status['newVersion'] = sprintf( __( 'Version %s' ), $theme->get( 'Version' ) );
 		}
 
 		wp_send_json_success( $status );
-
 	} else if ( is_wp_error( $result ) ) {
-		$status['error'] = $result->get_error_message();
+		$status['errorMessage'] = $result->get_error_message();
 		wp_send_json_error( $status );
-
 	} else if ( false === $result ) {
 		global $wp_filesystem;
 
-		$status['errorCode'] = 'unable_to_connect_to_filesystem';
-		$status['error']     = __( 'Unable to connect to the filesystem. Please confirm your credentials.' );
+		$status['errorCode']    = 'unable_to_connect_to_filesystem';
+		$status['errorMessage'] = __( 'Unable to connect to the filesystem. Please confirm your credentials.' );
 
 		// Pass through the error from WP_Filesystem if one was raised.
 		if ( $wp_filesystem instanceof WP_Filesystem_Base && is_wp_error( $wp_filesystem->errors ) && $wp_filesystem->errors->get_error_code() ) {
-			$status['error'] = $wp_filesystem->errors->get_error_message();
+			$status['errorMessage'] = $wp_filesystem->errors->get_error_message();
 		}
 
 		wp_send_json_error( $status );
 	}
 
 	// An unhandled error occurred.
-	$status['error'] = __( 'Update failed.' );
+	$status['errorMessage'] = __( 'Update failed.' );
 	wp_send_json_error( $status );
 }
 
@@ -170,9 +167,9 @@ function wp_ajax_delete_theme() {
 
 	if ( empty( $_POST['slug'] ) ) {
 		wp_send_json_error( array(
-			'slug'      => '',
-			'errorCode' => 'no_theme_specified',
-			'error'     => __( 'No theme specified.' ),
+			'slug'         => '',
+			'errorCode'    => 'no_theme_specified',
+			'errorMessage' => __( 'No theme specified.' ),
 		) );
 	}
 
@@ -183,12 +180,12 @@ function wp_ajax_delete_theme() {
 	);
 
 	if ( ! current_user_can( 'delete_themes' ) ) {
-		$status['error'] = __( 'You do not have sufficient permissions to delete themes on this site.' );
+		$status['errorMessage'] = __( 'You do not have sufficient permissions to delete themes on this site.' );
 		wp_send_json_error( $status );
 	}
 
 	if ( ! wp_get_theme( $stylesheet )->exists() ) {
-		$status['error'] = __( 'The requested theme does not exist.' );
+		$status['errorMessage'] = __( 'The requested theme does not exist.' );
 		wp_send_json_error( $status );
 	}
 
@@ -199,12 +196,12 @@ function wp_ajax_delete_theme() {
 		global $wp_filesystem;
 		ob_end_clean();
 
-		$status['errorCode'] = 'unable_to_connect_to_filesystem';
-		$status['error']     = __( 'Unable to connect to the filesystem. Please confirm your credentials.' );
+		$status['errorCode']    = 'unable_to_connect_to_filesystem';
+		$status['errorMessage'] = __( 'Unable to connect to the filesystem. Please confirm your credentials.' );
 
 		// Pass through the error from WP_Filesystem if one was raised.
 		if ( $wp_filesystem instanceof WP_Filesystem_Base && is_wp_error( $wp_filesystem->errors ) && $wp_filesystem->errors->get_error_code() ) {
-			$status['error'] = $wp_filesystem->errors->get_error_message();
+			$status['errorMessage'] = $wp_filesystem->errors->get_error_message();
 		}
 
 		wp_send_json_error( $status );
@@ -215,11 +212,10 @@ function wp_ajax_delete_theme() {
 	$result = delete_theme( $stylesheet );
 
 	if ( is_wp_error( $result ) ) {
-		$status['error'] = $result->get_error_message();
+		$status['errorMessage'] = $result->get_error_message();
 		wp_send_json_error( $status );
-
 	} elseif ( false === $result ) {
-		$status['error'] = __( 'Theme could not be deleted.' );
+		$status['errorMessage'] = __( 'Theme could not be deleted.' );
 		wp_send_json_error( $status );
 	}
 
@@ -237,9 +233,9 @@ function wp_ajax_install_plugin() {
 
 	if ( empty( $_POST['slug'] ) ) {
 		wp_send_json_error( array(
-			'slug'      => '',
-			'errorCode' => 'no_plugin_specified',
-			'error'     => __( 'No plugin specified.' ),
+			'slug'         => '',
+			'errorCode'    => 'no_plugin_specified',
+			'errorMessage' => __( 'No plugin specified.' ),
 		) );
 	}
 
@@ -249,7 +245,7 @@ function wp_ajax_install_plugin() {
 	);
 
 	if ( ! current_user_can( 'install_plugins' ) ) {
-		$status['error'] = __( 'You do not have sufficient permissions to install plugins on this site.' );
+		$status['errorMessage'] = __( 'You do not have sufficient permissions to install plugins on this site.' );
 		wp_send_json_error( $status );
 	}
 
@@ -264,32 +260,31 @@ function wp_ajax_install_plugin() {
 	) );
 
 	if ( is_wp_error( $api ) ) {
-		$status['error'] = $api->get_error_message();
+		$status['errorMessage'] = $api->get_error_message();
 		wp_send_json_error( $status );
 	}
 
 	$status['pluginName'] = $api->name;
 
 	$upgrader = new Plugin_Upgrader( new Automatic_Upgrader_Skin() );
-	$result = $upgrader->install( $api->download_link );
+	$result   = $upgrader->install( $api->download_link );
 
 	if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 		$status['debug'] = $upgrader->skin->get_upgrade_messages();
 	}
 
 	if ( is_wp_error( $result ) ) {
-		$status['error'] = $result->get_error_message();
+		$status['errorMessage'] = $result->get_error_message();
 		wp_send_json_error( $status );
-
 	} else if ( is_null( $result ) ) {
 		global $wp_filesystem;
 
-		$status['errorCode'] = 'unable_to_connect_to_filesystem';
-		$status['error']     = __( 'Unable to connect to the filesystem. Please confirm your credentials.' );
+		$status['errorCode']    = 'unable_to_connect_to_filesystem';
+		$status['errorMessage'] = __( 'Unable to connect to the filesystem. Please confirm your credentials.' );
 
 		// Pass through the error from WP_Filesystem if one was raised.
 		if ( $wp_filesystem instanceof WP_Filesystem_Base && is_wp_error( $wp_filesystem->errors ) && $wp_filesystem->errors->get_error_code() ) {
-			$status['error'] = $wp_filesystem->errors->get_error_message();
+			$status['errorMessage'] = $wp_filesystem->errors->get_error_message();
 		}
 
 		wp_send_json_error( $status );
@@ -322,9 +317,9 @@ function wpsu_ajax_update_plugin() {
 
 	if ( empty( $_POST['plugin'] ) || empty( $_POST['slug'] ) ) {
 		wp_send_json_error( array(
-			'slug'      => '',
-			'errorCode' => 'no_plugin_specified',
-			'error'     => __( 'No plugin specified.' ),
+			'slug'         => '',
+			'errorCode'    => 'no_plugin_specified',
+			'errorMessage' => __( 'No plugin specified.' ),
 		) );
 	}
 
@@ -346,7 +341,7 @@ function wpsu_ajax_update_plugin() {
 	}
 
 	if ( ! current_user_can( 'update_plugins' ) ) {
-		$status['error'] = __( 'You do not have sufficient permissions to update plugins for this site.' );
+		$status['errorMessage'] = __( 'You do not have sufficient permissions to update plugins for this site.' );
 		wp_send_json_error( $status );
 	}
 
@@ -378,7 +373,7 @@ function wpsu_ajax_update_plugin() {
 		 * For now, surface some sort of error here.
 		 */
 		if ( true === $plugin_update_data ) {
-			$status['error'] = __( 'Plugin update failed.' );
+			$status['errorMessage'] = __( 'Plugin update failed.' );
 			wp_send_json_error( $status );
 		}
 
@@ -390,27 +385,25 @@ function wpsu_ajax_update_plugin() {
 			$status['newVersion'] = sprintf( __( 'Version %s' ), $plugin_data['Version'] );
 		}
 		wp_send_json_success( $status );
-
 	} else if ( is_wp_error( $result ) ) {
-		$status['error'] = $result->get_error_message();
+		$status['errorMessage'] = $result->get_error_message();
 		wp_send_json_error( $status );
-
 	} else if ( false === $result ) {
 		global $wp_filesystem;
 
-		$status['errorCode'] = 'unable_to_connect_to_filesystem';
-		$status['error'] = __( 'Unable to connect to the filesystem. Please confirm your credentials.' );
+		$status['errorCode']    = 'unable_to_connect_to_filesystem';
+		$status['errorMessage'] = __( 'Unable to connect to the filesystem. Please confirm your credentials.' );
 
 		// Pass through the error from WP_Filesystem if one was raised.
 		if ( $wp_filesystem instanceof WP_Filesystem_Base && is_wp_error( $wp_filesystem->errors ) && $wp_filesystem->errors->get_error_code() ) {
-			$status['error'] = $wp_filesystem->errors->get_error_message();
+			$status['errorMessage'] = $wp_filesystem->errors->get_error_message();
 		}
 
 		wp_send_json_error( $status );
 	}
 
 	// An unhandled error occurred.
-	$status['error'] = __( 'Plugin update failed.' );
+	$status['errorMessage'] = __( 'Plugin update failed.' );
 	wp_send_json_error( $status );
 }
 
@@ -437,12 +430,12 @@ function wp_ajax_delete_plugin() {
 	);
 
 	if ( ! current_user_can( 'delete_plugins' ) ) {
-		$status['error'] = __( 'You do not have sufficient permissions to delete plugins for this site.' );
+		$status['errorMessage'] = __( 'You do not have sufficient permissions to delete plugins for this site.' );
 		wp_send_json_error( $status );
 	}
 
 	if ( is_plugin_active( $plugin ) ) {
-		$status['error'] = __( 'You cannot delete a plugin while it is active on the main site.' );
+		$status['errorMessage'] = __( 'You cannot delete a plugin while it is active on the main site.' );
 		wp_send_json_error( $status );
 	}
 
@@ -453,12 +446,12 @@ function wp_ajax_delete_plugin() {
 		global $wp_filesystem;
 		ob_end_clean();
 
-		$status['errorCode'] = 'unable_to_connect_to_filesystem';
-		$status['error']     = __( 'Unable to connect to the filesystem. Please confirm your credentials.' );
+		$status['errorCode']    = 'unable_to_connect_to_filesystem';
+		$status['errorMessage'] = __( 'Unable to connect to the filesystem. Please confirm your credentials.' );
 
 		// Pass through the error from WP_Filesystem if one was raised.
 		if ( $wp_filesystem instanceof WP_Filesystem_Base && is_wp_error( $wp_filesystem->errors ) && $wp_filesystem->errors->get_error_code() ) {
-			$status['error'] = $wp_filesystem->errors->get_error_message();
+			$status['errorMessage'] = $wp_filesystem->errors->get_error_message();
 		}
 
 		wp_send_json_error( $status );
@@ -467,11 +460,10 @@ function wp_ajax_delete_plugin() {
 	$result = delete_plugins( array( $plugin ) );
 
 	if ( is_wp_error( $result ) ) {
-		$status['error'] = $result->get_error_message();
+		$status['errorMessage'] = $result->get_error_message();
 		wp_send_json_error( $status );
-
 	} elseif ( false === $result ) {
-		$status['error'] = __( 'Plugin could not be deleted.' );
+		$status['errorMessage'] = __( 'Plugin could not be deleted.' );
 		wp_send_json_error( $status );
 	}
 
@@ -496,12 +488,15 @@ function wp_ajax_search_plugins() {
 	$wp_list_table = _get_list_table( 'WP_Plugins_List_Table' );
 
 	if ( ! $wp_list_table->ajax_user_can() ) {
-		$status['error'] = __( 'You do not have sufficient permissions to manage plugins on this site.' );
+		$status['errorMessage'] = __( 'You do not have sufficient permissions to manage plugins on this site.' );
 		wp_send_json_error( $status );
 	}
 
 	// Set the correct requester, so pagination works.
-	$_SERVER['REQUEST_URI'] = add_query_arg( array_diff_key( $_POST, array( '_ajax_nonce' => null, 'action' => null ) ), '/wp-admin/plugins.php' );
+	$_SERVER['REQUEST_URI'] = add_query_arg( array_diff_key( $_POST, array(
+		'_ajax_nonce' => null,
+		'action'      => null,
+	) ), '/wp-admin/plugins.php' );
 
 	$wp_list_table->prepare_items();
 
@@ -530,12 +525,15 @@ function wp_ajax_search_install_plugins() {
 	$wp_list_table = _get_list_table( 'WP_Plugin_Install_List_Table' );
 
 	if ( ! $wp_list_table->ajax_user_can() ) {
-		$status['error'] = __( 'You do not have sufficient permissions to manage plugins on this site.' );
+		$status['errorMessage'] = __( 'You do not have sufficient permissions to manage plugins on this site.' );
 		wp_send_json_error( $status );
 	}
 
 	// Set the correct requester, so pagination works.
-	$_SERVER['REQUEST_URI'] = add_query_arg( array_diff_key( $_POST, array( '_ajax_nonce' => null, 'action' => null ) ), '/wp-admin/plugin-install.php' );
+	$_SERVER['REQUEST_URI'] = add_query_arg( array_diff_key( $_POST, array(
+		'_ajax_nonce' => null,
+		'action'      => null,
+	) ), '/wp-admin/plugin-install.php' );
 
 	$wp_list_table->prepare_items();
 
@@ -561,7 +559,7 @@ function wp_ajax_update_translations() {
 	);
 
 	if ( ! current_user_can( 'update_core' ) && ! current_user_can( 'update_plugins' ) && ! current_user_can( 'update_themes' ) ) {
-		$status['error'] = __( 'You do not have sufficient permissions to update this site.' );
+		$status['errorMessage'] = __( 'You do not have sufficient permissions to update this site.' );
 		wp_send_json_error( $status );
 	}
 
@@ -581,30 +579,27 @@ function wp_ajax_update_translations() {
 
 	if ( is_array( $result ) && ! empty( $result[0] ) ) {
 		wp_send_json_success( $status );
-
 	} else if ( is_wp_error( $result ) ) {
-		$status['error'] = $result->get_error_message();
+		$status['errorMessage'] = $result->get_error_message();
 		wp_send_json_error( $status );
-
 	} else if ( false === $result ) {
 		global $wp_filesystem;
 
-		$status['errorCode'] = 'unable_to_connect_to_filesystem';
-		$status['error']     = __( 'Unable to connect to the filesystem. Please confirm your credentials.' );
+		$status['errorCode']    = 'unable_to_connect_to_filesystem';
+		$status['errorMessage'] = __( 'Unable to connect to the filesystem. Please confirm your credentials.' );
 
 		// Pass through the error from WP_Filesystem if one was raised.
 		if ( $wp_filesystem instanceof WP_Filesystem_Base && is_wp_error( $wp_filesystem->errors ) && $wp_filesystem->errors->get_error_code() ) {
-			$status['error'] = $wp_filesystem->errors->get_error_message();
+			$status['errorMessage'] = $wp_filesystem->errors->get_error_message();
 		}
 
 		wp_send_json_error( $status );
 	}
 
 	// An unhandled error occurred.
-	$status['error'] = __( 'Translations update failed.' );
+	$status['errorMessage'] = __( 'Translations update failed.' );
 	wp_send_json_error( $status );
 }
-
 
 /**
  * AJAX handler for updating core.
@@ -622,7 +617,7 @@ function wp_ajax_update_core() {
 	);
 
 	if ( ! current_user_can( 'update_core' ) ) {
-		$status['error'] = __( 'You do not have sufficient permissions to update this site.' );
+		$status['errorMessage'] = __( 'You do not have sufficient permissions to update this site.' );
 		wp_send_json_error( $status );
 	}
 
@@ -636,7 +631,7 @@ function wp_ajax_update_core() {
 	$update = find_core_update( $version, $locale );
 
 	if ( ! $update ) {
-		$status['error'] = __( 'Core update failed.' );
+		$status['errorMessage'] = __( 'Core update failed.' );
 		wp_send_json_error( $status );
 	}
 
@@ -659,26 +654,24 @@ function wp_ajax_update_core() {
 
 	if ( is_string( $result ) ) {
 		wp_send_json_success( $status );
-
 	} else if ( is_wp_error( $result ) ) {
-		$status['error'] = $result->get_error_message();
+		$status['errorMessage'] = $result->get_error_message();
 		wp_send_json_error( $status );
-
 	} else if ( false === $result ) {
 		global $wp_filesystem;
 
-		$status['errorCode'] = 'unable_to_connect_to_filesystem';
-		$status['error']     = __( 'Unable to connect to the filesystem. Please confirm your credentials.' );
+		$status['errorCode']    = 'unable_to_connect_to_filesystem';
+		$status['errorMessage'] = __( 'Unable to connect to the filesystem. Please confirm your credentials.' );
 
 		// Pass through the error from WP_Filesystem if one was raised.
 		if ( $wp_filesystem instanceof WP_Filesystem_Base && is_wp_error( $wp_filesystem->errors ) && $wp_filesystem->errors->get_error_code() ) {
-			$status['error'] = $wp_filesystem->errors->get_error_message();
+			$status['errorMessage'] = $wp_filesystem->errors->get_error_message();
 		}
 
 		wp_send_json_error( $status );
 	}
 
 	// An unhandled error occurred.
-	$status['error'] = __( 'Core update failed.' );
+	$status['errorMessage'] = __( 'Core update failed.' );
 	wp_send_json_error( $status );
 }

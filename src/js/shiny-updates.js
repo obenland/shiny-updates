@@ -383,12 +383,12 @@
 	 * @since 4.2.0
 	 *
 	 * @typedef {object} updateError
-	 * @param {object} response            Response from the server.
-	 * @param {string} response.slug       Slug of the plugin to be updated.
-	 * @param {string} response.plugin     Basename of the plugin to be updated.
-	 * @param {string} response.pluginName Name of the plugin to be updated.
-	 * @param {string} response.error      The error that occurred.
-	 * @param {string} response.errorCode  Error code for the error that occurred.
+	 * @param {object} response              Response from the server.
+	 * @param {string} response.slug         Slug of the plugin to be updated.
+	 * @param {string} response.plugin       Basename of the plugin to be updated.
+	 * @param {string} response.pluginName   Name of the plugin to be updated.
+	 * @param {string} response.errorCode    Error code for the error that occurred.
+	 * @param {string} response.errorMessage The error that occurred.
 	 */
 	wp.updates.updateError = function( response ) {
 		var $card, $message, errorMessage;
@@ -398,7 +398,7 @@
 			return;
 		}
 
-		errorMessage = wp.updates.l10n.updateFailed.replace( '%s', response.error );
+		errorMessage = wp.updates.l10n.updateFailed.replace( '%s', response.errorMessage);
 
 		if ( 'plugins' === pagenow || 'plugins-network' === pagenow ) {
 			$message = $( 'tr[data-plugin="' + response.plugin + '"]' ).find( '.update-message' );
@@ -498,12 +498,12 @@
 	 * @since 4.X.0
 	 *
 	 * @typedef {object} installPluginError
-	 * @param {object} response            Response from the server.
-	 * @param {string} response.slug       Slug of the plugin to be installed.
-	 * @param {string} response.plugin     Basename of the plugin to be installed.
-	 * @param {string} response.pluginName Name of the plugin to be installed.
-	 * @param {string} response.error      The error that occurred.
-	 * @param {string} response.errorCode  Error code for the error that occurred.
+	 * @param {object} response              Response from the server.
+	 * @param {string} response.slug         Slug of the plugin to be installed.
+	 * @param {string} response.plugin       Basename of the plugin to be installed.
+	 * @param {string} response.pluginName   Name of the plugin to be installed.
+	 * @param {string} response.errorCode    Error code for the error that occurred.
+	 * @param {string} response.errorMessage The error that occurred.
 	 */
 	wp.updates.installPluginError = function( response ) {
 		var $card   = $( '.plugin-card-' + response.slug ),
@@ -515,7 +515,7 @@
 			return;
 		}
 
-		errorMessage = wp.updates.l10n.installFailed.replace( '%s', response.error );
+		errorMessage = wp.updates.l10n.installFailed.replace( '%s', response.errorMessage);
 
 		$card
 			.addClass( 'plugin-card-update-failed' )
@@ -545,9 +545,9 @@
 	 *
 	 * @since 4.X.0
 	 *
-	 * @param {object}              args         Arguments.
-	 * @param {string}              args.plugin  Plugin basename.
-	 * @param {string}              args.slug    Plugin slug.
+	 * @param {object}               args         Arguments.
+	 * @param {string}               args.plugin  Plugin basename.
+	 * @param {string}               args.slug    Plugin slug.
 	 * @param {deletePluginSuccess=} args.success Success callback.
 	 * @param {deletePluginError=}   args.error   Error callback.
 	 * @return {$.promise} A jQuery promise that represents the request,
@@ -638,10 +638,10 @@
 	 * @since 4.X.0
 	 *
 	 * @typedef {object} deletePluginError
-	 * @param {object} response           Response from the server.
-	 * @param {string} response.plugin    Basename of the plugin to be deleted.
-	 * @param {string} response.error     The error that occurred.
-	 * @param {string} response.errorCode Error code for the error that occurred.
+	 * @param {object} response              Response from the server.
+	 * @param {string} response.plugin       Basename of the plugin to be deleted.
+	 * @param {string} response.errorCode    Error code for the error that occurred.
+	 * @param {string} response.errorMessage The error that occurred.
 	 */
 	wp.updates.deletePluginError = function( response ) {
 		if ( response.errorCode && 'unable_to_connect_to_filesystem' === response.errorCode ) {
@@ -758,14 +758,14 @@
 	 * @since 4.X.0
 	 *
 	 * @typedef {object} updateThemeError
-	 * @param {object} response           Response from the server.
-	 * @param {string} response.slug      Slug of the theme to be updated.
-	 * @param {string} response.error     The error that occurred.
-	 * @param {string} response.errorCode Error code for the error that occurred.
+	 * @param {object} response              Response from the server.
+	 * @param {string} response.slug         Slug of the theme to be updated.
+	 * @param {string} response.errorCode    Error code for the error that occurred.
+	 * @param {string} response.errorMessage The error that occurred.
 	 */
 	wp.updates.updateThemeError = function( response ) {
 		var $theme       = $( '[data-slug="' + response.slug + '"]' ),
-		    errorMessage = wp.updates.l10n.updateFailed.replace( '%s', response.error ),
+		    errorMessage = wp.updates.l10n.updateFailed.replace( '%s', response.errorMessage),
 		    $notice;
 
 		if ( response.errorCode && 'unable_to_connect_to_filesystem' === response.errorCode ) {
@@ -850,14 +850,14 @@
 	 * @since 4.X.0
 	 *
 	 * @typedef {object} installThemeError
-	 * @param {object} response           Response from the server.
-	 * @param {string} response.slug      Slug of the theme to be installed.
-	 * @param {string} response.error     The error that occurred.
-	 * @param {string} response.errorCode Error code for the error that occurred.
+	 * @param {object} response              Response from the server.
+	 * @param {string} response.slug         Slug of the theme to be installed.
+	 * @param {string} response.errorCode    Error code for the error that occurred.
+	 * @param {string} response.errorMessage The error that occurred.
 	 */
 	wp.updates.installThemeError = function( response ) {
 		var $card, $button,
-		    errorMessage = wp.updates.l10n.installFailed.replace( '%s', response.error ),
+		    errorMessage = wp.updates.l10n.installFailed.replace( '%s', response.errorMessage),
 		    $message     = wp.updates.adminNotice( {
 			    className: 'update-message notice-error notice-alt',
 			    message:   errorMessage
@@ -966,13 +966,13 @@
 	 * @since 4.X.0
 	 *
 	 * @typedef {object} deleteThemeError
-	 * @param {object} response           Response from the server.
-	 * @param {string} response.slug      Slug of the theme to be deleted.
-	 * @param {string} response.error     The error that occurred.
-	 * @param {string} response.errorCode Error code for the error that occurred.
+	 * @param {object} response              Response from the server.
+	 * @param {string} response.slug         Slug of the theme to be deleted.
+	 * @param {string} response.errorCode    Error code for the error that occurred.
+	 * @param {string} response.errorMessage The error that occurred.
 	 */
 	wp.updates.deleteThemeError = function( response ) {
-		var errorMessage = wp.updates.l10n.deleteFailed.replace( '%s', response.error ),
+		var errorMessage = wp.updates.l10n.deleteFailed.replace( '%s', response.errorMessage),
 		    $message     = wp.updates.adminNotice( {
 			    className: 'update-message notice-error notice-alt',
 			    message:   errorMessage
@@ -1143,19 +1143,19 @@
 	 * @since 4.X.0
 	 *
 	 * @typedef {object} updateItemError
-	 * @param {object}  response            Response from the server.
-	 * @param {string}  response.update     The type of update. 'core', 'plugin', 'theme', or 'translations'.
-	 * @param {string}  response.error      The error that occurred.
-	 * @param {string}  response.errorCode  Error code for the error that occurred.
-	 * @param {string=} response.slug       Optional. Slug of the theme or plugin that was updated.
-	 * @param {string=} response.plugin     Optional. Basename of the plugin that was updated.
-	 * @param {string=} response.pluginName Optional. Name of the plugin that was updated.
-	 * @param {string=} response.reinstall  Optional. Whether this was a reinstall request or not.
+	 * @param {object}  response              Response from the server.
+	 * @param {string}  response.update       The type of update. 'core', 'plugin', 'theme', or 'translations'.
+	 * @param {string}  response.errorCode    Error code for the error that occurred.
+	 * @param {string}  response.errorMessage The error that occurred.
+	 * @param {string=} response.slug         Optional. Slug of the theme or plugin that was updated.
+	 * @param {string=} response.plugin       Optional. Basename of the plugin that was updated.
+	 * @param {string=} response.pluginName   Optional. Name of the plugin that was updated.
+	 * @param {string=} response.reinstall    Optional. Whether this was a reinstall request or not.
 	 */
 	wp.updates.updateItemError = function( response ) {
 		var type = response.update,
 		    $row = $( '[data-type="' + type + '"]' ),
-		    errorMessage = wp.updates.l10n.updateFailed.replace( '%s', response.error );
+		    errorMessage = wp.updates.l10n.updateFailed.replace( '%s', response.errorMessage);
 
 		if ( response.errorCode && 'unable_to_connect_to_filesystem' === response.errorCode ) {
 			wp.updates.credentialError( response, 'update-' + response.update );
@@ -1378,7 +1378,7 @@
 		} );
 
 		wp.updates.filesystemCredentials.available = false;
-		wp.updates.showErrorInCredentialsForm( response.error );
+		wp.updates.showErrorInCredentialsForm( response.errorMessage );
 		wp.updates.requestFilesystemCredentials();
 	};
 
@@ -1746,7 +1746,7 @@
 					success++;
 				} else {
 					error++;
-					errorMessages.push( response.pluginName + ': ' + response.error );
+					errorMessages.push( response.pluginName + ': ' + response.errorMessage );
 				}
 
 				wp.updates.adminNotice = wp.template( 'wp-bulk-updates-admin-notice' );
