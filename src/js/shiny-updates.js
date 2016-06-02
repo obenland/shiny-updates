@@ -1023,7 +1023,8 @@
 		var $message;
 
 		$message = $( '[data-type="core"]' ).filter( function() {
-			return args.reinstall && $( this ).is( '.wordpress-reinstall-card' ) || ! args.reinstall && ! $( this ).is( '.wordpress-reinstall-card' );
+			return args.reinstall && $( this ).is( '.wordpress-reinstall-card' ) ||
+				! args.reinstall && ! $( this ).is( '.wordpress-reinstall-card' ) && args.locale === $( this ).data( 'locale' );
 		} ).find( '.update-link' );
 
 		if ( $message.html() !== wp.updates.l10n.updating ) {
