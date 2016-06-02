@@ -1832,7 +1832,7 @@
 		 *
 		 * @param {Event} event Event interface.
 		 */
-		$( '.update-core-php .update-link' ).on( 'click', function( event ) {
+		$( '#wp-updates-table .update-link, .wordpress-reinstall-card .update-link' ).on( 'click', function( event ) {
 			var $message = $( event.target ),
 				$itemRow = $message.parents( '[data-type]' );
 
@@ -1857,8 +1857,8 @@
 		 *
 		 * @param {Event} event Event interface.
 		 */
-		$document.on( 'click', '.tablenav .update-link', function( event ) {
 			var $message = $( '.update-link[data-type="all"]' ).addClass( 'updating-message' );
+		$document.on( 'click', '.wordpress-updates-table .tablenav .update-link', function( event ) {
 
 			event.preventDefault();
 
