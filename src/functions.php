@@ -651,6 +651,27 @@ function su_update_table() {
 		<?php
 		require_once( 'class-shiny-updates-list-table.php' );
 
+		// Do the (un)dismiss actions before headers, so that they can redirect.
+		if ( isset( $_GET['dismiss'] ) ) {
+			$version = isset( $_GET['version'] ) ? $_GET['version'] : false;
+			$locale  = isset( $_GET['locale'] ) ? $_GET['locale'] : 'en_US';
+
+			$update = find_core_update( $version, $locale );
+
+			if ( $update ) {
+				dismiss_core_update( $update );
+			}
+		} else if ( isset( $_GET['undismiss'] ) ) {
+			$version = isset( $_GET['version'] ) ? $_GET['version'] : false;
+			$locale  = isset( $_GET['locale'] ) ? $_GET['locale'] : 'en_US';
+
+			$update = find_core_update( $version, $locale );
+
+			if ( $update ) {
+				undismiss_core_update( $version, $locale );
+			}
+		}
+
 		// Todo: Use _get_list_table().
 		$updates_table = new Shiny_Updates_List_Table();
 		$updates_table->prepare_items();
@@ -820,4 +841,21 @@ function su_plugin_install_actions( $action_links, $plugin ) {
 	}
 
 	return $action_links;
+}
+
+/**
+ * Filters the list of removable query args to add query args needed for Shiny Updates.
+ *
+ * @todo Merge: Add directly to wp_removable_query_args()
+ *
+ * @param array $query_args An array of query variables to remove from a URL.
+ * @return array The filtered query args.
+ */
+function su_wp_removable_query_args( $query_args ) {
+	$query_args[] = 'locale';
+	$query_args[] = 'version';
+	$query_args[] = 'dismiss';
+	$query_args[] = 'undismiss';
+
+	return $query_args;
 }

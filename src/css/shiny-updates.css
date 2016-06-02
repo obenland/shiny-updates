@@ -261,7 +261,7 @@ tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-error.notic
 	width: 85px;
 }
 
-.wp-list-table.updates .updates-table-screenshot + p {
+.wp-list-table.updates .column-title p {
 	margin-left: 105px;
 }
 

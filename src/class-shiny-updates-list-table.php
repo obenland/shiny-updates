@@ -81,7 +81,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 
 		$this->cur_wp_version = preg_replace( '/-.*$/', '', $wp_version );
 
-		$core_updates = (array) get_core_updates();
+		$core_updates = (array) get_core_updates( array( 'dismissed' => true ));
 		$plugins      = (array) get_plugin_updates();
 		$themes       = (array) get_theme_updates();
 		$translations = (array) wp_get_translation_updates();
@@ -383,36 +383,52 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	 */
 	public function column_title_core( $item ) {
 		global $wp_version;
-		?>
-		<div class="updates-table-screenshot">
-			<img src="<?php echo esc_url( admin_url( 'images/wordpress-logo.svg' ) ); ?>" width="85" height="85" alt=""/>
-		</div>
-		<p>
-			<strong><?php _e( 'WordPress' ); ?></strong>
+
+		$update = $item['data'];
+
+		$dismiss_url = add_query_arg( array(
+			'locale'  => $update->locale,
+			'version' => $update->current,
+		),
+			admin_url( 'update-core.php' )
+		);
+
+		if ( 'en_US' !== $update->locale && isset( $update->dismissed ) && $update->dismissed ) :
+			printf( '<p><a href="%1$s">%2$s</a></p>', esc_url( add_query_arg( 'undismiss', '', $dismiss_url ) ), __( 'Show this update' ) );
+		else : ?>
+			<div class="updates-table-screenshot">
+				<img src="<?php echo esc_url( admin_url( 'images/wordpress-logo.svg' ) ); ?>" width="85" height="85" alt=""/>
+			</div>
+			<p>
+				<strong><?php _e( 'WordPress' ); ?></strong>
+				<?php
+
+
+				if ( 'en_US' === $update->locale &&
+				     'en_US' === get_locale() ||
+				     (
+					     $update->packages->partial &&
+					     $wp_version === $update->partial_version &&
+					     1 === count( get_core_updates() )
+				     )
+				) {
+					$version_string = $update->current;
+				} else {
+					$version_string = sprintf( '%s&ndash;<code>%s</code>', $update->current, $update->locale );
+				}
+
+				if ( 'development' === $update->response ) {
+					_e( 'You are using a development version of WordPress. You can update to the latest nightly build automatically.' );
+				} else if ( isset( $update->response ) && 'latest' !== $update->response ) {
+					printf( __( 'You can update to <a href="https://codex.wordpress.org/Version_%1$s">WordPress %2$s</a> automatically.' ), $update->current, $version_string );
+				}
+				?>
+			</p>
 			<?php
-			$update = $item['data'];
-
-			if ( 'en_US' === $update->locale &&
-			     'en_US' === get_locale() ||
-			     (
-				     $update->packages->partial &&
-				     $wp_version === $update->partial_version &&
-				     1 === count( get_core_updates() )
-			     )
-			) {
-				$version_string = $update->current;
-			} else {
-				$version_string = sprintf( '%s&ndash;<code>%s</code>', $update->current, $update->locale );
+			if ( 'en_US' !== $update->locale && ! isset( $update->dismissed ) || ! $update->dismissed ) {
+				printf( '<p><a href="%1$s">%2$s</a></p>', esc_url( add_query_arg( 'dismiss', '', $dismiss_url ) ), __( 'Hide this update' ) );
 			}
-
-			if ( 'development' === $update->response ) {
-				_e( 'You are using a development version of WordPress. You can update to the latest nightly build automatically.' );
-			} else if ( isset( $update->response ) && 'latest' !== $update->response ) {
-				printf( __( 'You can update to <a href="https://codex.wordpress.org/Version_%1$s">WordPress %2$s</a> automatically.' ), $update->current, $version_string );
-			}
-			?>
-		</p>
-		<?php
+		endif;
 	}
 
 	/**
@@ -525,6 +541,10 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 		$form_action  = sprintf( 'update-core.php?action=do-%s-upgrade', $item['type'] );
 		$nonce_action = 'translations' === $item['type'] ? 'upgrade-translations' : 'upgrade-core';
 		$data         = '';
+
+		if ( 'core' === $item['type'] && ( 'en_US' !== $item['data']->locale && isset( $item['data']->dismissed ) || $item['data']->dismissed ) ) {
+			return;
+		}
 
 		foreach ( $this->_get_data_attributes( $item, 'button' ) as $attribute => $value ) {
 			$data .= $attribute . '="' . esc_attr( $value ) . '" ';

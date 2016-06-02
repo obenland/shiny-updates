@@ -59,5 +59,7 @@ add_action( 'wp_ajax_update-core', 'wp_ajax_update_core', -1 );
 add_action( 'core_upgrade_preamble', 'su_update_table' );
 add_action( 'update-core-custom_do-all-upgrade', 'su_update_all' );
 
+add_filter( 'removable_query_args', 'su_wp_removable_query_args' );
+
 // Replace update row functions.
 add_action( 'admin_init', 'su_new_update_rows', 1 );
