@@ -738,7 +738,10 @@
 		if ( 'themes-network' === pagenow ) {
 			$notice = $( '[data-slug="' + args.slug + '"]' ).find( '.update-message' );
 		} else {
-			$notice = $( '#update-theme' ).closest( '.notice' ) || $( '[data-slug="' + args.slug + '"]' ).find( '.update-message' );
+			$notice = $( '#update-theme' ).closest( '.notice' );
+			if ( ! $notice.length ) {
+				$notice = $( '[data-slug="' + args.slug + '"]' ).find( '.update-message' );
+			}
 		}
 
 		message = $notice.find( 'p' ).text();
@@ -1724,6 +1727,11 @@
 					break;
 
 				case 'delete-selected':
+					if ( ! window.confirm( wp.updates.l10n.aysBulkDelete ) ) {
+						event.preventDefault();
+						return;
+					}
+
 					pluginAction     = wp.updates.deletePlugin;
 					pluginActionDone = wp.updates.deletePluginSuccess;
 					pluginActionFail = wp.updates.deletePluginError;
