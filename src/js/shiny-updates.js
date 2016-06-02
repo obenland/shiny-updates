@@ -462,7 +462,7 @@
 		}, args );
 
 		$message.addClass( 'updating-message' );
-		$message.text( wp.updates.l10n.installing );
+
 		wp.a11y.speak( wp.updates.l10n.installingMsg, 'polite' );
 
 		// Remove previous error messages, if any.
@@ -548,6 +548,60 @@
 		wp.a11y.speak( errorMessage, 'assertive' );
 
 		$document.trigger( 'wp-plugin-install-error', response );
+	};
+
+	/**
+	 * On Importer install success, update the UI with the result.
+	 *
+	 * @since 4.X.0
+	 *
+	 * @typedef {object} installImporterSuccess
+	 * @param {object} response             Response from the server.
+	 * @param {string} response.slug        Slug of the plugin to be installed.
+	 * @param {string} response.activateUrl URL to activate the just installed plugin.
+	 */
+	wp.updates.installImporterSuccess = function( response ) {
+		wp.updates.addAdminNotice( {
+			id:        'install-success',
+			className: 'notice-success is-dismissible',
+			message:   wp.updates.l10n.importerInstalledMsg.replace( '%s', response.activateUrl + '&from=import' )
+		} );
+
+		$( 'a[href*="' + response.slug + '"]' )
+			.removeClass( 'thickbox open-plugin-details-modal updating-message' )
+			.off( 'click' )
+			.attr( 'href', response.activateUrl + '&from=import' )
+			.attr( 'title', wp.updates.l10n.activateImporter );
+
+		wp.a11y.speak( wp.updates.l10n.installedMsg, 'polite' );
+
+		$document.trigger( 'wp-installer-install-success', response );
+	};
+
+	/**
+	 * On Importer install failure, update the UI appropriately.
+	 *
+	 * @since 4.X.0
+	 *
+	 * @typedef {object} installImporterError
+	 * @param {object} response           Response from the server.
+	 * @param {string} response.error     The error that occurred.
+	 * @param {string} response.errorCode Error code for the error that occurred.
+	 */
+	wp.updates.installImporterError = function( response ) {
+		var errorMessage = wp.updates.l10n.installFailed.replace( '%s', response.error );
+
+		wp.updates.addAdminNotice( {
+			id:        response.errorCode,
+			className: 'notice-error is-dismissible',
+			message:   errorMessage
+		} );
+
+		$( 'a[href*="' + response.slug + '"]' ).removeClass( 'updating-message' );
+
+		wp.a11y.speak( errorMessage, 'assertive' );
+
+		$document.trigger( 'wp-importer-install-error', response );
 	};
 
 	/**
@@ -2181,7 +2235,17 @@
 					window.tb_remove();
 					/* jscs:enable */
 
+					message.data.success = wp.updates.installPluginSuccess;
+					message.data.error   = wp.updates.installPluginError;
 					message.data = wp.updates._addCallbacks( message.data, 'install-plugin' );
+
+					if ( 'import' === pagenow ) {
+						message.data.success = wp.updates.installImporterSuccess;
+						message.data.error   = wp.updates.installImporterError;
+					} else {
+						message.data.success = wp.updates.installPluginSuccess;
+						message.data.error   = wp.updates.installPluginError;
+					}
 
 					wp.updates.updateQueue.push( message );
 					wp.updates.queueChecker();

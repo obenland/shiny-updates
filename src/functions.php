@@ -32,6 +32,7 @@ function su_enqueue_scripts( $hook ) {
 		'themes.php',
 		'theme-install.php',
 		'update-core.php',
+		'import.php',
 	), true )
 	) {
 		return;
@@ -104,6 +105,8 @@ function su_enqueue_scripts( $hook ) {
 			'installFailedLabel'         => __( '%s installation failed' ),
 			'installingMsg'              => __( 'Installing... please wait.' ),
 			'installedMsg'               => __( 'Installation completed successfully.' ),
+			/* translators: Activation URL */
+			'importerInstalledMsg'       => __( 'Importer installed successfully. <a href="%s">Activate plugin &#38; run importer</a>' ),
 			/* translators: %s: Plugin name */
 			'aysDelete'                  => __( 'Are you sure you want to delete %s and its data?' ),
 			'aysBulkDelete'              => __( 'Are you sure you want to delete the selected plugins and their data?' ),
@@ -112,6 +115,7 @@ function su_enqueue_scripts( $hook ) {
 			'deleteFailed'               => __( 'Deletion failed: %s' ),
 			'deleted'                    => __( 'Deleted!' ),
 			'activate'                   => __( 'Activate' ),
+			'activateImporter'           => __( 'Activate importer' ),
 		),
 	) );
 
