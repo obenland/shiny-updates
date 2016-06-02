@@ -289,6 +289,20 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	public function column_title_theme( $item ) {
 		/* @var WP_Theme $theme */
 		$theme = $item['data'];
+
+		$details_url = add_query_arg( array(
+			'TB_iframe' => 'true',
+			'width'     => 1024,
+			'height'    => 800,
+			'test' => 'abc',
+		), $theme->update['url'] );
+
+		/* translators: 1: theme name, 2: escaped theme name, 3: version number */
+		$details = sprintf( __( '<a href="%1$s" class="thickbox open-plugin-details-modal" aria-label="View %2$s version %3$s details">View version %3$s details</a>.' ),
+			esc_url( $details_url ),
+			esc_attr( $theme['Name'] ),
+			$theme->update['new_version']
+		);
 		?>
 		<div class="updates-table-screenshot">
 			<img src="<?php echo esc_url( $theme->get_screenshot() ); ?>" width="85" height="64" alt=""/>
@@ -301,6 +315,8 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 				$theme->display( 'Version' ),
 				$theme->update['new_version']
 			);
+
+			echo ' ' . $details;
 			?>
 		</p>
 		<?php
