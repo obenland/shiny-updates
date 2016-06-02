@@ -398,7 +398,7 @@
 			return;
 		}
 
-		errorMessage = wp.updates.l10n.updateFailed.replace( '%s', response.errorMessage);
+		errorMessage = wp.updates.l10n.updateFailed.replace( '%s', response.errorMessage );
 
 		if ( 'plugins' === pagenow || 'plugins-network' === pagenow ) {
 			$message = $( 'tr[data-plugin="' + response.plugin + '"]' ).find( '.update-message' );
@@ -515,7 +515,7 @@
 			return;
 		}
 
-		errorMessage = wp.updates.l10n.installFailed.replace( '%s', response.errorMessage);
+		errorMessage = wp.updates.l10n.installFailed.replace( '%s', response.errorMessage );
 
 		$card
 			.addClass( 'plugin-card-update-failed' )
@@ -765,7 +765,7 @@
 	 */
 	wp.updates.updateThemeError = function( response ) {
 		var $theme       = $( '[data-slug="' + response.slug + '"]' ),
-		    errorMessage = wp.updates.l10n.updateFailed.replace( '%s', response.errorMessage),
+		    errorMessage = wp.updates.l10n.updateFailed.replace( '%s', response.errorMessage ),
 		    $notice;
 
 		if ( response.errorCode && 'unable_to_connect_to_filesystem' === response.errorCode ) {
@@ -857,7 +857,7 @@
 	 */
 	wp.updates.installThemeError = function( response ) {
 		var $card, $button,
-		    errorMessage = wp.updates.l10n.installFailed.replace( '%s', response.errorMessage),
+		    errorMessage = wp.updates.l10n.installFailed.replace( '%s', response.errorMessage ),
 		    $message     = wp.updates.adminNotice( {
 			    className: 'update-message notice-error notice-alt',
 			    message:   errorMessage
@@ -972,7 +972,7 @@
 	 * @param {string} response.errorMessage The error that occurred.
 	 */
 	wp.updates.deleteThemeError = function( response ) {
-		var errorMessage = wp.updates.l10n.deleteFailed.replace( '%s', response.errorMessage),
+		var errorMessage = wp.updates.l10n.deleteFailed.replace( '%s', response.errorMessage ),
 		    $message     = wp.updates.adminNotice( {
 			    className: 'update-message notice-error notice-alt',
 			    message:   errorMessage
@@ -1155,7 +1155,7 @@
 	wp.updates.updateItemError = function( response ) {
 		var type = response.update,
 		    $row = $( '[data-type="' + type + '"]' ),
-		    errorMessage = wp.updates.l10n.updateFailed.replace( '%s', response.errorMessage);
+		    errorMessage = wp.updates.l10n.updateFailed.replace( '%s', response.errorMessage );
 
 		if ( response.errorCode && 'unable_to_connect_to_filesystem' === response.errorCode ) {
 			wp.updates.credentialError( response, 'update-' + response.update );
@@ -1200,47 +1200,47 @@
 	wp.updates._addCallbacks = function( data, type ) {
 		switch ( type ) {
 			case 'install-plugin':
-				response.success = wp.updates.installPluginSuccess;
-				response.error   = wp.updates.installPluginError;
+				data.success = wp.updates.installPluginSuccess;
+				data.error   = wp.updates.installPluginError;
 				break;
 
 			case 'update-plugin':
-				response.success = wp.updates.updateSuccess;
-				response.error   = wp.updates.updateError;
+				data.success = wp.updates.updateSuccess;
+				data.error   = wp.updates.updateError;
 				break;
 
 			case 'delete-plugin':
-				response.success = wp.updates.deletePluginSuccess;
-				response.error   = wp.updates.deletePluginError;
+				data.success = wp.updates.deletePluginSuccess;
+				data.error   = wp.updates.deletePluginError;
 				break;
 
 			case 'install-theme':
-				response.success = wp.updates.installThemeSuccess;
-				response.error   = wp.updates.installThemeError;
+				data.success = wp.updates.installThemeSuccess;
+				data.error   = wp.updates.installThemeError;
 				break;
 
 			case 'update-theme':
-				response.success = wp.updates.updateThemeSuccess;
-				response.error   = wp.updates.updateThemeError;
+				data.success = wp.updates.updateThemeSuccess;
+				data.error   = wp.updates.updateThemeError;
 				break;
 
 			case 'delete-theme':
-				response.success = wp.updates.deleteThemeSuccess;
-				response.error   = wp.updates.deleteThemeError;
+				data.success = wp.updates.deleteThemeSuccess;
+				data.error   = wp.updates.deleteThemeError;
 				break;
 
 			default:
-				response.success = wp.updates.updateItemSuccess;
-				response.error   = wp.updates.updateItemError;
+				data.success = wp.updates.updateItemSuccess;
+				data.error   = wp.updates.updateItemError;
 		}
 
 		if ( 'update-core' === pagenow ) {
-			response.success = wp.updates.updateItemSuccess;
-			response.error   = wp.updates.updateItemError;
+			data.success = wp.updates.updateItemSuccess;
+			data.error   = wp.updates.updateItemError;
 
 		} else if ( 'import' === pagenow && 'install-plugin' === type ) {
-			response.success = wp.updates.installImporterSuccess;
-			response.error   = wp.updates.installImporterError;
+			data.success = wp.updates.installImporterSuccess;
+			data.error   = wp.updates.installImporterError;
 		}
 
 		return data;
