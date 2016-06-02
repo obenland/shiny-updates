@@ -287,20 +287,14 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	 * @param array $item The current item.
 	 */
 	public function column_title_theme( $item ) {
-		static $themes_update = null;
-
 		/* @var WP_Theme $theme */
 		$theme = $item['data'];
-
-		if ( ! isset( $themes_update ) ) {
-			$themes_update = get_site_transient( 'update_themes' );
-		}
 
 		$details_url = add_query_arg( array(
 			'TB_iframe' => 'true',
 			'width'     => 640,
 			'height'    => 662,
-		), $themes_update->response[ $theme->get_stylesheet() ]['url'] );
+		), $theme->update['url'] );
 
 		?>
 		<div class="updates-table-screenshot">
