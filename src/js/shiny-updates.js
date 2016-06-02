@@ -1840,12 +1840,18 @@
 		 */
 		$( '#wp-updates-table .update-link, .wordpress-reinstall-card .update-link' ).on( 'click', function( event ) {
 			var $message = $( event.target ),
+			    $coreRow = $( '.update-link[data-type="core"]' ).not( this ),
 				$itemRow = $message.parents( '[data-type]' );
 
 			event.preventDefault();
 
 			// The item has already been updated, do not proceed.
 			if ( 0 === $message.length || $message.hasClass( 'updated-message' ) || $message.hasClass( 'updating-message' ) || $message.hasClass( 'button-disabled' ) ) {
+				return;
+			}
+
+			// Bail if there's already another core update going on.
+			if ( $coreRow.not( this ).hasClass( 'updated-message' ) || $coreRow.not( this ).hasClass( 'updating-message' ) || $coreRow.hasClass( 'button-disabled' ) ) {
 				return;
 			}
 
@@ -1894,6 +1900,11 @@
 				var $itemRow = $( element );
 
 				if ( $( '.update-link', $itemRow ).prop( 'disabled' ) ) {
+					return;
+				}
+
+				// When there are two core updates (en_US + localized), only update the localized one.
+				if ( 1 < $( '.update-link[data-type="core"]' ).length && 'core' === $itemRow.data( 'type' ) && 'en_US' === $itemRow.data( 'locale' ) ) {
 					return;
 				}
 
