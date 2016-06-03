@@ -1090,15 +1090,15 @@
 				break;
 
 			case 'core':
-				update.data.version   = $itemRow.data( 'version' );
-				update.data.locale    = $itemRow.data( 'locale' );
-				update.data.reinstall = !! $itemRow.data( 'reinstall' );
 
 				// The update queue should only ever contain one core update.
 				if ( _.findWhere( wp.updates.updateQueue, { type: 'update-core' } ) ) {
 					return;
 				}
 
+				update.data.version   = $itemRow.data( 'version' );
+				update.data.locale    = $itemRow.data( 'locale' );
+				update.data.reinstall = !! $itemRow.data( 'reinstall' );
 				break;
 		}
 
