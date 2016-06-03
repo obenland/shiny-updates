@@ -1380,6 +1380,13 @@
 				break;
 
 			case 'update-core':
+
+				// Core updates should always come last to redirect to the about page.
+				if ( 0 !== wp.updates.updateQueue.length ) {
+					wp.updates.updateQueue.push( job );
+					return wp.updates.queueChecker();
+				}
+
 				wp.updates.updateCore( job.data );
 				break;
 
