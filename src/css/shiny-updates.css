@@ -7,18 +7,12 @@
 	top: 0;
 }
 
-.wrap .notice p:before {
-	display: inline-block;
-	font: normal 18px/1 dashicons;
-	-webkit-font-smoothing: antialiased;
-	margin-right: 6px;
-	vertical-align: text-bottom;
-}
-
+.wrap .notice p:before,
 .update-message p:before,
 .updating-message p:before,
 .plugin-card .updated-message:before,
 .plugin-card .installed:before,
+.import-php .updating-message:before,
 .button.updating-message:before,
 .button.updated-message:before,
 .button.installed:before,
@@ -35,6 +29,7 @@
 .updating-message p:before,
 .plugin-update-tr .installed:before,
 .plugin-card .update-now:before,
+.import-php .updating-message:before,
 .button.updating-message:before,
 .button.installing:before {
 	color: #f56e28;
@@ -43,18 +38,29 @@
 
 .updating-message p:before,
 .button.updating-message:before,
+.import-php .updating-message:before,
 .button.installing:before {
 	-webkit-animation: rotation 2s infinite linear;
 	animation: rotation 2s infinite linear;
 }
 
-.wrap .notice-success p:before,
 .plugin-card .updated-message:before,
 .plugin-card .installed:before,
+.updated-message p:before,
 .button.updated-message:before,
+.installed:before p:before,
 .button.installed:before {
 	color: #79ba49;
 	content: '\f147';
+}
+
+.wrap .notice p:before {
+	margin-right: 6px;
+	vertical-align: text-bottom;
+}
+
+.import-php .updating-message:before {
+	vertical-align: bottom;
 }
 
 .button-primary.updating-message:before,
@@ -73,6 +79,22 @@
 	position: absolute;
 	top: 0;
 	right: 0;
+}
+
+/* Theme install browser */
+.theme-install-overlay .close-full-overlay,
+.theme-install-overlay .previous-theme,
+.theme-install-overlay .next-theme {
+	border-left: 0;
+	border-top: 0;
+	border-bottom: 0;
+}
+
+.theme-install-overlay .close-full-overlay:before,
+.theme-install-overlay .previous-theme:before,
+.theme-install-overlay .next-theme:before {
+	top: 2px;
+	left: 0;
 }
 
 /* Inline notifications */
@@ -150,11 +172,6 @@ tr.active.update + tr.plugin-update-tr .plugin-update {
 	color: #00a0d2;
 }
 
-.notice-success,
-div.updated {
-	border-left-color: #46b450;
-}
-
 tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-success.notice-alt,
 .notice-success.notice-alt {
 	background-color: #ecf7ed;
@@ -169,22 +186,9 @@ tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-warning.not
 	background-color: #fff8e5;
 }
 
-.notice-error,
-div.error {
-	border-left-color: #dc3232;
-}
-
 tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-error.notice-alt,
 .notice-error.notice-alt {
 	background-color: #fbeaea;
-}
-
-.notice-info {
-	border-left-color: #00a0d2;
-}
-
-.notice-info.notice-alt {
-	background-color: #e5f5fa;
 }
 
 .update-core-php .wrap > h2,
@@ -267,6 +271,39 @@ tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-error.notic
 
 .wordpress-reinstall-card {
 	max-width: 100%;
+}
+
+/* Todo: Merge: Change this in forms.css */
+.request-filesystem-credentials-dialog .ftp-username,
+.request-filesystem-credentials-dialog .ftp-password {
+	float: none;
+	width: auto;
+}
+
+.request-filesystem-credentials-dialog .ftp-username {
+	margin-bottom: 1em;
+}
+
+.request-filesystem-credentials-dialog .ftp-password {
+	margin: 0;
+}
+
+.request-filesystem-credentials-dialog .ftp-password em {
+	color: #888;
+}
+
+.request-filesystem-credentials-dialog label {
+	display: block;
+	line-height: 1.5;
+	margin-bottom: 1em;
+}
+
+.request-filesystem-credentials-form legend {
+	padding-bottom: 0;
+}
+
+.request-filesystem-credentials-form #ssh-keys legend {
+	font-size: 1.3em;
 }
 
 @media aural {

@@ -70,7 +70,9 @@ jQuery( function( $ ) {
 				type: 'update-plugin',
 				data: {
 					plugin: 'test/test.php',
-					slug: 'test'
+					slug: 'test',
+					success: null,
+					error: null
 				}
 			}
 		];
@@ -78,7 +80,9 @@ jQuery( function( $ ) {
 		wp.updates.updateLock = true;
 		wp.updates.updatePlugin( {
 			plugin: 'test/test.php',
-			slug: 'test'
+			slug: 'test',
+			success: null,
+			error: null
 		} );
 
 		assert.deepEqual( wp.updates.updateQueue, value );

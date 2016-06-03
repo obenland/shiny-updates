@@ -32,6 +32,7 @@ function su_enqueue_scripts( $hook ) {
 		'themes.php',
 		'theme-install.php',
 		'update-core.php',
+		'import.php',
 	), true )
 	) {
 		return;
@@ -104,13 +105,17 @@ function su_enqueue_scripts( $hook ) {
 			'installFailedLabel'         => __( '%s installation failed' ),
 			'installingMsg'              => __( 'Installing... please wait.' ),
 			'installedMsg'               => __( 'Installation completed successfully.' ),
+			/* translators: Activation URL */
+			'importerInstalledMsg'       => __( 'Importer installed successfully. <a href="%s">Activate plugin &#38; run importer</a>' ),
 			/* translators: %s: Plugin name */
-			'aysDelete'                  => __( 'Are you sure you want to delete %s?' ),
+			'aysDelete'                  => __( 'Are you sure you want to delete %s and its data?' ),
+			'aysBulkDelete'              => __( 'Are you sure you want to delete the selected plugins and their data?' ),
 			'deleting'                   => __( 'Deleting...' ),
 			/* translators: %s: Error string for a failed deletion */
 			'deleteFailed'               => __( 'Deletion failed: %s' ),
 			'deleted'                    => __( 'Deleted!' ),
 			'activate'                   => __( 'Activate' ),
+			'activateImporter'           => __( 'Activate importer' ),
 		),
 	) );
 
@@ -274,7 +279,7 @@ function theme_install_templates() {
 
 		<div class="theme-actions">
 			<a class="button button-primary theme-install" data-slug="{{ data.id }}" href="{{ data.install_url }}"><?php esc_html_e( 'Install' ); ?></a>
-			<a class="button button-secondary preview install-theme-preview" href="#"><?php esc_html_e( 'Preview' ); ?></a>
+			<button class="button-secondary preview install-theme-preview"><?php esc_html_e( 'Preview' ); ?></button>
 		</div>
 
 		<# if ( data.installed ) { #>
@@ -285,11 +290,11 @@ function theme_install_templates() {
 	<script id="tmpl-shiny-theme-preview" type="text/template">
 		<div class="wp-full-overlay-sidebar">
 			<div class="wp-full-overlay-header">
-				<a href="#" class="close-full-overlay"><span class="screen-reader-text"><?php _e( 'Close' ); ?></span></a>
-				<a href="#" class="previous-theme"><span class="screen-reader-text"><?php _ex( 'Previous', 'Button label for a theme' ); ?></span></a>
-				<a href="#" class="next-theme"><span class="screen-reader-text"><?php _ex( 'Next', 'Button label for a theme' ); ?></span></a>
+				<button class="close-full-overlay"><span class="screen-reader-text"><?php _e( 'Close' ); ?></span></button>
+				<button class="previous-theme"><span class="screen-reader-text"><?php _ex( 'Previous', 'Button label for a theme' ); ?></span></button>
+				<button class="next-theme"><span class="screen-reader-text"><?php _ex( 'Next', 'Button label for a theme' ); ?></span></button>
 				<# if ( data.installed ) { #>
-					<a href="#" class="button button-primary theme-install disabled"><?php _ex( 'Installed', 'theme' ); ?></a>
+					<button class="button button-primary theme-install disabled"><?php _ex( 'Installed', 'theme' ); ?></button>
 				<# } else { #>
 					<a href="{{ data.install_url }}" class="button button-primary theme-install" data-slug="{{ data.id }}"><?php _e( 'Install' ); ?></a>
 				<# } #>
@@ -674,7 +679,7 @@ function su_update_table() {
 		if ( $updates_table->has_available_updates() ) :
 			$updates_table->display();
 		else : ?>
-		<div class="notice inline">
+		<div class="notice notice-success inline">
 			<p>
 				<strong><?php _e( 'Everything is up to date.' ); ?></strong>
 				<?php
