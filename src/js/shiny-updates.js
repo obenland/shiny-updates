@@ -470,6 +470,12 @@
 			error: wp.updates.installPluginError
 		}, args );
 
+		if ( 'import' === pagenow ) {
+			$message = $( 'a[href*="' + args.slug + '"]' );
+		} else {
+			$message.text( wp.updates.l10n.installing );
+		}
+
 		$message.addClass( 'updating-message' );
 
 		wp.a11y.speak( wp.updates.l10n.installingMsg, 'polite' );
