@@ -56,7 +56,7 @@
 
 .wrap .notice p:before {
 	margin-right: 6px;
-	vertical-align: text-bottom;
+	vertical-align: bottom;
 }
 
 .import-php .updating-message:before {
