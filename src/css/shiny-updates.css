@@ -306,6 +306,11 @@ tr.active + tr.plugin-update-tr:not(.updated) .plugin-update .notice-error.notic
 	font-size: 1.3em;
 }
 
+.request-filesystem-credentials-form .notice {
+	margin: 0 0 20px 0;
+	clear: both;
+}
+
 @media aural {
 	.wrap .notice p:before,
 	.theme .notice:before,
