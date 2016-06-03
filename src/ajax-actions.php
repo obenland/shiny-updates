@@ -577,7 +577,7 @@ function wp_ajax_update_translations() {
 		$result = $skin->result;
 	}
 
-	if ( is_array( $result ) && ! empty( $result[0] ) ) {
+	if ( ( is_array( $result ) && ! empty( $result[0] ) ) || true === $result ) {
 		wp_send_json_success( $status );
 	} else if ( is_wp_error( $result ) ) {
 		$status['errorMessage'] = $result->get_error_message();
