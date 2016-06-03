@@ -1411,6 +1411,7 @@
 		if ( 27 === event.keyCode ) {
 			wp.updates.requestForCredentialsModalCancel();
 		} else if ( 9 === event.keyCode ) {
+
 			// #upgrade button must always be the last focus-able element in the dialog.
 			if ( 'upgrade' === event.target.id && ! event.shiftKey ) {
 				$( '#hostname' ).focus();
@@ -1459,22 +1460,21 @@
 	 * @since 4.X.0 Triggers an event for callbacks to listen to and add their actions.
 	 */
 	wp.updates.requestForCredentialsModalCancel = function() {
-		var queue = wp.updates.updateQueue;
 
 		// No updateLock and no updateQueue means we already have cleared things up.
 		if ( false === wp.updates.updateLock && 0 === wp.updates.updateQueue.length ) {
 			return;
 		}
 
+		_.each( wp.updates.updateQueue, function( job ) {
+			$document.trigger( 'credential-modal-cancel', job );
+		} );
+
 		// Remove the lock, and clear the queue.
 		wp.updates.updateLock  = false;
 		wp.updates.updateQueue = [];
 
 		wp.updates.requestForCredentialsModalClose();
-
-		_.each( queue, function( job ) {
-			$document.trigger( 'credential-modal-cancel', job );
-		} );
 	};
 
 	/**
