@@ -278,6 +278,37 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Checks whether the current MySQL version is compatible with the one required by the update.
+	 *
+	 * @since 4.X.0
+	 * @access protected
+	 *
+	 * @global wpdb $wpdb WordPress database abstraction object.
+	 *
+	 * @param object $item Core update item.
+	 */
+	protected function _mysql_compat( $update ) {
+		global $wpdb;
+
+		return ( file_exists( WP_CONTENT_DIR . '/db.php' ) && empty( $wpdb->is_mysql ) ) ||
+		       version_compare( $wpdb->db_version(), $update->mysql_version, '>=' );
+	}
+
+	/**
+	 * Checks whether the current PHP version is compatible with the one required by the update.
+	 *
+	 * @since 4.X.0
+	 * @access protected
+	 *
+	 * @global wpdb $wpdb WordPress database abstraction object.
+	 *
+	 * @param object $item Core update item.
+	 */
+	protected function _php_compat( $update ) {
+		return version_compare( phpversion(), $update->php_version, '>=' );
+	}
+
+	/**
 	 * Gets a list of columns.
 	 *
 	 * @since 4.X.0
@@ -430,11 +461,12 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	 * @access public
 	 *
 	 * @global string $wp_version The current WordPress version.
+	 * @global wpdb   $wpdb       WordPress database abstraction object.
 	 *
 	 * @param array $item The current item.
 	 */
 	public function column_title_core( $item ) {
-		global $wp_version;
+		global $wp_version, $wpdb;
 
 		$update = $item['data'];
 
@@ -477,8 +509,43 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 				if ( 'development' === $update->response ) {
 					_e( 'You are using a development version of WordPress. You can update to the latest nightly build automatically.' );
 				} else if ( isset( $update->response ) && 'latest' !== $update->response ) {
-					/* translators: 1: WordPress version, 2: WordPress version including locale */
-					printf( __( 'You can update to <a href="https://codex.wordpress.org/Version_%1$s">WordPress %2$s</a> automatically.' ), $update->current, $version_string );
+					$php_version   = phpversion();
+					$mysql_version = $wpdb->db_version();
+
+					if ( ! $this->_mysql_compat( $update ) && ! $this->_php_compat( $update ) ) {
+						/* translators: 1: WordPress version, 2: Required PHP version, 3: Required MySQL version, 4: Current PHP version, 5: Current MySQL version */
+						printf(
+							__( 'You cannot update because <a href="https://codex.wordpress.org/Version_%1$s">WordPress %1$s</a> requires PHP version %2$s or higher and MySQL version %3$s or higher. You are running PHP version %4$s and MySQL version %5$s.' ),
+							$update->current,
+							$update->php_version,
+							$update->mysql_version,
+							$php_version,
+							$mysql_version
+						);
+					} elseif ( ! $this->_php_compat( $update ) ) {
+						/* translators: 1: WordPress version, 2: Required PHP version, 3: Current PHP version */
+						printf(
+							__( 'You cannot update because <a href="https://codex.wordpress.org/Version_%1$s">WordPress %1$s</a> requires PHP version %2$s or higher. You are running version %3$s.' ),
+							$update->current,
+							$update->php_version,
+							$php_version
+						);
+					} elseif ( ! $this->_mysql_compat( $update ) ) {
+						/* translators: 1: WordPress version, 2: Required MySQL version, 3: Current MySQL version */
+						printf(
+							__( 'You cannot update because <a href="https://codex.wordpress.org/Version_%1$s">WordPress %1$s</a> requires MySQL version %2$s or higher. You are running version %3$s.' ),
+							$update->current,
+							$update->mysql_version,
+							$mysql_version
+						);
+					} else {
+						/* translators: 1: WordPress version, 2: WordPress version including locale */
+						printf(
+							__( 'You can update to <a href="https://codex.wordpress.org/Version_%1$s">WordPress %2$s</a> automatically.' ),
+							$update->current,
+							$version_string
+						);
+					}
 				}
 				?>
 			</p>
@@ -552,8 +619,14 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 		$nonce_action = 'translations' === $item['type'] ? 'upgrade-translations' : 'upgrade-core';
 		$data         = '';
 
-		if ( 'core' === $item['type'] && ( 'en_US' !== $item['data']->locale && isset( $item['data']->dismissed ) && $item['data']->dismissed ) ) {
-			return;
+		if ( 'core' === $item['type'] ) {
+			if ( 'en_US' !== $item['data']->locale && isset( $item['data']->dismissed ) && $item['data']->dismissed ) {
+				return;
+			}
+
+			if ( ! $this->_mysql_compat( $item['data'] ) || ! $this->_php_compat( $item['data'] ) ) {
+				return;
+			}
 		}
 
 		foreach ( $this->_get_data_attributes( $item, 'button' ) as $attribute => $value ) {
