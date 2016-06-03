@@ -285,7 +285,8 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	 *
 	 * @global wpdb $wpdb WordPress database abstraction object.
 	 *
-	 * @param object $item Core update item.
+	 * @param object $update Core update item.
+	 * @return bool Whether the current MySQL version is compatible or not.
 	 */
 	protected function _mysql_compat( $update ) {
 		global $wpdb;
@@ -302,7 +303,8 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	 *
 	 * @global wpdb $wpdb WordPress database abstraction object.
 	 *
-	 * @param object $item Core update item.
+	 * @param object $update Core update item.
+	 * @return bool Whether the current PHP version is compatible or not.
 	 */
 	protected function _php_compat( $update ) {
 		return version_compare( phpversion(), $update->php_version, '>=' );
