@@ -639,10 +639,16 @@
 	 *                     decorated with an abort() method.
 	 */
 	wp.updates.deletePlugin = function( args ) {
+		var $message = $( '[data-plugin="' + args.plugin + '"]' ).find( '.update-message p' );
+
 		args = _.extend( {
 			success: wp.updates.deletePluginSuccess,
 			error: wp.updates.deletePluginError
 		}, args );
+
+		if ( $message.html() !== wp.updates.l10n.updating ) {
+			$message.data( 'originaltext', $message.html() );
+		}
 
 		wp.a11y.speak( wp.updates.l10n.deleting, 'polite' );
 
