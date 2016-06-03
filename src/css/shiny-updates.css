@@ -10,6 +10,7 @@
 .wrap .notice p:before,
 .update-message p:before,
 .updating-message p:before,
+.updated-message p:before,
 .plugin-card .updated-message:before,
 .plugin-card .installed:before,
 .import-php .updating-message:before,
@@ -21,10 +22,10 @@
 	font: normal 20px/1 'dashicons';
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-	margin: 3px 5px 0 -2px;
 	vertical-align: top;
 }
 
+/* Update icon. */
 .update-message p:before,
 .updating-message p:before,
 .plugin-update-tr .installed:before,
@@ -36,6 +37,7 @@
 	content: "\f463";
 }
 
+/* Spins the update icon. */
 .updating-message p:before,
 .button.updating-message:before,
 .import-php .updating-message:before,
@@ -44,28 +46,40 @@
 	animation: rotation 2s infinite linear;
 }
 
+/* Updated icon (check mark). */
 .plugin-card .updated-message:before,
 .plugin-card .installed:before,
 .updated-message p:before,
+.installed p:before,
 .button.updated-message:before,
-.installed:before p:before,
 .button.installed:before {
 	color: #79ba49;
 	content: '\f147';
 }
 
-.wrap .notice p:before {
+.wrap .notice p:before,
+.import-php .updating-message:before {
 	margin-right: 6px;
 	vertical-align: bottom;
 }
 
-.import-php .updating-message:before {
-	vertical-align: bottom;
+.plugin-card .updated-message:before,
+.plugin-card .installed:before,
+.button.updating-message:before,
+.button.updated-message:before,
+.button.installed:before,
+.button.installing:before {
+	margin: 3px 5px 0 -2px;
 }
 
 .button-primary.updating-message:before,
 .theme-install.updating-message:before {
 	color: #fff;
+}
+
+.theme-install.updating-message:before {
+	margin-right: 6px;
+	vertical-align: -5px;
 }
 
 .theme-install.updated-message:before {
@@ -111,7 +125,7 @@ tr.active.update + tr.plugin-update-tr .plugin-update {
 
 .plugins .plugin-update-tr .update-message {
 	margin: 5px 20px 15px 40px;
-	padding: 1px 12px 1px 15px;
+	padding: 1px 12px;
 }
 
 .plugin-update-tr .update-message:before {
@@ -135,22 +149,9 @@ tr.active.update + tr.plugin-update-tr .plugin-update {
 	margin: 0.5em 0;
 }
 
-.update-message {
-	padding-left: 15px;
-}
-
-.update-message p:before {
-	margin: 0 10px 0 -25px;
-}
-
 .wrap .notice-error p:before {
 	color: #dc3232;
 	content: "\f534";
-}
-
-.plugin-card .update-message p:before {
-	content: '';
-	margin: auto;
 }
 
 .button.updated-message,
