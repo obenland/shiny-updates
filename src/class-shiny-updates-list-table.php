@@ -632,10 +632,13 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 		$data         = '';
 
 		if ( 'core' === $item['type'] ) {
+
+			// Bail if this is a dismissed localized Core update.
 			if ( 'en_US' !== $item['data']->locale && isset( $item['data']->dismissed ) && $item['data']->dismissed ) {
 				return;
 			}
 
+			// Bail if the new mysql or php requirements are incompatible.
 			if ( ! $this->is_mysql_compatible( $item['data'] ) || ! $this->is_php_compatible( $item['data'] ) ) {
 				return;
 			}
