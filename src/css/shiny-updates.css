@@ -111,7 +111,7 @@ tr.active.update + tr.plugin-update-tr .plugin-update {
 
 .plugins .plugin-update-tr .update-message {
 	margin: 5px 20px 15px 40px;
-	padding: 1px 12px 1px 35px;
+	padding: 1px 12px 1px 15px;
 }
 
 .plugin-update-tr .update-message:before {
@@ -136,7 +136,7 @@ tr.active.update + tr.plugin-update-tr .plugin-update {
 }
 
 .update-message {
-	padding-left: 40px;
+	padding-left: 15px;
 }
 
 .update-message p:before {
