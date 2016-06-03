@@ -120,6 +120,15 @@
 	wp.updates.updateQueue = [];
 
 	/**
+	 * Holds the URL the user is being redirected to after a successful core update.
+	 *
+	 * @since 4.X.0
+	 *
+	 * @type {string}
+	 */
+	wp.updates.coreUpdateRedirect = undefined;
+
+	/**
 	 * Store a jQuery reference to return focus to when exiting the request credentials modal.
 	 *
 	 * @since 4.2.0
@@ -1231,11 +1240,11 @@
 
 		wp.updates.decrementCount( type );
 
-		$document.trigger( 'wp-' + type + '-update-success', response );
-
 		if ( 'core' === type && response.redirect ) {
-			window.location = response.redirect;
+			wp.updates.coreUpdateRedirect = response.redirect;
 		}
+
+		$document.trigger( 'wp-' + type + '-update-success', response );
 	};
 
 	/**
@@ -2005,6 +2014,11 @@
 							.attr( 'aria-label', wp.updates.l10n.updated )
 							.prop( 'disabled', true )
 							.text( wp.updates.l10n.updated );
+
+						// Redirect to about page after a core update took place.
+						if ( wp.updates.coreUpdateRedirect ) {
+							window.location = wp.updates.coreUpdateRedirect;
+						}
 					}
 				} );
 
