@@ -14,6 +14,7 @@
  * @since 4.X.0
  */
 class Shiny_Updates_List_Table extends WP_List_Table {
+
 	/**
 	 * The current WordPress version.
 	 *
@@ -141,18 +142,6 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Returns a list of CSS classes for the WP_List_Table table tag.
-	 *
-	 * @since 4.X.0
-	 * @access protected
-	 *
-	 * @return array List of CSS classes for the table tag.
-	 */
-	protected function get_table_classes() {
-		return array( 'widefat', 'striped', $this->_args['plural'] );
-	}
-
-	/**
 	 * Displays the actual table.
 	 *
 	 * @since 4.X.0
@@ -190,124 +179,6 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 		</table>
 		<?php
 		$this->display_tablenav( 'bottom' );
-	}
-
-	/**
-	 * Generates the table navigation above or below the table.
-	 *
-	 * @since 4.X.0
-	 * @access protected
-	 *
-	 * @param string $which The location of the bulk actions: 'top' or 'bottom'.
-	 */
-	protected function display_tablenav( $which ) {
-		$total_items = $this->_pagination_args['total_items'];
-		?>
-		<div class="tablenav <?php echo esc_attr( $which ); ?>">
-			<?php
-			if ( $this->has_available_updates ) : ?>
-				<div class="alignright actions">
-					<form method="post" action="update-core.php?action=do-all-upgrade" name="upgrade-all">
-						<?php wp_nonce_field( 'upgrade-core', '_wpnonce' ); ?>
-						<span class="displaying-num">
-							<?php printf( _n( '%s item', '%s items', $total_items ), number_format_i18n( $total_items ) ); ?>
-						</span>
-						<button class="button button-primary update-link" data-type="all" type="submit" aria-label="<?php esc_attr_e( 'Install all updates now' ); ?>">
-							<?php esc_attr_e( 'Update All' ); ?>
-						</button>
-					</form>
-				</div>
-			<?php endif;
-			?>
-		</div>
-		<?php
-	}
-
-	/**
-	 * Get the data attributes for a given list table item.
-	 *
-	 * @since 4.X.0
-	 * @access protected
-	 *
-	 * @param array  $item    The current item.
-	 * @param string $context Optional. Context where the attributes should be applied.
-	 *                        Can be either 'row' or 'button'. Default 'row'.
-	 * @return array Data attributes as key value pairs.
-	 */
-	protected function get_data_attributes( $item, $context = 'row' ) {
-		$attributes = array( 'data-type' => esc_attr( $item['type'] ) );
-
-		switch ( $item['type'] ) {
-			case 'plugin':
-				$attributes['data-plugin'] = esc_attr( $item['slug'] );
-				$attributes['data-slug']   = esc_attr( $item['data']->update->slug );
-				$attributes['data-name']   = esc_attr( $item['data']->Name );
-
-				if ( 'button' === $context ) {
-					/* translators: %s: Plugin name */
-					$attributes['aria-label'] = esc_attr( sprintf( __( 'Update %s now' ), $item['data']->Name ) );
-				}
-				break;
-			case 'theme':
-				$attributes['data-slug'] = esc_attr( $item['slug'] );
-				$attributes['data-name'] = esc_attr( $item['data']->display( 'Name' ) );
-
-				if ( 'button' === $context ) {
-					/* translators: %s: Theme name */
-					$attributes['aria-label'] = esc_attr( sprintf( __( 'Update %s now' ), $item['data']->display( 'Name' ) ) );
-				}
-				break;
-			case 'translations':
-				if ( 'button' === $context ) {
-					$attributes['aria-label'] = esc_attr__( 'Update translations now' );
-				}
-				break;
-			case 'core':
-				$attributes['data-version'] = esc_attr( $item['data']->current );
-				$attributes['data-locale']  = esc_attr( $item['data']->locale );
-
-				if ( 'button' === $context ) {
-					$attributes['aria-label'] = esc_attr__( 'Update WordPress now' );
-				}
-				break;
-			default:
-				break;
-		}
-
-		return $attributes;
-	}
-
-	/**
-	 * Checks whether the current MySQL version is compatible with the one required by the update.
-	 *
-	 * @since 4.X.0
-	 * @access protected
-	 *
-	 * @global wpdb $wpdb WordPress database abstraction object.
-	 *
-	 * @param object $update Core update item.
-	 * @return bool Whether the current MySQL version is compatible or not.
-	 */
-	protected function is_mysql_compatible( $update ) {
-		global $wpdb;
-
-		return ( file_exists( WP_CONTENT_DIR . '/db.php' ) && empty( $wpdb->is_mysql ) ) ||
-		       version_compare( $wpdb->db_version(), $update->mysql_version, '>=' );
-	}
-
-	/**
-	 * Checks whether the current PHP version is compatible with the one required by the update.
-	 *
-	 * @since 4.X.0
-	 * @access protected
-	 *
-	 * @global wpdb $wpdb WordPress database abstraction object.
-	 *
-	 * @param object $update Core update item.
-	 * @return bool Whether the current PHP version is compatible or not.
-	 */
-	protected function is_php_compatible( $update ) {
-		return version_compare( phpversion(), $update->php_version, '>=' );
 	}
 
 	/**
@@ -665,5 +536,135 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 			?>
 		</form>
 		<?php
+	}
+
+	/**
+	 * Returns a list of CSS classes for the WP_List_Table table tag.
+	 *
+	 * @since 4.X.0
+	 * @access protected
+	 *
+	 * @return array List of CSS classes for the table tag.
+	 */
+	protected function get_table_classes() {
+		return array( 'widefat', 'striped', $this->_args['plural'] );
+	}
+
+	/**
+	 * Generates the table navigation above or below the table.
+	 *
+	 * @since 4.X.0
+	 * @access protected
+	 *
+	 * @param string $which The location of the bulk actions: 'top' or 'bottom'.
+	 */
+	protected function display_tablenav( $which ) {
+		$total_items = $this->_pagination_args['total_items'];
+		?>
+		<div class="tablenav <?php echo esc_attr( $which ); ?>">
+			<?php
+			if ( $this->has_available_updates ) : ?>
+				<div class="alignright actions">
+					<form method="post" action="update-core.php?action=do-all-upgrade" name="upgrade-all">
+						<?php wp_nonce_field( 'upgrade-core', '_wpnonce' ); ?>
+						<span class="displaying-num">
+							<?php printf( _n( '%s item', '%s items', $total_items ), number_format_i18n( $total_items ) ); ?>
+						</span>
+						<button class="button button-primary update-link" data-type="all" type="submit" aria-label="<?php esc_attr_e( 'Install all updates now' ); ?>">
+							<?php esc_attr_e( 'Update All' ); ?>
+						</button>
+					</form>
+				</div>
+			<?php endif;
+			?>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Get the data attributes for a given list table item.
+	 *
+	 * @since 4.X.0
+	 * @access protected
+	 *
+	 * @param array  $item    The current item.
+	 * @param string $context Optional. Context where the attributes should be applied.
+	 *                        Can be either 'row' or 'button'. Default 'row'.
+	 * @return array Data attributes as key value pairs.
+	 */
+	protected function get_data_attributes( $item, $context = 'row' ) {
+		$attributes = array( 'data-type' => esc_attr( $item['type'] ) );
+
+		switch ( $item['type'] ) {
+			case 'plugin':
+				$attributes['data-plugin'] = esc_attr( $item['slug'] );
+				$attributes['data-slug']   = esc_attr( $item['data']->update->slug );
+				$attributes['data-name']   = esc_attr( $item['data']->Name );
+
+				if ( 'button' === $context ) {
+					/* translators: %s: Plugin name */
+					$attributes['aria-label'] = esc_attr( sprintf( __( 'Update %s now' ), $item['data']->Name ) );
+				}
+				break;
+			case 'theme':
+				$attributes['data-slug'] = esc_attr( $item['slug'] );
+				$attributes['data-name'] = esc_attr( $item['data']->display( 'Name' ) );
+
+				if ( 'button' === $context ) {
+					/* translators: %s: Theme name */
+					$attributes['aria-label'] = esc_attr( sprintf( __( 'Update %s now' ), $item['data']->display( 'Name' ) ) );
+				}
+				break;
+			case 'translations':
+				if ( 'button' === $context ) {
+					$attributes['aria-label'] = esc_attr__( 'Update translations now' );
+				}
+				break;
+			case 'core':
+				$attributes['data-version'] = esc_attr( $item['data']->current );
+				$attributes['data-locale']  = esc_attr( $item['data']->locale );
+
+				if ( 'button' === $context ) {
+					$attributes['aria-label'] = esc_attr__( 'Update WordPress now' );
+				}
+				break;
+			default:
+				break;
+		}
+
+		return $attributes;
+	}
+
+	/**
+	 * Checks whether the current MySQL version is compatible with the one required by the update.
+	 *
+	 * @since 4.X.0
+	 * @access protected
+	 *
+	 * @global wpdb $wpdb WordPress database abstraction object.
+	 *
+	 * @param object $update Core update item.
+	 * @return bool Whether the current MySQL version is compatible or not.
+	 */
+	protected function is_mysql_compatible( $update ) {
+		global $wpdb;
+
+		return ( file_exists( WP_CONTENT_DIR . '/db.php' ) && empty( $wpdb->is_mysql ) ) ||
+		       version_compare( $wpdb->db_version(), $update->mysql_version, '>=' );
+	}
+
+	/**
+	 * Checks whether the current PHP version is compatible with the one required by the update.
+	 *
+	 * @since 4.X.0
+	 * @access protected
+	 *
+	 * @global wpdb $wpdb WordPress database abstraction object.
+	 *
+	 * @param object $update Core update item.
+	 * @return bool Whether the current PHP version is compatible or not.
+	 */
+	protected function is_php_compatible( $update ) {
+		return version_compare( phpversion(), $update->php_version, '>=' );
 	}
 }
