@@ -1,4 +1,5 @@
-/* global pagenow, commonL10n */
+/* global pagenow */
+
 /**
  *
  * @param {jQuery}  $                                   jQuery object.
@@ -2062,34 +2063,6 @@
 			} else {
 				wp.updates.updateItem( $itemRow );
 			}
-		} );
-
-		/**
-		 * Make notices dismissible.
-		 *
-		 * @since 4.X.0
-		 */
-		$document.on( 'wp-updates-notice-added wp-theme-update-error wp-theme-install-error', function() {
-			$( '.notice.is-dismissible' ).each( function() {
-				var $notice = $( this ),
-				    $button = $( '<button type="button" class="notice-dismiss"><span class="screen-reader-text"></span></button>' ),
-				    /** @property {string} commonL10n.dismiss Dismiss message. */
-				    btnText = commonL10n.dismiss || '';
-
-				// Ensure plain text.
-				$button.find( '.screen-reader-text' ).text( btnText );
-				$button.on( 'click.wp-dismiss-notice', function( event ) {
-					event.preventDefault();
-
-					$notice.fadeTo( 100, 0, function() {
-						$notice.slideUp( 100, function() {
-							$notice.remove();
-						} );
-					} );
-				} );
-
-				$notice.append( $button );
-			} );
 		} );
 
 		/**
