@@ -291,10 +291,12 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 		$theme = $item['data'];
 
 		$details_url = add_query_arg( array(
+			'tab'       => 'theme-information',
+			'theme'     => $theme->get_stylesheet(),
 			'TB_iframe' => 'true',
 			'width'     => 640,
 			'height'    => 662,
-		), $theme->update['url'] );
+		), admin_url( 'theme-install.php' ) );
 		?>
 		<div class="updates-table-screenshot">
 			<img src="<?php echo esc_url( $theme->get_screenshot() ); ?>" width="85" height="64" alt=""/>
