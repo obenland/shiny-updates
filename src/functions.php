@@ -827,7 +827,7 @@ function su_update_all() {
 function su_plugin_install_actions( $action_links, $plugin ) {
 	$status = install_plugin_install_status( $plugin );
 
-	if ( is_plugin_active( $status['file'] ) ) {
+	if ( is_plugin_active( $status['file'] ) && 'update_available' !== $status['status'] ) {
 		$action_links[0] = '<button type="button" class="button button-disabled" disabled="disabled">' . _x( 'Active', 'plugin' ) . '</button>';
 
 		// If the plugin is installed, potentially add an activation link.
