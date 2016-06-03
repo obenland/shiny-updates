@@ -81,10 +81,10 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 
 		$this->cur_wp_version = preg_replace( '/-.*$/', '', $wp_version );
 
-		$core_updates = (array) get_core_updates( array( 'dismissed' => true ) );
-		$plugins      = (array) get_plugin_updates();
-		$themes       = (array) get_theme_updates();
-		$translations = (array) wp_get_translation_updates();
+		$core_updates = current_user_can( 'update_core' ) ? (array) get_core_updates( array( 'dismissed' => true ) ) : array();
+		$plugins      = current_user_can( 'update_plugins' ) ? get_plugin_updates() : array();
+		$themes       = current_user_can( 'update_themes' ) ? get_theme_updates() : array();
+		$translations = ( $core_updates || $plugins || $themes ) ? wp_get_translation_updates() : array();
 
 		foreach ( $core_updates as $core_update ) {
 			if ( isset( $core_update->response ) &&
