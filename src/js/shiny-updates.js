@@ -1487,7 +1487,7 @@
 
 		// Remove any existing error.
 		$modal.find( '.notice' ).remove();
-		$modal.find( 'h2' ).after( '<div class="notice notice-alt notice-error"><p>' + message + '</p></div>' );
+		$modal.find( '#request-filesystem-credentials-title' ).after( '<div class="notice notice-alt notice-error"><p>' + message + '</p></div>' );
 	};
 
 	/**
