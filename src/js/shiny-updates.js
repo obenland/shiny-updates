@@ -324,7 +324,7 @@
 
 			// Remove previous error messages, if any.
 			$card.removeClass( 'plugin-card-update-failed' ).find( '.notice.notice-error' ).remove();
-		} else if ( 'update-core' === pagenow ) {
+		} else if ( 'update-core' === pagenow || 'update-core-network' === pagenow ) {
 			$message = $( '.update-link[data-plugin="' + args.plugin + '"]' ).addClass( 'updating-message' );
 			message  = wp.updates.l10n.updatingLabel.replace( '%s', $message.data( 'name' ) );
 		}
@@ -746,7 +746,7 @@
 			error: wp.updates.updateThemeError
 		}, args );
 
-		if ( 'update-core' === pagenow ) {
+		if ( 'update-core' === pagenow || 'update-core-network' === pagenow ) {
 			$notice = $( '.update-link', '[data-slug="' + args.slug + '"]' ).addClass( 'updating-message' );
 
 		} else if ( 'themes-network' === pagenow ) {
@@ -1292,7 +1292,7 @@
 	 * @return {object} The AJAX payload with the appropriate callbacks.
 	 */
 	wp.updates._addCallbacks = function( data, type ) {
-		if ( 'update-core' === pagenow ) {
+		if ( 'update-core' === pagenow || 'update-core-network' === pagenow ) {
 			data.success = wp.updates.updateItemSuccess;
 			data.error   = wp.updates.updateItemError;
 
@@ -1580,7 +1580,7 @@
 		$document.on( 'credential-modal-cancel', function( event, job ) {
 			var $message, originalText;
 
-			if ( 'update-core' === pagenow ) {
+			if ( 'update-core' === pagenow || 'update-core-network' === pagenow ) {
 				$( '.updating-message' ).removeClass( 'updating-message' ).text( function() {
 					return $( this ).data( 'originaltext' );
 				} );
