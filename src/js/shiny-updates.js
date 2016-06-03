@@ -1959,16 +1959,21 @@
 		/**
 		 * Click handler for updates in the Update List Table view.
 		 *
-		 * Handles the re-install core button as well.
+		 * Handles the re-install core button and "Update All" as well.
 		 *
 		 * @since 4.X.0
 		 *
 		 * @param {Event} event Event interface.
 		 */
-		$( '#wp-updates-table .update-link, .wordpress-reinstall-card .update-link' ).on( 'click', function( event ) {
+		$( '.update-core-php .update-link' ).on( 'click', function( event ) {
 			var $message = $( event.target ),
 			    $coreRow = $( '.update-link[data-type="core"]' ).not( this ),
 				$itemRow = $message.parents( '[data-type]' );
+
+			// There are two 'Update All' buttons
+			if ( 'all' === $message.data( 'type' ) ) {
+				$message = $( '.update-link[data-type="all"]' );
+			}
 
 			event.preventDefault();
 
@@ -1986,61 +1991,41 @@
 				wp.updates.requestFilesystemCredentials( event );
 			}
 
-			wp.updates.updateItem( $itemRow );
-		} );
-
-		/**
-		 * Click handler for updates in the Update List Table view.
-		 *
-		 * @since 4.X.0
-		 *
-		 * @param {Event} event Event interface.
-		 */
-		$document.on( 'click', '.wordpress-updates-table .tablenav .update-link', function( event ) {
-			var $message = $( '.update-link[data-type="all"]' );
-
-			event.preventDefault();
-
-			// The item has already been updated, do not proceed.
-			if ( $message.prop( 'disabled' ) || $message.hasClass( 'updating-message' ) || $message.hasClass( 'button-disabled' ) ) {
-				return;
-			}
-
-			if ( wp.updates.shouldRequestFilesystemCredentials && ! wp.updates.updateLock ) {
-				wp.updates.requestFilesystemCredentials( event );
-			}
-
-			if ( $message.html() !== wp.updates.l10n.updating ) {
-				$message.data( 'originaltext', $message.html() );
-			}
-
-			$message.addClass( 'updating-message' ).attr( 'aria-label', wp.updates.l10n.updatingAllLabel ).text( wp.updates.l10n.updating );
-
-			$document.on( 'wp-plugin-update-success wp-theme-update-success wp-core-update-success wp-translations-update-success wp-plugin-update-error wp-theme-update-error wp-core-update-error wp-translations-update-error ', function() {
-				if ( 0 === wp.updates.updateQueue.length ) {
-					$message
-						.removeClass( 'updating-message' )
-						.attr( 'aria-label', wp.updates.l10n.updated )
-						.prop( 'disabled', true )
-						.text( wp.updates.l10n.updated );
-				}
-			} );
-
-			// Translations first, themes and plugins afterwards before updating core at last.
-			$( $( 'tr[data-type]', '#wp-updates-table' ).get().reverse() ).each( function( index, element ) {
-				var $itemRow = $( element );
-
-				if ( $( '.update-link', $itemRow ).prop( 'disabled' ) ) {
-					return;
+			if ( 'all' === $message.data( 'type' ) ) {
+				if ( $message.html() !== wp.updates.l10n.updating ) {
+					$message.data( 'originaltext', $message.html() );
 				}
 
-				// When there are two core updates (en_US + localized), only update the localized one.
-				if ( 1 < $( '.update-link[data-type="core"]' ).length && 'core' === $itemRow.data( 'type' ) && 'en_US' === $itemRow.data( 'locale' ) ) {
-					return;
-				}
+				$message.addClass( 'updating-message' ).attr( 'aria-label', wp.updates.l10n.updatingAllLabel ).text( wp.updates.l10n.updating );
 
+				$document.on( 'wp-plugin-update-success wp-theme-update-success wp-core-update-success wp-translations-update-success wp-plugin-update-error wp-theme-update-error wp-core-update-error wp-translations-update-error ', function() {
+					if ( 0 === wp.updates.updateQueue.length ) {
+						$message
+							.removeClass( 'updating-message' )
+							.attr( 'aria-label', wp.updates.l10n.updated )
+							.prop( 'disabled', true )
+							.text( wp.updates.l10n.updated );
+					}
+				} );
+
+				// Translations first, themes and plugins afterwards before updating core at last.
+				$( $( 'tr[data-type]', '#wp-updates-table' ).get().reverse() ).each( function( index, element ) {
+					var $itemRow = $( element );
+
+					if ( $( '.update-link', $itemRow ).prop( 'disabled' ) ) {
+						return;
+					}
+
+					// When there are two core updates (en_US + localized), only update the localized one.
+					if ( 1 < $( '.update-link[data-type="core"]' ).length && 'core' === $itemRow.data( 'type' ) && 'en_US' === $itemRow.data( 'locale' ) ) {
+						return;
+					}
+
+					wp.updates.updateItem( $itemRow );
+				} );
+			} else {
 				wp.updates.updateItem( $itemRow );
-			} );
+			}
 		} );
 
 		/**
