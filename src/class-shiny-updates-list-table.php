@@ -234,7 +234,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	 *                        Can be either 'row' or 'button'. Default 'row'.
 	 * @return array Data attributes as key value pairs.
 	 */
-	protected function _get_data_attributes( $item, $context = 'row' ) {
+	protected function get_data_attributes( $item, $context = 'row' ) {
 		$attributes = array( 'data-type' => esc_attr( $item['type'] ) );
 
 		switch ( $item['type'] ) {
@@ -288,7 +288,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	 * @param object $update Core update item.
 	 * @return bool Whether the current MySQL version is compatible or not.
 	 */
-	protected function _mysql_compat( $update ) {
+	protected function is_mysql_compatible( $update ) {
 		global $wpdb;
 
 		return ( file_exists( WP_CONTENT_DIR . '/db.php' ) && empty( $wpdb->is_mysql ) ) ||
@@ -306,7 +306,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	 * @param object $update Core update item.
 	 * @return bool Whether the current PHP version is compatible or not.
 	 */
-	protected function _php_compat( $update ) {
+	protected function is_php_compatible( $update ) {
 		return version_compare( phpversion(), $update->php_version, '>=' );
 	}
 
@@ -337,7 +337,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	public function single_row( $item ) {
 		$data = '';
 
-		foreach ( $this->_get_data_attributes( $item, 'row' ) as $attribute => $value ) {
+		foreach ( $this->get_data_attributes( $item, 'row' ) as $attribute => $value ) {
 			$data .= $attribute . '="' . esc_attr( $value ) . '" ';
 		}
 
@@ -524,7 +524,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 					$php_version   = phpversion();
 					$mysql_version = $wpdb->db_version();
 
-					if ( ! $this->_mysql_compat( $update ) && ! $this->_php_compat( $update ) ) {
+					if ( ! $this->is_mysql_compatible( $update ) && ! $this->is_php_compatible( $update ) ) {
 						printf(
 							/* translators: 1: WordPress version, 2: Required PHP version, 3: Required MySQL version, 4: Current PHP version, 5: Current MySQL version */
 							__( 'You cannot update because <a href="https://codex.wordpress.org/Version_%1$s">WordPress %1$s</a> requires PHP version %2$s or higher and MySQL version %3$s or higher. You are running PHP version %4$s and MySQL version %5$s.' ),
@@ -534,7 +534,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 							$php_version,
 							$mysql_version
 						);
-					} elseif ( ! $this->_php_compat( $update ) ) {
+					} elseif ( ! $this->is_php_compatible( $update ) ) {
 						printf(
 							/* translators: 1: WordPress version, 2: Required PHP version, 3: Current PHP version */
 							__( 'You cannot update because <a href="https://codex.wordpress.org/Version_%1$s">WordPress %1$s</a> requires PHP version %2$s or higher. You are running version %3$s.' ),
@@ -542,7 +542,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 							$update->php_version,
 							$php_version
 						);
-					} elseif ( ! $this->_mysql_compat( $update ) ) {
+					} elseif ( ! $this->is_mysql_compatible( $update ) ) {
 						printf(
 							/* translators: 1: WordPress version, 2: Required MySQL version, 3: Current MySQL version */
 							__( 'You cannot update because <a href="https://codex.wordpress.org/Version_%1$s">WordPress %1$s</a> requires MySQL version %2$s or higher. You are running version %3$s.' ),
@@ -636,12 +636,12 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 				return;
 			}
 
-			if ( ! $this->_mysql_compat( $item['data'] ) || ! $this->_php_compat( $item['data'] ) ) {
+			if ( ! $this->is_mysql_compatible( $item['data'] ) || ! $this->is_php_compatible( $item['data'] ) ) {
 				return;
 			}
 		}
 
-		foreach ( $this->_get_data_attributes( $item, 'button' ) as $attribute => $value ) {
+		foreach ( $this->get_data_attributes( $item, 'button' ) as $attribute => $value ) {
 			$data .= $attribute . '="' . esc_attr( $value ) . '" ';
 		}
 		?>
