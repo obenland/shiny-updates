@@ -19,6 +19,7 @@ add_action( 'admin_enqueue_scripts', 'su_enqueue_scripts' );
 
 // Add the update HTML for plugin updates progress.
 add_action( 'in_admin_header', 'su_admin_notice_template' );
+add_action( 'in_admin_header', 'su_plugin_update_row_template' );
 
 // Search plugins.
 add_action( 'wp_ajax_search-plugins', 'wp_ajax_search_plugins' );

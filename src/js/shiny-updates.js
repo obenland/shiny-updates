@@ -740,15 +740,28 @@
 	 * @param {string} response.errorMessage The error that occurred.
 	 */
 	wp.updates.deletePluginError = function( response ) {
+		var $plugin         = $( 'tr.inactive[data-plugin="' + response.plugin + '"]' ),
+		    pluginUpdateRow = wp.template( 'plugin-update-row' );
+
 		if ( response.errorCode && 'unable_to_connect_to_filesystem' === response.errorCode ) {
 			wp.updates.credentialError( response, 'delete-plugin' );
 			return;
 		}
 
-		$( 'tr[data-plugin="' + response.plugin + '"]' ).find( '.column-description' ).prepend( wp.updates.adminNotice( {
-			className: 'update-message notice-error notice-alt',
-			message:   response.errorMessage
-		} ) );
+		if ( !$plugin.siblings( '#' + $plugin.data( 'slug' ) + '-error' ).length ) {
+			$plugin.after(
+				pluginUpdateRow( {
+					slug:    $plugin.data( 'slug' ),
+					plugin:  response.plugin,
+					type:    'error',
+					colspan: $( '#bulk-action-form' ).find( 'thead th:not(.hidden), thead td' ).length,
+					content: wp.updates.adminNotice( {
+						className: 'update-message notice-error notice-alt',
+						message:   response.errorMessage
+					} )
+				} )
+			)
+		}
 
 		$document.trigger( 'wp-plugin-delete-error', response );
 	};

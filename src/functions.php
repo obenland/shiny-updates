@@ -201,6 +201,35 @@ function su_admin_notice_template() {
 }
 
 /**
+ * Adds the HTML template for plugin update rows on plugins.php.
+ *
+ * Template takes one argument with three values:
+ *
+ * param {object} data {
+ *     Arguments for admin notice.
+ *
+ *     @type string id        ID of the notice.
+ *     @type string className Class names for the notice.
+ *     @type string message   The notice's message.
+ * }
+ *
+ * @todo Merge: Perhaps add to to wp-admin/includes/update.php
+ *
+ * @since 4.X.0
+ */
+function su_plugin_update_row_template() {
+?>
+<script id="tmpl-plugin-update-row" type="text/template">
+	<tr class="plugin-update-tr {{{ type }}}" id="{{{ data.slug }}}-{{{ type }}}" data-slug="{{{ data.slug }}}" data-plugin="{{{ data.plugin }}}">
+		<td colspan="{{{ data.colspan }}}" class="plugin-update colspanchange">
+			{{{ data.content }}}
+		</td>
+	</tr>
+</script>
+<?php
+}
+
+/**
  * JavaScript theme template.
  *
  * @todo Merge: Replace template in wp-admin/themes.php
