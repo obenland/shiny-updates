@@ -208,9 +208,9 @@ function su_admin_notice_template() {
  * param {object} data {
  *     Arguments for admin notice.
  *
- *     @type string id        ID of the notice.
- *     @type string className Class names for the notice.
- *     @type string message   The notice's message.
+ *     @type string slug    Plugin slug.
+ *     @type string plugin  Plugin folder and file name.
+ *     @type string content The update row content.
  * }
  *
  * @todo Merge: Perhaps add to to wp-admin/includes/update.php
@@ -220,7 +220,7 @@ function su_admin_notice_template() {
 function su_plugin_update_row_template() {
 ?>
 <script id="tmpl-plugin-update-row" type="text/template">
-	<tr class="plugin-update-tr {{ data.type }}" id="{{ data.slug }}-{{ data.type }}" data-slug="{{ data.slug }}" data-plugin="{{ data.plugin }}">
+	<tr class="plugin-update-tr update" id="{{ data.slug }}-update" data-slug="{{ data.slug }}" data-plugin="{{ data.plugin }}">
 		<td colspan="{{ data.colspan }}" class="plugin-update colspanchange">
 			{{{ data.content }}}
 		</td>
