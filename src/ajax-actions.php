@@ -56,7 +56,7 @@ function wp_ajax_install_theme() {
 	if ( is_wp_error( $result ) ) {
 		$status['errorMessage'] = $result->get_error_message();
 		wp_send_json_error( $status );
-	} else if ( is_null( $result ) ) {
+	} elseif ( is_null( $result ) ) {
 		global $wp_filesystem;
 
 		$status['errorCode']    = 'unable_to_connect_to_filesystem';
@@ -135,10 +135,10 @@ function wp_ajax_update_theme() {
 		}
 
 		wp_send_json_success( $status );
-	} else if ( is_wp_error( $result ) ) {
+	} elseif ( is_wp_error( $result ) ) {
 		$status['errorMessage'] = $result->get_error_message();
 		wp_send_json_error( $status );
-	} else if ( false === $result ) {
+	} elseif ( false === $result ) {
 		global $wp_filesystem;
 
 		$status['errorCode']    = 'unable_to_connect_to_filesystem';
@@ -276,7 +276,7 @@ function wp_ajax_install_plugin() {
 	if ( is_wp_error( $result ) ) {
 		$status['errorMessage'] = $result->get_error_message();
 		wp_send_json_error( $status );
-	} else if ( is_null( $result ) ) {
+	} elseif ( is_null( $result ) ) {
 		global $wp_filesystem;
 
 		$status['errorCode']    = 'unable_to_connect_to_filesystem';
@@ -385,10 +385,10 @@ function wpsu_ajax_update_plugin() {
 			$status['newVersion'] = sprintf( __( 'Version %s' ), $plugin_data['Version'] );
 		}
 		wp_send_json_success( $status );
-	} else if ( is_wp_error( $result ) ) {
+	} elseif ( is_wp_error( $result ) ) {
 		$status['errorMessage'] = $result->get_error_message();
 		wp_send_json_error( $status );
-	} else if ( false === $result ) {
+	} elseif ( false === $result ) {
 		global $wp_filesystem;
 
 		$status['errorCode']    = 'unable_to_connect_to_filesystem';
@@ -579,10 +579,10 @@ function wp_ajax_update_translations() {
 
 	if ( ( is_array( $result ) && ! empty( $result[0] ) ) || true === $result ) {
 		wp_send_json_success( $status );
-	} else if ( is_wp_error( $result ) ) {
+	} elseif ( is_wp_error( $result ) ) {
 		$status['errorMessage'] = $result->get_error_message();
 		wp_send_json_error( $status );
-	} else if ( false === $result ) {
+	} elseif ( false === $result ) {
 		global $wp_filesystem;
 
 		$status['errorCode']    = 'unable_to_connect_to_filesystem';
@@ -654,10 +654,10 @@ function wp_ajax_update_core() {
 
 	if ( is_string( $result ) ) {
 		wp_send_json_success( $status );
-	} else if ( is_wp_error( $result ) ) {
+	} elseif ( is_wp_error( $result ) ) {
 		$status['errorMessage'] = $result->get_error_message();
 		wp_send_json_error( $status );
-	} else if ( false === $result ) {
+	} elseif ( false === $result ) {
 		global $wp_filesystem;
 
 		$status['errorCode']    = 'unable_to_connect_to_filesystem';

@@ -326,14 +326,14 @@
 			$updateRow = $( 'tr[data-plugin="' + args.plugin + '"]' );
 			$message   = $updateRow.find( '.update-message' ).addClass( 'updating-message' ).find( 'p' );
 			message    = wp.updates.l10n.updatingLabel.replace( '%s', $updateRow.find( '.plugin-title strong' ).text() );
-		} else if ( 'plugin-install' === pagenow || 'plugin-install-network' === pagenow ) {
+		} elseif ( 'plugin-install' === pagenow || 'plugin-install-network' === pagenow ) {
 			$card    = $( '.plugin-card-' + args.slug );
 			$message = $card.find( '.update-now' ).addClass( 'updating-message' );
 			message  = wp.updates.l10n.updatingLabel.replace( '%s', $message.data( 'name' ) );
 
 			// Remove previous error messages, if any.
 			$card.removeClass( 'plugin-card-update-failed' ).find( '.notice.notice-error' ).remove();
-		} else if ( 'update-core' === pagenow || 'update-core-network' === pagenow ) {
+		} elseif ( 'update-core' === pagenow || 'update-core-network' === pagenow ) {
 			$message = $( '.update-link[data-plugin="' + args.plugin + '"]' ).addClass( 'updating-message' );
 			message  = wp.updates.l10n.updatingLabel.replace( '%s', $message.data( 'name' ) );
 		}
@@ -376,7 +376,7 @@
 			newText = $pluginRow.find( '.plugin-version-author-uri' ).html().replace( response.oldVersion, response.newVersion );
 			$pluginRow.find( '.plugin-version-author-uri' ).html( newText );
 
-		} else if ( 'plugin-install' === pagenow || 'plugin-install-network' === pagenow ) {
+		} elseif ( 'plugin-install' === pagenow || 'plugin-install-network' === pagenow ) {
 			$updateMessage = $( '.plugin-card-' + response.slug ).find( '.update-now' ).removeClass( 'updating-message' ).addClass( 'button-disabled updated-message' );
 		}
 
@@ -417,7 +417,7 @@
 		if ( 'plugins' === pagenow || 'plugins-network' === pagenow ) {
 			$message = $( 'tr[data-plugin="' + response.plugin + '"]' ).find( '.update-message' );
 			$message.removeClass( 'updating-message notice-warning' ).addClass( 'notice-error' ).find( 'p' ).html( errorMessage );
-		} else if ( 'plugin-install' === pagenow || 'plugin-install-network' === pagenow ) {
+		} elseif ( 'plugin-install' === pagenow || 'plugin-install-network' === pagenow ) {
 			$card = $( '.plugin-card-' + response.slug )
 				.addClass( 'plugin-card-update-failed' )
 				.append( wp.updates.adminNotice( {
@@ -776,7 +776,7 @@
 		if ( 'update-core' === pagenow || 'update-core-network' === pagenow ) {
 			$notice = $( '.update-link', '[data-slug="' + args.slug + '"]' ).addClass( 'updating-message' );
 
-		} else if ( 'themes-network' === pagenow ) {
+		} elseif ( 'themes-network' === pagenow ) {
 			$notice = $( '[data-slug="' + args.slug + '"]' ).find( '.update-message' ).addClass( 'updating-message' ).find( 'p' );
 
 		} else {
@@ -1240,7 +1240,7 @@
 
 		if ( 'plugin' === type || 'theme' === type ) {
 			$row = $row.filter( '[data-slug="' + response.slug + '"]' );
-		} else if ( 'core' === type ) {
+		} elseif ( 'core' === type ) {
 			$row = $row.filter( function() {
 				return 'reinstall' === response.reinstall && $( this ).is( '.wordpress-reinstall-card' ) ||
 					'reinstall' !== response.reinstall && ! $( this ).is( '.wordpress-reinstall-card' );
@@ -1292,7 +1292,7 @@
 
 		if ( 'plugin' === type || 'theme' === type ) {
 			$row = $row.filter( '[data-slug="' + response.slug + '"]' );
-		} else if ( 'core' === type ) {
+		} elseif ( 'core' === type ) {
 			$row = $row.filter( function() {
 				return 'reinstall' === response.reinstall && $( this ).is( '.wordpress-reinstall-card' ) ||
 					'reinstall' !== response.reinstall && ! $( this ).is( '.wordpress-reinstall-card' );
@@ -1330,7 +1330,7 @@
 			data.success = wp.updates.updateItemSuccess;
 			data.error   = wp.updates.updateItemError;
 
-		} else if ( 'import' === pagenow && 'install-plugin' === type ) {
+		} elseif ( 'import' === pagenow && 'install-plugin' === type ) {
 			data.success = wp.updates.installImporterSuccess;
 			data.error   = wp.updates.installImporterError;
 		}
@@ -1435,14 +1435,14 @@
 	wp.updates.keydown = function( event ) {
 		if ( 27 === event.keyCode ) {
 			wp.updates.requestForCredentialsModalCancel();
-		} else if ( 9 === event.keyCode ) {
+		} elseif ( 9 === event.keyCode ) {
 
 			// #upgrade button must always be the last focus-able element in the dialog.
 			if ( 'upgrade' === event.target.id && ! event.shiftKey ) {
 				$( '#hostname' ).focus();
 
 				event.preventDefault();
-			} else if ( 'hostname' === event.target.id && event.shiftKey ) {
+			} elseif ( 'hostname' === event.target.id && event.shiftKey ) {
 				$( '#upgrade' ).focus();
 
 				event.preventDefault();
@@ -1627,11 +1627,11 @@
 				$( '.updating-message' ).removeClass( 'updating-message' ).text( function() {
 					return $( this ).data( 'originaltext' );
 				} );
-			} else if ( 'import' === pagenow ) {
+			} elseif ( 'import' === pagenow ) {
 				$( '.updating-message' ).removeClass( 'updating-message' );
-			} else if ( 'plugins' === pagenow || 'plugins-network' === pagenow ) {
+			} elseif ( 'plugins' === pagenow || 'plugins-network' === pagenow ) {
 				$message = $( 'tr[data-plugin="' + job.data.plugin + '"]' ).find( '.update-message' );
-			} else if ( 'plugin-install' === pagenow || 'plugin-install-network' === pagenow ) {
+			} elseif ( 'plugin-install' === pagenow || 'plugin-install-network' === pagenow ) {
 				$message = $( '.update-now.updating-message' );
 			} else {
 				$message = $( '.updating-message' );
@@ -2151,7 +2151,7 @@
 
 				if ( 0 === data.s.length ) {
 					$oldSubTitle.remove();
-				} else if ( $oldSubTitle.length ) {
+				} elseif ( $oldSubTitle.length ) {
 					$oldSubTitle.replaceWith( $subTitle );
 				} else {
 					$( '.wrap h1' ).append( $subTitle );

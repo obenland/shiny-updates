@@ -395,7 +395,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 				<?php
 				if ( 'development' === $update->response ) {
 					_e( 'You are using a development version of WordPress. You can update to the latest nightly build automatically.' );
-				} else if ( isset( $update->response ) && 'latest' !== $update->response ) {
+				} elseif ( isset( $update->response ) && 'latest' !== $update->response ) {
 					$php_version   = phpversion();
 					$mysql_version = $wpdb->db_version();
 
