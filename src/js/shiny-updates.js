@@ -326,14 +326,14 @@
 			$updateRow = $( 'tr[data-plugin="' + args.plugin + '"]' );
 			$message   = $updateRow.find( '.update-message' ).addClass( 'updating-message' ).find( 'p' );
 			message    = wp.updates.l10n.updatingLabel.replace( '%s', $updateRow.find( '.plugin-title strong' ).text() );
-		} elseif ( 'plugin-install' === pagenow || 'plugin-install-network' === pagenow ) {
+		} else if ( 'plugin-install' === pagenow || 'plugin-install-network' === pagenow ) {
 			$card    = $( '.plugin-card-' + args.slug );
 			$message = $card.find( '.update-now' ).addClass( 'updating-message' );
 			message  = wp.updates.l10n.updatingLabel.replace( '%s', $message.data( 'name' ) );
 
 			// Remove previous error messages, if any.
 			$card.removeClass( 'plugin-card-update-failed' ).find( '.notice.notice-error' ).remove();
-		} elseif ( 'update-core' === pagenow || 'update-core-network' === pagenow ) {
+		} else if ( 'update-core' === pagenow || 'update-core-network' === pagenow ) {
 			$message = $( '.update-link[data-plugin="' + args.plugin + '"]' ).addClass( 'updating-message' );
 			message  = wp.updates.l10n.updatingLabel.replace( '%s', $message.data( 'name' ) );
 		}
@@ -376,7 +376,7 @@
 			newText = $pluginRow.find( '.plugin-version-author-uri' ).html().replace( response.oldVersion, response.newVersion );
 			$pluginRow.find( '.plugin-version-author-uri' ).html( newText );
 
-		} elseif ( 'plugin-install' === pagenow || 'plugin-install-network' === pagenow ) {
+		} else if ( 'plugin-install' === pagenow || 'plugin-install-network' === pagenow ) {
 			$updateMessage = $( '.plugin-card-' + response.slug ).find( '.update-now' ).removeClass( 'updating-message' ).addClass( 'button-disabled updated-message' );
 		}
 
@@ -417,7 +417,7 @@
 		if ( 'plugins' === pagenow || 'plugins-network' === pagenow ) {
 			$message = $( 'tr[data-plugin="' + response.plugin + '"]' ).find( '.update-message' );
 			$message.removeClass( 'updating-message notice-warning' ).addClass( 'notice-error' ).find( 'p' ).html( errorMessage );
-		} elseif ( 'plugin-install' === pagenow || 'plugin-install-network' === pagenow ) {
+		} else if ( 'plugin-install' === pagenow || 'plugin-install-network' === pagenow ) {
 			$card = $( '.plugin-card-' + response.slug )
 				.addClass( 'plugin-card-update-failed' )
 				.append( wp.updates.adminNotice( {
@@ -776,7 +776,7 @@
 		if ( 'update-core' === pagenow || 'update-core-network' === pagenow ) {
 			$notice = $( '.update-link', '[data-slug="' + args.slug + '"]' ).addClass( 'updating-message' );
 
-		} elseif ( 'themes-network' === pagenow ) {
+		} else if ( 'themes-network' === pagenow ) {
 			$notice = $( '[data-slug="' + args.slug + '"]' ).find( '.update-message' ).addClass( 'updating-message' ).find( 'p' );
 
 		} else {
@@ -1184,12 +1184,12 @@
 	wp.updates.updateItem = function( $itemRow ) {
 		var type   = $itemRow.data( 'type' ),
 		    update = {
-				type: 'update-' + type,
-				data: {
-					success: wp.updates.updateItemSuccess,
-					error:   wp.updates.updateItemError
-				}
-			};
+			    type: 'update-' + type,
+			    data: {
+				    success: wp.updates.updateItemSuccess,
+				    error:   wp.updates.updateItemError
+			    }
+		    };
 
 		switch ( type ) {
 			case 'plugin':
@@ -1240,7 +1240,7 @@
 
 		if ( 'plugin' === type || 'theme' === type ) {
 			$row = $row.filter( '[data-slug="' + response.slug + '"]' );
-		} elseif ( 'core' === type ) {
+		} else if ( 'core' === type ) {
 			$row = $row.filter( function() {
 				return 'reinstall' === response.reinstall && $( this ).is( '.wordpress-reinstall-card' ) ||
 					'reinstall' !== response.reinstall && ! $( this ).is( '.wordpress-reinstall-card' );
@@ -1292,7 +1292,7 @@
 
 		if ( 'plugin' === type || 'theme' === type ) {
 			$row = $row.filter( '[data-slug="' + response.slug + '"]' );
-		} elseif ( 'core' === type ) {
+		} else if ( 'core' === type ) {
 			$row = $row.filter( function() {
 				return 'reinstall' === response.reinstall && $( this ).is( '.wordpress-reinstall-card' ) ||
 					'reinstall' !== response.reinstall && ! $( this ).is( '.wordpress-reinstall-card' );
@@ -1330,7 +1330,7 @@
 			data.success = wp.updates.updateItemSuccess;
 			data.error   = wp.updates.updateItemError;
 
-		} elseif ( 'import' === pagenow && 'install-plugin' === type ) {
+		} else if ( 'import' === pagenow && 'install-plugin' === type ) {
 			data.success = wp.updates.installImporterSuccess;
 			data.error   = wp.updates.installImporterError;
 		}
@@ -1435,14 +1435,14 @@
 	wp.updates.keydown = function( event ) {
 		if ( 27 === event.keyCode ) {
 			wp.updates.requestForCredentialsModalCancel();
-		} elseif ( 9 === event.keyCode ) {
+		} else if ( 9 === event.keyCode ) {
 
 			// #upgrade button must always be the last focus-able element in the dialog.
 			if ( 'upgrade' === event.target.id && ! event.shiftKey ) {
 				$( '#hostname' ).focus();
 
 				event.preventDefault();
-			} elseif ( 'hostname' === event.target.id && event.shiftKey ) {
+			} else if ( 'hostname' === event.target.id && event.shiftKey ) {
 				$( '#upgrade' ).focus();
 
 				event.preventDefault();
@@ -1627,11 +1627,11 @@
 				$( '.updating-message' ).removeClass( 'updating-message' ).text( function() {
 					return $( this ).data( 'originaltext' );
 				} );
-			} elseif ( 'import' === pagenow ) {
+			} else if ( 'import' === pagenow ) {
 				$( '.updating-message' ).removeClass( 'updating-message' );
-			} elseif ( 'plugins' === pagenow || 'plugins-network' === pagenow ) {
+			} else if ( 'plugins' === pagenow || 'plugins-network' === pagenow ) {
 				$message = $( 'tr[data-plugin="' + job.data.plugin + '"]' ).find( '.update-message' );
-			} elseif ( 'plugin-install' === pagenow || 'plugin-install-network' === pagenow ) {
+			} else if ( 'plugin-install' === pagenow || 'plugin-install-network' === pagenow ) {
 				$message = $( '.update-now.updating-message' );
 			} else {
 				$message = $( '.updating-message' );
@@ -2006,7 +2006,7 @@
 		$( '.update-core-php .update-link' ).on( 'click', function( event ) {
 			var $message = $( event.target ),
 			    $coreRow = $( '.update-link[data-type="core"]' ).not( this ),
-				$itemRow = $message.parents( '[data-type]' );
+			    $itemRow = $message.parents( '[data-type]' );
 
 			// There are two 'Update All' buttons
 			if ( 'all' === $message.data( 'type' ) ) {
@@ -2151,7 +2151,7 @@
 
 				if ( 0 === data.s.length ) {
 					$oldSubTitle.remove();
-				} elseif ( $oldSubTitle.length ) {
+				} else if ( $oldSubTitle.length ) {
 					$oldSubTitle.replaceWith( $subTitle );
 				} else {
 					$( '.wrap h1' ).append( $subTitle );
@@ -2211,7 +2211,7 @@
 		 */
 		$( '#plugin_install_from_iframe' ).on( 'click', function( event ) {
 			var target = window.parent === window ? null : window.parent,
-				install;
+			    install;
 
 			$.support.postMessage = !! window.postMessage;
 
