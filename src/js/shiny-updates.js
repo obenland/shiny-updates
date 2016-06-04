@@ -678,13 +678,13 @@
 			$( this ).remove();
 
 			// Remove plugin from update count.
-			if ( -1 !== plugins.upgrade.indexOf( response.plugin ) ) {
+			if ( -1 !== _.indexOf( plugins.upgrade, response.plugin ) ) {
 				plugins.upgrade = _.without( plugins.upgrade, response.plugin );
 				wp.updates.decrementCount( 'plugin' );
 			}
 
 			// Remove from views.
-			if ( -1 !== plugins.inactive.indexOf( response.plugin ) ) {
+			if ( -1 !== _.indexOf( plugins.inactive, response.plugin ) ) {
 				plugins.inactive = _.without( plugins.inactive, response.plugin );
 				if ( plugins.inactive.length > 0 ) {
 					$views.find( '.inactive .count' ).text( '(' + plugins.inactive.length + ')' );
@@ -693,7 +693,7 @@
 				}
 			}
 
-			if ( -1 !== plugins.active.indexOf( response.plugin ) ) {
+			if ( -1 !== _.indexOf( plugins.active, response.plugin ) ) {
 				plugins.active = _.without( plugins.active, response.plugin );
 				if ( plugins.active.length ) {
 					$views.find( '.active .count' ).text( '(' + plugins.active.length + ')' );
@@ -702,7 +702,7 @@
 				}
 			}
 
-			if ( -1 !== plugins.recently_activated.indexOf( response.plugin ) ) {
+			if ( -1 !== _.indexOf( plugins.recently_activated, response.plugin ) ) {
 				plugins.recently_activated = _.without( plugins.recently_activated, response.plugin );
 				if ( plugins.recently_activated.length ) {
 					$views.find( '.recently_activated .count' ).text( '(' + plugins.recently_activated.length + ')' );
