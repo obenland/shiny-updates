@@ -760,7 +760,7 @@
 						message:   response.errorMessage
 					} )
 				} )
-			)
+			);
 		}
 
 		$document.trigger( 'wp-plugin-delete-error', response );
