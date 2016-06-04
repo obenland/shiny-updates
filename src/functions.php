@@ -220,7 +220,7 @@ function su_admin_notice_template() {
 function su_plugin_update_row_template() {
 ?>
 <script id="tmpl-plugin-update-row" type="text/template">
-	<tr class="plugin-update-tr {{ type }}" id="{{ data.slug }}-{{ type }}" data-slug="{{ data.slug }}" data-plugin="{{ data.plugin }}">
+	<tr class="plugin-update-tr {{ data.type }}" id="{{ data.slug }}-{{ data.type }}" data-slug="{{ data.slug }}" data-plugin="{{ data.plugin }}">
 		<td colspan="{{ data.colspan }}" class="plugin-update colspanchange">
 			{{{ data.content }}}
 		</td>
