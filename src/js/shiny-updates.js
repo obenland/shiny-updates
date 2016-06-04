@@ -748,20 +748,21 @@
 			return;
 		}
 
-		if ( !$plugin.siblings( '#' + $plugin.data( 'slug' ) + '-error' ).length ) {
-			$plugin.after(
-				pluginUpdateRow( {
-					slug:    $plugin.data( 'slug' ),
-					plugin:  response.plugin,
-					type:    'error',
-					colspan: $( '#bulk-action-form' ).find( 'thead th:not(.hidden), thead td' ).length,
-					content: wp.updates.adminNotice( {
-						className: 'update-message notice-error notice-alt',
-						message:   response.errorMessage
-					} )
+		// Remove previous error messages, if any.
+		$plugin.siblings( '#' + $plugin.data( 'slug' ) + '-error' ).remove();
+
+		$plugin.after(
+			pluginUpdateRow( {
+				slug:    $plugin.data( 'slug' ),
+				plugin:  response.plugin,
+				type:    'error',
+				colspan: $( '#bulk-action-form' ).find( 'thead th:not(.hidden), thead td' ).length,
+				content: wp.updates.adminNotice( {
+					className: 'update-message notice-error notice-alt',
+					message:   response.errorMessage
 				} )
-			);
-		}
+			} )
+		);
 
 		$document.trigger( 'wp-plugin-delete-error', response );
 	};
