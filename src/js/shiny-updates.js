@@ -2083,12 +2083,19 @@
 
 					// When there are two core updates (en_US + localized), only update the localized one.
 					if ( 1 < $( '.update-link[data-type="core"]' ).length && 'core' === $itemRow.data( 'type' ) && 'en_US' === $itemRow.data( 'locale' ) ) {
+						$( '.update-link', $itemRow ).prop( 'disabled', true );
+
 						return;
 					}
 
 					wp.updates.updateItem( $itemRow );
 				} );
 			} else {
+				// If this is a core update, disable the other one.
+				if ( 'core' === $message.data( 'type' ) ) {
+					$coreRow.prop( 'disabled', true );
+				}
+
 				wp.updates.updateItem( $itemRow );
 			}
 		} );
