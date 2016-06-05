@@ -737,7 +737,6 @@ function su_update_table() {
 	<?php
 	$core_updates = (array) get_core_updates( array( 'dismissed' => true ) );
 
-
 	if ( empty( $core_updates ) ) {
 		return;
 	}
@@ -745,21 +744,21 @@ function su_update_table() {
 	<div class="wordpress-reinstall-card card" data-type="core" data-reinstall="true" data-version="<?php echo esc_attr( $update->current ); ?>" data-locale="<?php echo esc_attr( $update->locale ); ?>">
 		<h2><?php _e( 'Need to re-install WordPress?' ); ?></h2>
 		<?php
-			foreach( $core_updates as $update ) :
-				if ( 'en_US' === $update->locale &&
-				     'en_US' === get_locale() ||
-				     (
-					     $update->packages->partial &&
-					     $wp_version === $update->partial_version &&
-					     1 === count( $core_updates )
-				     )
-				) {
-					$version_string = $update->current;
-				} else {
-					$version_string = sprintf( '%s&ndash;<code>%s</code>', $update->current, $update->locale );
-				}
+		foreach( $core_updates as $update ) :
+			if ( 'en_US' === $update->locale &&
+			     'en_US' === get_locale() ||
+			     (
+				     $update->packages->partial &&
+				     $wp_version === $update->partial_version &&
+				     1 === count( $core_updates )
+			     )
+			) {
+				$version_string = $update->current;
+			} else {
+				$version_string = sprintf( '%s&ndash;<code>%s</code>', $update->current, $update->locale );
+			}
 
-				if ( ! isset( $update->response ) || 'latest' === $update->response ) :
+			if ( ! isset( $update->response ) || 'latest' === $update->response ) :
 		 ?>
 		<p>
 			<?php
@@ -777,9 +776,9 @@ function su_update_table() {
 			</p>
 		</form>
 		<?php
-				endif;
-			endforeach;
-		 ?>
+			endif;
+		endforeach;
+		?>
 	</div>
 	<?php
 }
