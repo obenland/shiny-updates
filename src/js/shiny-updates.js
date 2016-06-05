@@ -959,7 +959,7 @@
 	 * @param {string} response.slug Slug of the theme to be installed.
 	 */
 	wp.updates.installThemeSuccess = function( response ) {
-		var $card    = $( '.wp-full-overlay-header, #' + response.slug ),
+		var $card    = $( '.wp-full-overlay-header, [data-slug=' + response.slug + ']' ),
 		    $message = $card.find( '.theme-install' );
 
 		$card.removeClass( 'focus' ).addClass( 'is-installed' ); // Hides the button.
