@@ -744,7 +744,7 @@ function su_update_table() {
 	<div class="wordpress-reinstall-card card" data-type="core" data-reinstall="true" data-version="<?php echo esc_attr( $update->current ); ?>" data-locale="<?php echo esc_attr( $update->locale ); ?>">
 		<h2><?php _e( 'Need to re-install WordPress?' ); ?></h2>
 		<?php
-		foreach( $core_updates as $update ) :
+		foreach ( $core_updates as $update ) :
 			if ( 'en_US' === $update->locale &&
 			     'en_US' === get_locale() ||
 			     (
@@ -759,7 +759,7 @@ function su_update_table() {
 			}
 
 			if ( ! isset( $update->response ) || 'latest' === $update->response ) :
-		 ?>
+			?>
 		<p>
 			<?php
 				/* translators: %s: WordPress version */
