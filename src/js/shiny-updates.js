@@ -1224,7 +1224,6 @@
 				break;
 
 			case 'core':
-
 				// The update queue should only ever contain one core update.
 				if ( _.findWhere( wp.updates.updateQueue, { type: 'update-core' } ) ) {
 					return;
@@ -1265,7 +1264,7 @@
 		} else if ( 'core' === type ) {
 			$row = $row.filter( function() {
 				return 'reinstall' === response.reinstall && $( this ).is( '.wordpress-reinstall-card' ) ||
-					'reinstall' !== response.reinstall && ! $( this ).is( '.wordpress-reinstall-card' );
+					'reinstall' !== response.reinstall && ! $( this ).is( '.wordpress-reinstall-card' ) && response.locale === $( this ).data( 'locale' );
 			} );
 		}
 
@@ -1317,7 +1316,7 @@
 		} else if ( 'core' === type ) {
 			$row = $row.filter( function() {
 				return 'reinstall' === response.reinstall && $( this ).is( '.wordpress-reinstall-card' ) ||
-					'reinstall' !== response.reinstall && ! $( this ).is( '.wordpress-reinstall-card' );
+					'reinstall' !== response.reinstall && ! $( this ).is( '.wordpress-reinstall-card' ) && response.locale === $( this ).data( 'locale' );
 			} );
 		}
 
