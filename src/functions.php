@@ -735,7 +735,7 @@ function su_update_table() {
 	</div>
 
 	<?php
-	$core_updates = (array) get_core_updates();
+	$core_updates = (array) get_core_updates( array( 'dismissed' => true ) );
 
 	if ( empty( $core_updates ) ) {
 		return;
