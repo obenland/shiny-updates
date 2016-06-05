@@ -962,10 +962,12 @@
 		var $card    = $( '.wp-full-overlay-header, [data-slug=' + response.slug + ']' ),
 		    $message = $card.find( '.theme-install' );
 
-		$card.removeClass( 'focus' ).addClass( 'is-installed' ); // Hides the button.
 		$message.removeClass( 'updating-message' ).addClass( 'updated-message disabled' );
+
 		$message.text( wp.updates.l10n.installed );
 		wp.a11y.speak( wp.updates.l10n.installedMsg, 'polite' );
+
+		$card.addClass( 'is-installed' ).removeClass( 'focus' ); // Hides the button.
 
 		$document.trigger( 'wp-install-theme-success', response );
 	};
