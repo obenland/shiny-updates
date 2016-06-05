@@ -58,7 +58,6 @@ add_action( 'wp_ajax_update-translations', 'wp_ajax_update_translations', -1 );
 // Core updates.
 add_action( 'wp_ajax_update-core', 'wp_ajax_update_core', -1 );
 add_action( 'core_upgrade_preamble', 'su_update_table' );
-add_action( 'update-core-custom_do-all-upgrade', 'su_update_all' );
 add_action( 'admin_footer-update-core.php', 'wp_print_request_filesystem_credentials_modal' );
 add_action( 'admin_footer-import.php',      'wp_print_request_filesystem_credentials_modal' );
 

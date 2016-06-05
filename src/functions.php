@@ -782,68 +782,6 @@ function su_update_table() {
 }
 
 /**
- * Install all available updates.
- *
- * Updates themes, plugins, core and translations.
- *
- * @todo Use only one iframe for all updates.
- * @todo Merge: Add directly to wp-admin/update-core.php
- */
-function su_update_all() {
-	if ( ! current_user_can( 'update_core' ) && ! current_user_can( 'update_plugins' ) && ! current_user_can( 'update_themes' ) ) {
-		wp_die( __( 'You do not have sufficient permissions to update this site.' ) );
-	}
-
-	check_admin_referer( 'upgrade-core' );
-
-	require_once( ABSPATH . 'wp-admin/admin-header.php' );
-
-	// Update themes.
-	$themes = array_keys( get_theme_updates() );
-
-	if ( ! empty( $themes ) ) {
-		$url = 'update.php?action=update-selected-themes&themes=' . urlencode( implode( ',', $themes ) );
-		$url = wp_nonce_url( $url, 'bulk-update-themes' );
-		?>
-		<div class="wrap">
-			<h1><?php _e( 'Update Themes' ); ?></h1>
-			<iframe src="<?php echo $url ?>" style="width: 100%; height: 100%; min-height: 750px;" frameborder="0" title="<?php esc_attr_e( 'Update progress' ); ?>"></iframe>
-		</div>
-		<?php
-	}
-
-	// Update plugins.
-	$plugins = array_keys( get_plugin_updates() );
-
-	if ( ! empty( $plugins ) ) {
-		$url = 'update.php?action=update-selected&plugins=' . urlencode( implode( ',', $plugins ) );
-		$url = wp_nonce_url( $url, 'bulk-update-plugins' );
-		?>
-		<div class="wrap">
-			<h1><?php _e( 'Update Plugins' ); ?></h1>
-			<iframe src="<?php echo $url ?>" style="width: 100%; height: 100%; min-height: 750px;" frameborder="0" title="<?php esc_attr_e( 'Update progress' ); ?>"></iframe>
-		</div>
-		<?php
-	}
-
-	include_once( ABSPATH . 'wp-admin/includes/class-wp-upgrader.php' );
-
-	// Update translations.
-	$url     = 'update-core.php?action=do-translation-upgrade';
-	$nonce   = 'upgrade-translations';
-	$title   = __( 'Update Translations' );
-	$context = WP_LANG_DIR;
-
-	$upgrader = new Language_Pack_Upgrader( new Language_Pack_Upgrader_Skin( compact( 'url', 'nonce', 'title', 'context' ) ) );
-	$upgrader->bulk_upgrade();
-
-	// Update core.
-	do_core_upgrade();
-
-	include( ABSPATH . 'wp-admin/admin-footer.php' );
-}
-
-/**
  * Filter the actions available on the new plugin screen, enabling activation
  * for plugins that are installed and inactive.
  *

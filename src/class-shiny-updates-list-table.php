@@ -569,15 +569,13 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 			<?php
 			if ( $this->has_available_updates ) : ?>
 				<div class="alignright actions">
-					<form method="post" action="update-core.php?action=do-all-upgrade" name="upgrade-all">
-						<?php wp_nonce_field( 'upgrade-core', '_wpnonce' ); ?>
-						<span class="displaying-num">
-							<?php printf( _n( '%s item', '%s items', $total_items ), number_format_i18n( $total_items ) ); ?>
-						</span>
-						<button class="button button-primary update-link" data-type="all" type="submit" aria-label="<?php esc_attr_e( 'Install all updates now' ); ?>">
-							<?php esc_attr_e( 'Update All' ); ?>
-						</button>
-					</form>
+					<?php wp_nonce_field( 'upgrade-core', '_wpnonce' ); ?>
+					<span class="displaying-num">
+						<?php printf( _n( '%s item', '%s items', $total_items ), number_format_i18n( $total_items ) ); ?>
+					</span>
+					<button class="button button-primary update-link hide-if-no-js" data-type="all" type="submit" aria-label="<?php esc_attr_e( 'Install all updates now' ); ?>">
+						<?php esc_attr_e( 'Update All' ); ?>
+					</button>
 				</div>
 			<?php endif;
 			?>
