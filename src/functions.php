@@ -232,7 +232,7 @@ function su_plugin_update_row_template() {
 			<?php
 				printf(
 					/* translators: %s: Plugin name */
-					__( 'The plugin %s was successfully deleted'),
+					__( 'The plugin %s was successfully deleted.' ),
 					'<strong>{{{ data.pluginName }}}</strong>'
 				);
 			?>
