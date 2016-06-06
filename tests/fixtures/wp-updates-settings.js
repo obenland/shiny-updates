@@ -31,6 +31,7 @@ window._wpUpdatesSettings = {
 		'installingMsg': 'Installing... please wait.',
 		'installedMsg': 'Installation completed successfully.',
 		'importerInstalledMsg': 'Importer installed successfully. <a href="%s">Activate plugin &#38; run importer</a>',
+		'aysDeleteTheme': 'Are you sure you want to delete %s?',
 		'aysDelete': 'Are you sure you want to delete %s and its data?',
 		'aysBulkDelete': 'Are you sure you want to delete the selected plugins and their data?',
 		'deleting': 'Deleting...',

@@ -107,6 +107,8 @@ function su_enqueue_scripts( $hook ) {
 			'installedMsg'               => __( 'Installation completed successfully.' ),
 			/* translators: Activation URL */
 			'importerInstalledMsg'       => __( 'Importer installed successfully. <a href="%s">Activate plugin &#38; run importer</a>' ),
+			/* translators: %s: Theme name */
+			'aysDeleteTheme'             => __( 'Are you sure you want to delete %s?' ),
 			/* translators: %s: Plugin name */
 			'aysDelete'                  => __( 'Are you sure you want to delete %s and its data?' ),
 			'aysBulkDelete'              => __( 'Are you sure you want to delete the selected plugins and their data?' ),
