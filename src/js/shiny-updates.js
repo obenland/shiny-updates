@@ -1152,8 +1152,8 @@
 		}, args );
 
 		$message = $( '[data-type="core"]' ).filter( function() {
-			return args.reinstall && $( this ).is( '.wordpress-reinstall-card' ) ||
-				! args.reinstall && ! $( this ).is( '.wordpress-reinstall-card' ) && args.locale === $( this ).data( 'locale' );
+			return args.reinstall && $( this ).is( '.wordpress-reinstall-card-item' ) ||
+				! args.reinstall && ! $( this ).is( '.wordpress-reinstall-card-item' ) && args.locale === $( this ).data( 'locale' );
 		} ).find( '.update-link' );
 
 		if ( $message.html() !== wp.updates.l10n.updating ) {
@@ -1263,8 +1263,8 @@
 			$row = $row.filter( '[data-slug="' + response.slug + '"]' );
 		} else if ( 'core' === type ) {
 			$row = $row.filter( function() {
-				return 'reinstall' === response.reinstall && $( this ).is( '.wordpress-reinstall-card' ) ||
-					'reinstall' !== response.reinstall && ! $( this ).is( '.wordpress-reinstall-card' ) && response.locale === $( this ).data( 'locale' );
+				return 'reinstall' === response.reinstall && $( this ).is( '.wordpress-reinstall-card-item' ) ||
+					'reinstall' !== response.reinstall && ! $( this ).is( '.wordpress-reinstall-card-item' ) && response.locale === $( this ).data( 'locale' );
 			} );
 		}
 
@@ -1315,8 +1315,8 @@
 			$row = $row.filter( '[data-slug="' + response.slug + '"]' );
 		} else if ( 'core' === type ) {
 			$row = $row.filter( function() {
-				return 'reinstall' === response.reinstall && $( this ).is( '.wordpress-reinstall-card' ) ||
-					'reinstall' !== response.reinstall && ! $( this ).is( '.wordpress-reinstall-card' ) && response.locale === $( this ).data( 'locale' );
+				return 'reinstall' === response.reinstall && $( this ).is( '.wordpress-reinstall-card-item' ) ||
+					'reinstall' !== response.reinstall && ! $( this ).is( '.wordpress-reinstall-card-item' ) && response.locale === $( this ).data( 'locale' );
 			} );
 		}
 
@@ -2061,6 +2061,7 @@
 					if ( 0 === wp.updates.updateQueue.length ) {
 						$message
 							.removeClass( 'updating-message' )
+							.addClass( 'updated-message' )
 							.attr( 'aria-label', wp.updates.l10n.updated )
 							.prop( 'disabled', true )
 							.text( wp.updates.l10n.updated );
