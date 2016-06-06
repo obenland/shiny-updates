@@ -221,21 +221,21 @@ function su_admin_notice_template() {
  */
 function su_plugin_update_row_template() {
 ?>
-<script id="tmpl-plugin-update-row" type="text/template">
-	<tr class="plugin-update-tr update" id="{{ data.slug }}-update" data-slug="{{ data.slug }}" data-plugin="{{ data.plugin }}">
+<script id="tmpl-item-update-row" type="text/template">
+	<tr class="plugin-update-tr update" id="{{ data.slug }}-update" data-slug="{{ data.slug }}" <# if ( data.plugin ) { #>data-plugin="{{ data.plugin }}"<# } #>>
 		<td colspan="{{ data.colspan }}" class="plugin-update colspanchange">
 			{{{ data.content }}}
 		</td>
 	</tr>
 </script>
-<script id="tmpl-plugin-deleted-row" type="text/template">
-	<tr class="plugin-deleted-tr inactive deleted" id="{{ data.slug }}-deleted" data-slug="{{ data.slug }}" data-plugin="{{ data.plugin }}">
+<script id="tmpl-item-deleted-row" type="text/template">
+	<tr class="plugin-deleted-tr inactive deleted" id="{{ data.slug }}-deleted" data-slug="{{ data.slug }}" <# if ( data.plugin ) { #>data-plugin="{{ data.plugin }}"<# } #>>
 		<td colspan="{{ data.colspan }}" class="plugin-update colspanchange">
 			<?php
 				printf(
-					/* translators: %s: Plugin name */
-					__( 'The plugin %s was successfully deleted.' ),
-					'<strong>{{{ data.pluginName }}}</strong>'
+					/* translators: %s: Plugin or Theme name */
+					__( '%s was successfully deleted.' ),
+					'<strong>{{{ data.name }}}</strong>'
 				);
 			?>
 		</td>

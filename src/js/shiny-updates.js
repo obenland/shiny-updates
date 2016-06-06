@@ -674,17 +674,17 @@
 			    $views           = $( '.subsubsub' ),
 			    $pluginRow       = $( this ),
 			    columnCount      = $form.find( 'thead th:not(.hidden), thead td' ).length,
-			    pluginDeletedRow = wp.template( 'plugin-deleted-row' ),
+			    pluginDeletedRow = wp.template( 'item-deleted-row' ),
 			    /** @type {object} plugins Base names of plugins in their different states. */
 			    plugins          = settings.plugins;
 
 			if ( ! $pluginRow.hasClass( 'plugin-update-tr' ) ) {
 				$pluginRow.after(
 					pluginDeletedRow( {
-						slug:       response.slug,
-						plugin:     response.plugin,
-						colspan:    columnCount,
-						pluginName: response.pluginName
+						slug:    response.slug,
+						plugin:  response.plugin,
+						colspan: columnCount,
+						name:    response.pluginName
 					} )
 				);
 			}
@@ -749,14 +749,15 @@
 	 *
 	 * @typedef {object} deletePluginError
 	 * @param {object} response              Response from the server.
-	 * @param {string} response.plugin       Basename of the plugin to be deleted.
+	 * @param {string} response.slug         Slug of the plugin that was deleted.
+	 * @param {string} response.plugin       Basename of the plugin that was deleted.
 	 * @param {string} response.errorCode    Error code for the error that occurred.
 	 * @param {string} response.errorMessage The error that occurred.
 	 */
 	wp.updates.deletePluginError = function( response ) {
 		var $plugin          = $( 'tr.inactive[data-plugin="' + response.plugin + '"]' ),
-		    pluginUpdateRow  = wp.template( 'plugin-update-row' ),
-		    $pluginUpdateRow = $plugin.siblings( '#' + $plugin.data( 'slug' ) + '-update' ),
+		    pluginUpdateRow  = wp.template( 'item-update-row' ),
+		    $pluginUpdateRow = $plugin.siblings( '[data-plugin="' + response.plugin + '"]' ),
 		    noticeContent    = wp.updates.adminNotice( {
 			    className: 'update-message notice-error notice-alt',
 			    message:   response.errorMessage
@@ -771,7 +772,7 @@
 		if ( ! $pluginUpdateRow.length ) {
 			$plugin.addClass( 'update' ).after(
 				pluginUpdateRow( {
-					slug:    $plugin.data( 'slug' ),
+					slug:    response.slug,
 					plugin:  response.plugin,
 					colspan: $( '#bulk-action-form' ).find( 'thead th:not(.hidden), thead td' ).length,
 					content: noticeContent
@@ -1071,18 +1072,30 @@
 	 * @param {string} response.slug Slug of the theme to be deleted.
 	 */
 	wp.updates.deleteThemeSuccess = function( response ) {
-		var $themeRow = $( '[data-slug="' + response.slug + '"]' );
+		var $themeRows = $( '[data-slug="' + response.slug + '"]' );
 
 		if ( 'themes-network' === pagenow ) {
 
 			// Removes the theme and updates rows.
-			$themeRow.css( { backgroundColor: '#faafaa' } ).fadeOut( 350, function() {
-				var $views = $( '.subsubsub' ),
-				    totals = settings.totals;
+			$themeRows.css( { backgroundColor: '#faafaa' } ).fadeOut( 350, function() {
+				var $views     = $( '.subsubsub' ),
+				    $themeRow  = $( this ),
+				    totals     = settings.totals,
+				    deletedRow = wp.template( 'item-deleted-row' );
+
+				if ( ! $themeRow.hasClass( 'plugin-update-tr' ) ) {
+					$themeRow.after(
+						deletedRow( {
+							slug:    response.slug,
+							colspan: $( '.wp-list-table' ).find( 'thead th:not(.hidden), thead td' ).length,
+							name:    $themeRow.find( '.theme-title strong' ).text()
+						} )
+					);
+				}
 
 				$themeRow.remove();
 
-				// Remove plugin from update count.
+				// Remove theme from update count.
 				if ( $themeRow.hasClass( 'update' ) ) {
 					totals.upgrade--;
 					wp.updates.decrementCount( 'theme' );
@@ -1120,12 +1133,15 @@
 	 * @param {string} response.errorMessage The error that occurred.
 	 */
 	wp.updates.deleteThemeError = function( response ) {
-		var errorMessage = wp.updates.l10n.deleteFailed.replace( '%s', response.errorMessage ),
+		var $themeRow    = $( 'tr.inactive[data-slug="' + response.slug + '"]' ),
+		    $button      = $( '.theme-actions .delete-theme' ),
+		    updateRow    = wp.template( 'item-update-row' ),
+		    $updateRow   = $themeRow.siblings( '#' + response.slug + '-update' ),
+		    errorMessage = wp.updates.l10n.deleteFailed.replace( '%s', response.errorMessage ),
 		    $message     = wp.updates.adminNotice( {
 			    className: 'update-message notice-error notice-alt',
 			    message:   errorMessage
-		    } ),
-		    $button      = $( '.theme-actions .delete-theme' );
+		    } );
 
 		if ( response.errorCode && 'unable_to_connect_to_filesystem' === response.errorCode ) {
 			wp.updates.credentialError( response, 'delete-theme' );
@@ -1133,7 +1149,21 @@
 		}
 
 		if ( 'themes-network' === pagenow ) {
-			$( 'tr[data-slug="' + response.slug + '"]' ).find( '.column-description' ).prepend( $message );
+			if ( ! $updateRow.length ) {
+				$themeRow.addClass( 'update' ).after(
+					updateRow( {
+						slug: response.slug,
+						colspan: $( '.wp-list-table' ).find( 'thead th:not(.hidden), thead td' ).length,
+						content: $message
+					} )
+				);
+			} else {
+
+				// Remove previous error messages, if any.
+				$updateRow.find( '.notice-error' ).remove();
+				$updateRow.find( '.plugin-update' ).append( $message );
+			}
+
 		} else {
 			$( '.theme-info .theme-description' ).before( $message );
 		}
