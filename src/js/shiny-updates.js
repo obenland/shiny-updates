@@ -2062,6 +2062,7 @@
 					if ( 0 === wp.updates.updateQueue.length ) {
 						$message
 							.removeClass( 'updating-message' )
+							.addClass( 'updated-message' )
 							.attr( 'aria-label', wp.updates.l10n.updated )
 							.prop( 'disabled', true )
 							.text( wp.updates.l10n.updated );
