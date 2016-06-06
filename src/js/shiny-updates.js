@@ -672,7 +672,7 @@
 		$( '[data-plugin="' + response.plugin + '"]' ).css( { backgroundColor: '#faafaa' } ).fadeOut( 350, function() {
 			var $form            = $( '#bulk-action-form' ),
 			    $views           = $( '.subsubsub' ),
-				$pluginRow       = $( this ),
+			    $pluginRow       = $( this ),
 			    columnCount      = $form.find( 'thead th:not(.hidden), thead td' ).length,
 			    pluginDeletedRow = wp.template( 'plugin-deleted-row' ),
 			    /** @type {object} plugins Base names of plugins in their different states. */
