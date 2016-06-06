@@ -666,14 +666,25 @@
 	 * @param {string} response.plugin Basename of the plugin to be deleted.
 	 */
 	wp.updates.deletePluginSuccess = function( response ) {
-
 		// Removes the plugin and updates rows.
 		$( '[data-plugin="' + response.plugin + '"]' ).css( { backgroundColor: '#faafaa' } ).fadeOut( 350, function() {
-			var $form       = $( '#bulk-action-form' ),
-			    $views      = $( '.subsubsub' ),
-			    columnCount = $form.find( 'thead th:not(.hidden), thead td' ).length,
+			var $form            = $( '#bulk-action-form' ),
+			    $views           = $( '.subsubsub' ),
+			    columnCount      = $form.find( 'thead th:not(.hidden), thead td' ).length,
+			    pluginDeletedRow = wp.template( 'plugin-deleted-row' ),
 			    /** @type {object} plugins Base names of plugins in their different states. */
-			    plugins     = settings.plugins;
+			    plugins          = settings.plugins;
+
+			if ( ! $( this ).hasClass( 'plugin-update-tr' ) ) {
+				$( this ).after(
+					pluginDeletedRow( {
+						slug:       response.slug,
+						plugin:     response.plugin,
+						colspan:    $form.find( 'thead th:not(.hidden), thead td' ).length,
+						pluginName: $( this ).find( '.plugin-title strong' ).text()
+					} )
+				);
+			}
 
 			$( this ).remove();
 

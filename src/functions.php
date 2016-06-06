@@ -226,6 +226,19 @@ function su_plugin_update_row_template() {
 		</td>
 	</tr>
 </script>
+<script id="tmpl-plugin-deleted-row" type="text/template">
+	<tr class="plugin-deleted-tr inactive deleted" id="{{ data.slug }}-deleted" data-slug="{{ data.slug }}" data-plugin="{{ data.plugin }}">
+		<td colspan="{{ data.colspan }}" class="plugin-update colspanchange">
+			<?php
+				printf(
+					/* translators: %s: Plugin name */
+					__( 'The plugin %s was successfully deleted'),
+					'<strong>{{{ data.pluginName }}}</strong>'
+				);
+			?>
+		</td>
+	</tr>
+</script>
 <?php
 }
 
