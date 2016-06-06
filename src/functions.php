@@ -740,7 +740,7 @@ function su_update_table() {
 	if ( empty( $core_updates ) ) {
 		return;
 	}
-	
+
 	if ( empty( $update ) ) {
 		$update = array_pop( $core_updates );
 	}
