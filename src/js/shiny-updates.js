@@ -1165,6 +1165,17 @@
 			.attr( 'aria-label', wp.updates.l10n.updatingCoreLabel )
 			.text( wp.updates.l10n.updating );
 
+
+		// Core updates should always come last to redirect to the about page.
+		if ( 0 !== wp.updates.updateQueue.length ) {
+			wp.updates.updateQueue.push( {
+				type: 'update-core',
+				data: args
+			} );
+
+			return wp.updates.queueChecker();
+		}
+
 		return wp.updates.ajax( 'update-core', args );
 	};
 
@@ -1410,13 +1421,6 @@
 				break;
 
 			case 'update-core':
-
-				// Core updates should always come last to redirect to the about page.
-				if ( 0 !== wp.updates.updateQueue.length ) {
-					wp.updates.updateQueue.push( job );
-					return wp.updates.queueChecker();
-				}
-
 				wp.updates.updateCore( job.data );
 				break;
 
