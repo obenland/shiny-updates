@@ -740,26 +740,27 @@ function su_update_table() {
 	if ( empty( $core_updates ) ) {
 		return;
 	}
-	?>
-	<div class="wordpress-reinstall-card card">
-		<h2><?php _e( 'Need to re-install WordPress?' ); ?></h2>
-		<?php
-		foreach ( $core_updates as $update ) :
-			if ( 'en_US' === $update->locale &&
-			     'en_US' === get_locale() ||
-			     (
-				     $update->packages->partial &&
-				     $wp_version === $update->partial_version &&
-				     1 === count( $core_updates )
-			     )
-			) {
-				$version_string = $update->current;
-			} else {
-				$version_string = sprintf( '%s&ndash;<code>%s</code>', $update->current, $update->locale );
-			}
 
-			if ( ! isset( $update->response ) || 'latest' === $update->response ) :
-			?>
+	$first_pass = true;
+	foreach ( $core_updates as $update ) :
+		if ( 'en_US' === $update->locale &&
+		     'en_US' === get_locale() ||
+		     (
+			     $update->packages->partial &&
+			     $wp_version === $update->partial_version &&
+			     1 === count( $core_updates )
+		     )
+		) {
+			$version_string = $update->current;
+		} else {
+			$version_string = sprintf( '%s&ndash;<code>%s</code>', $update->current, $update->locale );
+		}
+
+		if ( ! isset( $update->response ) || 'latest' === $update->response ) :
+			if ( $first_pass ) : ?>
+			<div class="wordpress-reinstall-card card">
+			<h2><?php _e( 'Need to re-install WordPress?' ); ?></h2>
+			<?php endif; ?>
 		<div class="wordpress-reinstall-card-item" data-type="core" data-reinstall="true" data-version="<?php echo esc_attr( $update->current ); ?>" data-locale="<?php echo esc_attr( $update->locale ); ?>">
 			<p>
 				<?php
@@ -777,10 +778,13 @@ function su_update_table() {
 				</p>
 			</form>
 		</div>
-		<?php endif; ?>
-		<?php endforeach; ?>
-	</div>
-	<?php
+		<?php if ( $first_pass ) : ?>
+			</div>
+			<?php
+			$first_pass = false;
+			endif;
+		endif;
+	endforeach;
 }
 
 /**
