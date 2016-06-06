@@ -1152,8 +1152,8 @@
 		}, args );
 
 		$message = $( '[data-type="core"]' ).filter( function() {
-			return args.reinstall && $( this ).is( '.wordpress-reinstall-card' ) ||
-				! args.reinstall && ! $( this ).is( '.wordpress-reinstall-card' ) && args.locale === $( this ).data( 'locale' );
+			return args.reinstall && $( this ).is( '.wordpress-reinstall-card-item' ) ||
+				! args.reinstall && ! $( this ).is( '.wordpress-reinstall-card-item' ) && args.locale === $( this ).data( 'locale' );
 		} ).find( '.update-link' );
 
 		if ( $message.html() !== wp.updates.l10n.updating ) {
@@ -1264,8 +1264,8 @@
 			$row = $row.filter( '[data-slug="' + response.slug + '"]' );
 		} else if ( 'core' === type ) {
 			$row = $row.filter( function() {
-				return 'reinstall' === response.reinstall && $( this ).is( '.wordpress-reinstall-card' ) ||
-					'reinstall' !== response.reinstall && ! $( this ).is( '.wordpress-reinstall-card' );
+				return 'reinstall' === response.reinstall && $( this ).is( '.wordpress-reinstall-card-item' ) ||
+					'reinstall' !== response.reinstall && ! $( this ).is( '.wordpress-reinstall-card-item' );
 			} );
 		}
 
@@ -1316,8 +1316,8 @@
 			$row = $row.filter( '[data-slug="' + response.slug + '"]' );
 		} else if ( 'core' === type ) {
 			$row = $row.filter( function() {
-				return 'reinstall' === response.reinstall && $( this ).is( '.wordpress-reinstall-card' ) ||
-					'reinstall' !== response.reinstall && ! $( this ).is( '.wordpress-reinstall-card' );
+				return 'reinstall' === response.reinstall && $( this ).is( '.wordpress-reinstall-card-item' ) ||
+					'reinstall' !== response.reinstall && ! $( this ).is( '.wordpress-reinstall-card-item' );
 			} );
 		}
 
