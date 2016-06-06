@@ -1165,7 +1165,6 @@
 			.attr( 'aria-label', wp.updates.l10n.updatingCoreLabel )
 			.text( wp.updates.l10n.updating );
 
-
 		// Core updates should always come last to redirect to the about page.
 		if ( 0 !== wp.updates.updateQueue.length ) {
 			wp.updates.updateQueue.push( {
@@ -2039,7 +2038,7 @@
 		 */
 		$( '.update-core-php .update-link' ).on( 'click', function( event ) {
 			var $message = $( event.target ),
-				$itemRow = $message.parents( '[data-type]' ),
+			    $itemRow = $message.parents( '[data-type]' ),
 
 			    /*
 			     * There can be more than one WP update on localized installs.
