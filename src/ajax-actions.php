@@ -297,7 +297,11 @@ function wp_ajax_install_plugin() {
 			'_wpnonce' => wp_create_nonce( 'activate-plugin_' . $install_status['file'] ),
 			'action'   => 'activate',
 			'plugin'   => $install_status['file'],
-		), admin_url( 'plugins.php' ) );
+		), network_admin_url( 'plugins.php' ) );
+	}
+
+	if ( is_multisite() && current_user_can( 'manage_network_plugins' ) ) {
+		$status['activateUrl'] = add_query_arg( array( 'networkwide' => 1 ), $status['activateUrl'] );
 	}
 
 	wp_send_json_success( $status );
