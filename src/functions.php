@@ -758,28 +758,30 @@ function su_update_table() {
 
 		if ( ! isset( $update->response ) || 'latest' === $update->response ) :
 			if ( $first_pass ) : ?>
-			<div class="wordpress-reinstall-card card">
-			<h2><?php _e( 'Need to re-install WordPress?' ); ?></h2>
+				<div class="wordpress-reinstall-card card">
+					<h2><?php _e( 'Need to re-install WordPress?' ); ?></h2>
 			<?php endif; ?>
-		<div class="wordpress-reinstall-card-item" data-type="core" data-reinstall="true" data-version="<?php echo esc_attr( $update->current ); ?>" data-locale="<?php echo esc_attr( $update->locale ); ?>">
-			<p>
-				<?php
-					/* translators: %s: WordPress version */
-					printf( __( 'If you need to re-install version %s, you can do so here.' ), $version_string );
-				?>
-			</p>
 
-			<form method="post" action="update-core.php?action=do-core-reinstall" name="upgrade" class="upgrade">
-				<?php wp_nonce_field( 'upgrade-core' ); ?>
-				<input name="version" value="<?php echo esc_attr( $update->current ); ?>" type="hidden"/>
-				<input name="locale" value="<?php echo esc_attr( $update->locale ); ?>" type="hidden"/>
-				<p>
-					<button type="submit" name="upgrade" class="button update-link"><?php esc_attr_e( 'Re-install Now' ); ?></button>
-				</p>
-			</form>
-		</div>
-		<?php if ( $first_pass ) : ?>
-			</div>
+					<div class="wordpress-reinstall-card-item" data-type="core" data-reinstall="true" data-version="<?php echo esc_attr( $update->current ); ?>" data-locale="<?php echo esc_attr( $update->locale ); ?>">
+						<p>
+							<?php
+								/* translators: %s: WordPress version */
+								printf( __( 'If you need to re-install version %s, you can do so here.' ), $version_string );
+							?>
+						</p>
+
+						<form method="post" action="update-core.php?action=do-core-reinstall" name="upgrade" class="upgrade">
+							<?php wp_nonce_field( 'upgrade-core' ); ?>
+							<input name="version" value="<?php echo esc_attr( $update->current ); ?>" type="hidden"/>
+							<input name="locale" value="<?php echo esc_attr( $update->locale ); ?>" type="hidden"/>
+							<p>
+								<button type="submit" name="upgrade" class="button update-link"><?php esc_attr_e( 'Re-install Now' ); ?></button>
+							</p>
+						</form>
+					</div>
+
+			<?php if ( $first_pass ) : ?>
+				</div>
 			<?php
 			$first_pass = false;
 			endif;
