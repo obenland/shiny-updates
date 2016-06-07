@@ -1815,7 +1815,7 @@
 
 			event.preventDefault();
 
-			if ( ! window.confirm( wp.updates.l10n.aysDelete.replace( '%s', $pluginRow.find( '.plugin-title strong' ).text() ) ) ) {
+			if ( ! window.confirm( wp.updates.l10n.aysDeleteUninstall.replace( '%s', $pluginRow.find( '.plugin-title strong' ).text() ) ) ) {
 				return;
 			}
 
@@ -1870,7 +1870,7 @@
 
 			event.preventDefault();
 
-			if ( ! window.confirm( wp.updates.l10n.aysDeleteTheme.replace( '%s', $themeRow.find( '.theme-title strong' ).text() ) ) ) {
+			if ( ! window.confirm( wp.updates.l10n.aysDelete.replace( '%s', $themeRow.find( '.theme-title strong' ).text() ) ) ) {
 				return;
 			}
 
