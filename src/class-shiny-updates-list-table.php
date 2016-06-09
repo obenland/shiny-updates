@@ -393,7 +393,9 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 			<p>
 				<strong><?php _e( 'WordPress' ); ?></strong>
 				<?php
-				if ( 'development' === $update->response ) {
+				if ( 'development' === $update->response && $this->is_core_under_vcs() ) {
+					_e( 'You are using WordPress under version control. Please update using your VCS.' );
+				} elseif ( 'development' === $update->response ) {
 					_e( 'You are using a development version of WordPress. You can update to the latest nightly build automatically.' );
 				} elseif ( isset( $update->response ) && 'latest' !== $update->response ) {
 					$php_version   = phpversion();
@@ -515,6 +517,10 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 
 			// Bail if the new mysql or php requirements are incompatible.
 			if ( ! $this->is_mysql_compatible( $item['data'] ) || ! $this->is_php_compatible( $item['data'] ) ) {
+				return;
+			}
+
+			if ( $this->is_core_under_vcs() ) {
 				return;
 			}
 		}
@@ -668,5 +674,18 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	 */
 	protected function is_php_compatible( $update ) {
 		return version_compare( phpversion(), $update->php_version, '>=' );
+	}
+
+	/**
+	 * Checks whether Core is under a VCS,
+	 *
+	 * @since 4.X.0
+	 * @access protected
+	 *
+	 * @return bool Whether Core is under a VCS.
+	 */
+	protected function is_core_under_vcs() {
+		$vcs = new WP_Automatic_Updater;
+		return $vcs->is_vcs_checkout();
 	}
 }
