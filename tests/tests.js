@@ -1,5 +1,5 @@
 /*global QUnit */
-jQuery( function( $ ) {
+jQuery( function() {
 
 	QUnit.module( 'wp.updates' );
 

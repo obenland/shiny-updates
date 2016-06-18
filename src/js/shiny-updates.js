@@ -393,7 +393,7 @@
 	$( function() {
 		var $theList = $( '#the-list' );
 
-		$document.on( 'credential-modal-cancel', function( event, job ) {
+		$document.on( 'credential-modal-cancel', function() {
 			if ( 'update-core' === pagenow || 'update-core-network' === pagenow ) {
 				$( '.updating-message' ).removeClass( 'updating-message' ).text( function() {
 					return $( this ).data( 'originaltext' );
