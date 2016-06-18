@@ -43,6 +43,8 @@ before_script:
   # Install JSHint, a JavaScript Code Quality Tool.
   # @link http://jshint.com/docs/
   - if [[ "$SNIFF" == "1" ]]; then npm install -g jshint; fi
+  # Install Composer
+  - if [[ "$SNIFF" == "1" ]]; then composer install --no-interaction; fi
 
 # Run test script commands.
 # Default is specific to project language.
