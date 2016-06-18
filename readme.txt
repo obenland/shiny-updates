@@ -1,4 +1,4 @@
-=== Shiny Updates ===
+# Shiny Updates
 Contributors: obenland, adamsilverstein, michaelarestad, mapk, j-falk, kraftbj, ipstenu, ethitter
 Tags: updates, admin, feature-plugin, plugin, theme, multisite, network, auto-updates
 Requires at least: 4.6-alpha
@@ -7,7 +7,7 @@ License: GPLv2 or later
 
 A smoother experience for managing plugins and themes.
 
-== Description ==
+## Description
 
 Shiny Updates is a WordPress Core Feature Plugin.
 
@@ -17,7 +17,7 @@ Progress updates for these actions don't add a benefit, they are disruptive and 
 Development for this plugin takes place at GitHub.
 To report bugs or feature requests, please use [Github issues](https://github.com/obenland/shiny-updates/issues).
 
-= Testing =
+### Testing 
 We need help testing the user flows! Please [install the Shiny Updates plugin](https://wordpress.org/plugins/shiny-updates/), run the tests below, and share your feedback in the [#feature-shinyupdates](https://wordpress.slack.com/archives/feature-shinyupdates) channel in Slack or [create an issue on GitHub](https://github.com/obenland/shiny-updates/issues).
 
 *Update core*
@@ -33,13 +33,13 @@ We need help testing the user flows! Please [install the Shiny Updates plugin](h
 1. How did installing and activating a plugin or theme go? Was it difficult or easy? Was it faster or slower than expected?
 1. Do you have any further comments or suggestions?
 
-== Installation ==
+## Installation
 
 1. Download Shiny Updates.
 1. Unzip the folder into the `/wp-content/plugins/` directory, or install the plugin from Plugins -> Add New in your WordPress admin.
 1. Activate the plugin through the 'Plugins' screen in WordPress.
 
-== Screenshots ==
+## Screenshots
 
 1. Existing plugin install process, showing The Bleak Screen of Sadness.
 2. Plugin install process with Shiny Updates activated.
