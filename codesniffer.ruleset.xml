@@ -8,9 +8,9 @@
 
 	<!-- Include the WordPress ruleset, with exclusions. -->
 	<rule ref="WordPress">
-		<exclude name="WordPress.XSS.EscapeOutput.UnsafePrintingFunction"/>
-		<exclude name="WordPress.XSS.EscapeOutput.OutputNotEscaped"/>
-		<exclude name="WordPress.VIP.SuperGlobalInputUsage.AccessDetected"/>
+		<exclude name="WordPress.XSS.EscapeOutput"/>
+		<exclude name="WordPress.VIP.SuperGlobalInputUsage"/>
+		<exclude name="WordPress.VIP.ValidatedSanitizedInput"/>
 		<exclude name="WordPress.Variables.GlobalVariables.OverrideProhibited"/>
 		<exclude name="WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar"/>
 		<exclude name="Squiz.PHP.CommentedOutCode.Found"/>
