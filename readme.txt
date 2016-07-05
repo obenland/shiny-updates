@@ -33,6 +33,7 @@ We need help testing the user flows! Please [install the Shiny Updates plugin](h
 1. How did installing and activating a plugin or theme go? Was it difficult or easy? Was it faster or slower than expected?
 1. Do you have any further comments or suggestions?
 
+## Installation
 ## Screenshots
 
 1. Existing plugin install process, showing The Bleak Screen of Sadness.
