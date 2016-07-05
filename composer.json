@@ -11,5 +11,9 @@
     "phpmd/phpmd":              "*",
     "wp-coding-standards/wpcs": "*",
     "sebastian/phpcpd":         "*"
+  },
+  "scripts":     {
+    "post-install-cmd": "\"vendor/bin/phpcs\" --config-set installed_paths vendor/wp-coding-standards/wpcs",
+    "post-update-cmd":  "\"vendor/bin/phpcs\" --config-set installed_paths vendor/wp-coding-standards/wpcs"
   }
 }
