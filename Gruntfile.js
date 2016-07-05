@@ -27,7 +27,7 @@ module.exports = function(grunt) {
 		phpcs: {
 			files: 'src/**/*.php',
 			options: {
-				bin: 'phpcs/scripts/phpcs',
+				bin: 'vendor/bin/phpcs',
 				verbose: true,
 				showSniffCodes: true,
 				standard: 'codesniffer.ruleset.xml'

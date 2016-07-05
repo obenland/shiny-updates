@@ -1,4 +1,5 @@
-# gitignore file for Shiny Updates
+# Composer
+vendor
 
-# Files and folders related to build/test tools.
+# Build/Test tools.
 node_modules

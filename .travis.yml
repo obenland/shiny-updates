@@ -43,6 +43,8 @@ before_script:
   # Install JSHint, a JavaScript Code Quality Tool.
   # @link http://jshint.com/docs/
   - if [[ "$SNIFF" == "1" ]]; then npm install -g jshint; fi
+  # Install Composer
+  - if [[ "$SNIFF" == "1" ]]; then composer install --no-interaction; fi
 
 # Run test script commands.
 # Default is specific to project language.
@@ -63,8 +65,7 @@ script:
   # -n flag: Do not print warnings. (shortcut for --warning-severity=0)
   # --standard: Use WordPress as the standard.
   # --extensions: Only sniff PHP files.
-  - if [[ "$SNIFF" == "1" ]]; then phpcs/scripts/phpcs --config-set installed_paths wpcs,phpccs; fi
-  - if [[ "$SNIFF" == "1" ]]; then phpcs/scripts/phpcs -p -s -v -n ./src/ --standard=./codesniffer.ruleset.xml --extensions=php; fi
+  - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs -n --report=emacs --standard=codesniffer.ruleset.xml src --extensions=php; fi
 
 # Receive notifications for build results.
 # @link http://docs.travis-ci.com/user/notifications/#Email-notifications

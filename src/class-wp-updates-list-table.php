@@ -1,26 +1,28 @@
 <?php
 /**
- * Upgrade API: Shiny_Updates_List_Table class.
+ * Upgrade API: WP_Updates_List_Table class
  *
- * @package Shiny_Updates
+ * @package WordPress
+ * @subpackage Administration
  * @since 4.X.0
  */
 
 /**
- * List table used on the available updates screen.
+ * Core class used to list available updates of all types.
  *
- * Holds available updates for core, plugins, themes and translations.
+ * Displays available updates for core, plugins, themes and translations.
  *
  * @since 4.X.0
+ *
+ * @see WP_List_Table
  */
-class Shiny_Updates_List_Table extends WP_List_Table {
+class WP_Updates_List_Table extends WP_List_Table {
 
 	/**
 	 * The current WordPress version.
 	 *
 	 * @since 4.X.0
 	 * @access protected
-	 *
 	 * @var string
 	 */
 	protected $cur_wp_version;
@@ -30,7 +32,6 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	 *
 	 * @since 4.X.0
 	 * @access protected
-	 *
 	 * @var string|false Available WordPress version or false if already up to date.
 	 */
 	protected $core_update_version = false;
@@ -40,13 +41,12 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	 *
 	 * @since 4.X.0
 	 * @access protected
-	 *
 	 * @var bool
 	 */
 	protected $has_available_updates = false;
 
 	/**
-	 * Construct the list table.
+	 * Constructs the list table.
 	 *
 	 * @since 4.X.0
 	 * @access public
@@ -59,7 +59,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Whether there are any available updates.
+	 * Determines whether there are any available updates.
 	 *
 	 * @since 4.X.0
 	 * @access public
@@ -71,11 +71,13 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Prepares the list of items for displaying.
+	 * Prepares the list of items for display.
 	 *
 	 * @since 4.X.0
 	 * @access public
-	 * @uses WP_List_Table::set_pagination_args()
+	 *
+	 * @see WP_List_Table::set_pagination_args()
+	 * @global string $wp_version The current WordPress version.
 	 */
 	public function prepare_items() {
 		global $wp_version;
@@ -91,6 +93,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 		$themes       = $can_update_themes  ? get_theme_updates() : array();
 		$translations = ( $can_update_core || $can_update_plugins || $can_update_themes ) ? wp_get_translation_updates() : array();
 
+		// Core updates.
 		foreach ( $core_updates as $core_update ) {
 			if ( isset( $core_update->response ) &&
 			     'latest' !== $core_update->response &&
@@ -108,6 +111,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 
 		$this->has_available_updates = ( $this->core_update_version || ! empty( $plugins ) || ! empty( $themes ) || ! empty( $translations ) );
 
+		// Plugin updates.
 		foreach ( $plugins as $plugin_file => $plugin_data ) {
 			$this->items[] = array(
 				'type' => 'plugin',
@@ -116,6 +120,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 			);
 		}
 
+		// Theme updates.
 		foreach ( $themes as $stylesheet => $theme ) {
 			$this->items[] = array(
 				'type' => 'theme',
@@ -124,6 +129,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 			);
 		}
 
+		// Translation updates.
 		if ( ! empty( $translations ) ) {
 			$this->items[] = array(
 				'type' => 'translations',
@@ -146,7 +152,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Displays the actual table.
+	 * Displays the actual updates table.
 	 *
 	 * @since 4.X.0
 	 * @access public
@@ -186,7 +192,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Gets a list of columns.
+	 * Retrieves a list of columns.
 	 *
 	 * @since 4.X.0
 	 * @access public
@@ -277,26 +283,52 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	 */
 	public function column_title_plugin( $item ) {
 		$plugin = $item['data'];
+		$compat = '';
 
 		// Get plugin compat for running version of WordPress.
 		if ( isset( $plugin->update->tested ) && version_compare( $plugin->update->tested, $this->cur_wp_version, '>=' ) ) {
-			$compat = '<br />' . sprintf( __( 'Compatibility with WordPress %1$s: 100%% (according to its author)' ), $this->cur_wp_version );
+			$compat_current = sprintf( __( 'Compatibility with WordPress %1$s: 100%% (according to its author)' ), $this->cur_wp_version );
 		} elseif ( isset( $plugin->update->compatibility->{$this->cur_wp_version} ) ) {
-			$compat = $plugin->update->compatibility->{$this->cur_wp_version};
-			$compat = '<br />' . sprintf( __( 'Compatibility with WordPress %1$s: %2$d%% (%3$d "works" votes out of %4$d total)' ), $this->cur_wp_version, $compat->percent, $compat->votes, $compat->total_votes );
+			$plugin_compat = $plugin->update->compatibility->{$this->cur_wp_version};
+
+			$compat_current = sprintf(
+				__( 'Compatibility with WordPress %1$s: %2$d%% (%3$d "works" votes out of %4$d total)' ),
+				$this->cur_wp_version,
+				$plugin_compat->percent,
+				$plugin_compat->votes,
+				$plugin_compat->total_votes
+			);
+
+			$compat = '<br />' . $compat_current;
 		} else {
-			$compat = '<br />' . sprintf( __( 'Compatibility with WordPress %1$s: Unknown' ), $this->cur_wp_version );
+			$compat_current = sprintf( __( 'Compatibility with WordPress %1$s: Unknown' ), $this->cur_wp_version );
+			$compat         = '<br />' . $compat_current;
 		}
 
 		// Get plugin compat for updated version of WordPress.
 		if ( $this->core_update_version ) {
 			if ( isset( $plugin->update->tested ) && version_compare( $plugin->update->tested, $this->core_update_version, '>=' ) ) {
-				$compat .= '<br />' . sprintf( __( 'Compatibility with WordPress %1$s: 100%% (according to its author)' ), $this->core_update_version );
+				$compat_updated = sprintf( __( 'Compatibility with WordPress %1$s: 100%% (according to its author)' ), $this->core_update_version );
+
+				// Only show compatibility if it's not 100% for both scenarios.
+				if ( ! empty( $compat ) ) {
+					$compat = '<br />' . $compat_current . '<br />' . $compat_updated;
+				}
 			} elseif ( isset( $plugin->update->compatibility->{$this->core_update_version} ) ) {
 				$update_compat = $plugin->update->compatibility->{$this->core_update_version};
-				$compat .= '<br />' . sprintf( __( 'Compatibility with WordPress %1$s: %2$d%% (%3$d "works" votes out of %4$d total)' ), $this->core_update_version, $update_compat->percent, $update_compat->votes, $update_compat->total_votes );
+
+				$compat_updated = sprintf(
+					__( 'Compatibility with WordPress %1$s: %2$d%% (%3$d "works" votes out of %4$d total)' ),
+					$this->core_update_version,
+					$update_compat->percent,
+					$update_compat->votes,
+					$update_compat->total_votes
+				);
+
+				$compat = '<br />' . $compat_current . '<br />' . $compat_updated;
 			} else {
-				$compat .= '<br />' . sprintf( __( 'Compatibility with WordPress %1$s: Unknown' ), $this->core_update_version );
+				$compat_updated = sprintf( __( 'Compatibility with WordPress %1$s: Unknown' ), $this->core_update_version );
+				$compat         = '<br />' . $compat_current . '<br />' . $compat_updated;
 			}
 		}
 
@@ -480,14 +512,17 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 			case 'plugin':
 				_e( 'Plugin' );
 				break;
+
 			case 'theme':
 				_e( 'Theme' );
 				break;
+
 			case 'translations':
 				_e( 'Translations' );
 				break;
-			default:
-				_e( 'Core' );
+
+			case 'core':
+				_e( 'WordPress' );
 				break;
 		}
 	}
@@ -584,7 +619,7 @@ class Shiny_Updates_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Get the data attributes for a given list table item.
+	 * Retrieves the data attributes for a given list table item.
 	 *
 	 * @since 4.X.0
 	 * @access protected
