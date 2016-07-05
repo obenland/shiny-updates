@@ -35,6 +35,7 @@ Make sure you have the necessary dependencies:
 
 ```bash
 npm install
+composer install
 ```
 
 Start `grunt watch` or `npm start` to auto-build Shiny Updates as you work:
