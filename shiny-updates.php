@@ -19,7 +19,6 @@
 function su_init() {
 	require_once( dirname( __FILE__ ) . '/src/functions.php' );
 	require_once( dirname( __FILE__ ) . '/src/ajax-actions.php' );
-	require_once( dirname( __FILE__ ) . '/src/update.php' );
 	require_once( dirname( __FILE__ ) . '/src/default-filters.php' );
 }
 
