@@ -6,6 +6,9 @@
   },
   "author": "The WordPress Contributors",
   "license": "GPL-2.0+",
+  "scripts": {
+    "start": "grunt watch"
+  },
   "devDependencies": {
     "grunt": "~0.4.5",
     "grunt-contrib-jshint": "~1.0.0",
