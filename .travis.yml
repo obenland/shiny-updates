@@ -39,7 +39,7 @@ before_script:
   # @link http://jshint.com/docs/
   - if [[ "$WP_TRAVISCI" == "sniff" ]]; then npm install -g jshint; fi
   # Install Composer
-  - composer install --no-interaction
+  - if [[ "$WP_TRAVISCI" == "codecoverage" ] || [ "$WP_TRAVISCI" == "sniff" ]] ; composer install --no-interaction; fi
 
 script:
   # Search for PHP syntax errors.
