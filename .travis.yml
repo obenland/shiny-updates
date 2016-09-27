@@ -39,7 +39,7 @@ before_script:
   # @link http://jshint.com/docs/
   - if [[ "$WP_TRAVISCI" == "sniff" ]]; then npm install -g jshint; fi
   # Install Composer
-  - if [[ "$WP_TRAVISCI" == "codecoverage" ] || [ "$WP_TRAVISCI" == "sniff" ]] ; composer install --no-interaction; fi
+  - if [ "$WP_TRAVISCI" == "codecoverage" ] || [ "$WP_TRAVISCI" == "sniff" ]; then composer install --no-interaction; fi
 
 script:
   # Search for PHP syntax errors.
@@ -52,7 +52,7 @@ script:
   # @link https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards
   - if [[ "$WP_TRAVISCI" == "sniff" ]]; then vendor/bin/phpcs -n --report=emacs --standard=phpcs.ruleset.xml src --extensions=php; fi
   # PHPUnit tests
-  - if [ "$WP_TRAVISCI" == "codecoverage" ] || [ "$WP_TRAVISCI" == "sniff" ]; then composer install --no-interaction; fi
+  - if [[ "$WP_TRAVISCI" == "codecoverage" ]] ; then phpunit --coverage-clover coverage.xml; else phpunit; fi
 
 after_script:
   - if [[ "$WP_TRAVISCI" == "codecoverage" ]] ; then bash <(curl -s https://codecov.io/bash); fi
