@@ -1,6 +1,6 @@
 {
   "name":        "obenland/shiny-updates",
-  "description": "Allow others to easily embed your blog posts on their sites using oEmbed.",
+  "description": "A smoother experience for managing plugins and themes.",
   "version":     "3.0.0",
   "type":        "wordpress-plugin",
   "license":     "GPL-2.0+",
