@@ -1,5 +1,4 @@
 module.exports = function(grunt) {
-
 	grunt.initConfig({
 		qunit: {
 			files: ['tests/**/*.html']
@@ -8,16 +7,16 @@ module.exports = function(grunt) {
 			files: [
 				'Gruntfile.js',
 				'src/**/*.js',
-				'tests/**/*.js',
-				'!tests/vendor/**'
+				'tests/qunit/**/*.js',
+				'!tests/qunit/vendor/**'
 			],
 			options: grunt.file.readJSON('.jshintrc')
 		},
 		jscs: {
 			src: [
-				'src/**/*.js',
-				'tests/**/*.js',
-				'!tests/vendor/**'
+				'src/qunit/**/*.js',
+				'tests/qunit/**/*.js',
+				'!tests/qunit/vendor/**'
 			],
 			options: {
 				verbose: true,

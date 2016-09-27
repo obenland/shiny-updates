@@ -1,5 +1,5 @@
 # Composer
-vendor
+vendor/*
 
 # Build/Test tools.
 node_modules
