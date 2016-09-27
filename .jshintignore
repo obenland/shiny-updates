@@ -1,4 +1,4 @@
 Gruntfile.js
-tests/vendor/
+tests/qunit/vendor/
 phpcs/
 wpcs/
