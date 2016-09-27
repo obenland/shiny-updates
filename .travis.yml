@@ -52,7 +52,7 @@ script:
   # @link https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards
   - if [[ "$WP_TRAVISCI" == "sniff" ]]; then vendor/bin/phpcs -n --report=emacs --standard=phpcs.ruleset.xml src --extensions=php; fi
   # PHPUnit tests
-  - if [[ "$WP_TRAVISCI" == "codecoverage" ]] ; then phpunit --coverage-clover coverage.xml; else phpunit; fi
+  - if [ "$WP_TRAVISCI" == "codecoverage" ] || [ "$WP_TRAVISCI" == "sniff" ]; then composer install --no-interaction; fi
 
 after_script:
   - if [[ "$WP_TRAVISCI" == "codecoverage" ]] ; then bash <(curl -s https://codecov.io/bash); fi
