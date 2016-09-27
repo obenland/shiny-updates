@@ -1,37 +1,32 @@
-# Travis CI (MIT License) configuration file for the Shiny Updates WordPress plugin.
-# @link https://travis-ci.org/
-
-# For use with the Shiny Updates WordPress plugin.
-# @link https://github.com/obenland/shiny-updates
-
-# Ditch sudo and use containers.
-# @link http://docs.travis-ci.com/user/migrating-from-legacy/#Why-migrate-to-container-based-infrastructure%3F
-# @link http://docs.travis-ci.com/user/workers/container-based-infrastructure/#Routing-your-build-to-container-based-infrastructure
 sudo: false
 
-# Declare project language.
-# @link http://about.travis-ci.org/docs/user/languages/php/
 language: php
 
-# Declare versions of PHP to use. Use one decimal max.
-# @link http://docs.travis-ci.com/user/build-configuration/
+cache:
+  directories:
+    - vendor
+    - $HOME/.composer/cache
+
 matrix:
   fast_finish: true
 
   include:
     # Current $required_php_version for WordPress: 5.2.4
-    # aliased to 5.2.17
-    - php: '5.2'
-    # aliased to a recent 5.6.x version
-    - php: '5.6'
-      env: SNIFF=1
-    # aliased to a recent 7.x version
-    - php: '7.0'
-    # aliased to a recent hhvm version
-    - php: 'hhvm'
+    - php: 5.2
+    - php: 5.6
+    - php: 7.0
+      env: WP_TRAVISCI=sniff
+    - php: 7.0
+      env: WP_TRAVISCI=codecoverage
+    - php: hhvm
 
   allow_failures:
     - php: 'hhvm'
+
+install:
+  # Set up WordPress
+  - bash bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
+
 
 # Use this to prepare your build for testing.
 # e.g. copy database configurations, environment variables, etc.
@@ -39,33 +34,28 @@ matrix:
 before_script:
   # Install JSCS: JavaScript Code Style checker.
   # @link http://jscs.info/
-  - if [[ "$SNIFF" == "1" ]]; then npm install -g jscs; fi
+  - if [[ "$WP_TRAVISCI" == "sniff" ]]; then npm install -g jscs; fi
   # Install JSHint, a JavaScript Code Quality Tool.
   # @link http://jshint.com/docs/
-  - if [[ "$SNIFF" == "1" ]]; then npm install -g jshint; fi
+  - if [[ "$WP_TRAVISCI" == "sniff" ]]; then npm install -g jshint; fi
   # Install Composer
-  - if [[ "$SNIFF" == "1" ]]; then composer install --no-interaction; fi
+  - composer install --no-interaction
 
-# Run test script commands.
-# Default is specific to project language.
-# All commands must exit with code 0 on success. Anything else is considered failure.
 script:
   # Search for PHP syntax errors.
   - find -L ./src/ -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l
   # Run the theme through JSHint.
-  - if [[ "$SNIFF" == "1" ]]; then jshint .; fi
+  - if [[ "$WP_TRAVISCI" == "sniff" ]]; then jshint .; fi
   # Run the theme through JavaScript Code Style checker.
-  - if [[ "$SNIFF" == "1" ]]; then jscs .; fi
+  - if [[ "$WP_TRAVISCI" == "sniff" ]]; then jscs .; fi
   # WordPress Coding Standards.
   # @link https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards
-  # @link http://pear.php.net/package/PHP_CodeSniffer/
-  # -p flag: Show progress of the run.
-  # -s flag: Show sniff codes in all reports.
-  # -v flag: Print verbose output.
-  # -n flag: Do not print warnings. (shortcut for --warning-severity=0)
-  # --standard: Use WordPress as the standard.
-  # --extensions: Only sniff PHP files.
-  - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs -n --report=emacs --standard=codesniffer.ruleset.xml src --extensions=php; fi
+  - if [[ "$WP_TRAVISCI" == "sniff" ]]; then vendor/bin/phpcs -n --report=emacs --standard=phpcs.ruleset.xml src --extensions=php; fi
+  # PHPUnit tests
+  - if [[ "$WP_TRAVISCI" == "codecoverage" ]] ; then phpunit --coverage-clover coverage.xml; else phpunit; fi
+
+after_script:
+  - if [[ "$WP_TRAVISCI" == "codecoverage" ]] ; then bash <(curl -s https://codecov.io/bash); fi
 
 # Receive notifications for build results.
 # @link http://docs.travis-ci.com/user/notifications/#Email-notifications
